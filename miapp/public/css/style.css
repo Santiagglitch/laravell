@@ -1,0 +1,267 @@
+/* Reset general y configuración*/
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+/*Contenedor reutilizable*/
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/*Portada*/
+.header {
+    background-position: center;
+    background-size: cover;
+    /* min-height: 70vh;  👈 quítalo o coméntalo */
+    min-height: 80px;    /* o lo que quieras de alto */
+    color: white;
+    position: relative;
+}
+
+.logo {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    width: 120px;
+    height: auto;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+/*Navbar*/
+.menu {
+    display: flex;
+    justify-content: right;
+    padding-top: 20px;
+    flex-wrap: wrap;
+}
+
+.navbar ul {
+    list-style: none;
+    display: flex;
+    gap: 30px;
+}
+
+.navbar a {
+    color: rgb(4, 4, 4);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.navbar a:hover {
+    color: #00b4d8;
+}
+
+/*Botón general*/
+.btn-1 {
+    display: inline-block;
+    background-color: #00b4d8;
+    color: white;
+    padding: 10px 20px;
+    margin-top: 20px;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.btn-1:hover {
+    background-color: #0077b6;
+}
+
+
+
+/*TECNICELL: Celulares y accesorios*/
+.TECNICELL {
+    padding: 60px 0;
+    background-color: #ffffff;
+    text-align: center;
+}
+
+.celulares-content h2 {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    color: #0d1b2a;
+}
+
+.texto {
+    text-align: left;
+    margin-bottom: 40px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/*Celulares*/
+.celulares {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.celular {
+    background-color: #f1f1f1;
+    border-radius: 10px;
+    padding: 20px;
+    width: 300px;
+}
+
+.celular img {
+    width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+/* Accesorios */
+.accesorios-container {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 35px;
+}
+
+.accesorio {
+    background-color: #f1f1f1;
+    border-radius: 10px;
+    padding: 20px;
+    width: 300px;
+}
+
+.accesorio img {
+    width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+/*Pie de página*/
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    list-style: none;
+}
+.footer {
+    background-color: #000000;
+    padding: 30px 0;
+    list-style: none;
+}
+
+.footer-row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.Fonrio, .Ayuda, .Tienda, .Clases_link {
+    width: 25%;
+    padding: 0 15px;
+}
+
+.footer h4 {
+    font-size: 20px;
+    color: #ffffff;
+    margin-bottom: 30px;
+    font-weight: 200;
+    border-bottom: 2px solid #ff7f3d;
+    padding-bottom: 5px;
+    display: inline-block;
+}
+
+.footer ul li a {
+    font-size: 15px;
+    color: #bbbbbb;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.footer ul li a:hover {
+    color: #ffffff;
+    padding-left: 8px;
+}
+
+
+.social-links svg {
+    cursor: pointer;
+    width: 25px;
+    height: auto;
+    color: #ffffff;
+    margin-right: 10px;
+}
+.social-links svg:hover {
+    color: #ffffff;
+    transform: scale(1.2);
+}
+
+
+
+.copy {
+    text-align: center;
+    color: #ffffff;
+    font-size: 15px;
+    margin-top: 100px;
+    text-decoration: none;
+}
+
+/*¿Quiénes somos?*/
+.contenedor-quienes {
+    max-width: 1200px;
+    margin: 60px auto;
+    padding: 20px;
+    text-align: center;
+}
+
+.titulo-principal {
+    color: #ff7f3d;
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.descripcion {
+    font-size: 16px;
+    max-width: 800px;
+    margin: 0 auto 40px auto;
+    line-height: 1.6;
+}
+
+.tarjetas {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 0 20px;
+}
+
+.tarjeta {
+    flex: 1 1 30%;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    min-width: 280px;
+}
+
+.tarjeta h2 {
+    color: #d66c00;
+    margin-bottom: 10px;
+}
+
+.tarjeta p {
+    font-size: 15px;
+    text-align: justify;
+    line-height: 1.5;
+}

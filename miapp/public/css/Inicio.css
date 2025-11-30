@@ -1,0 +1,111 @@
+/* Barra lateral fija */
+.barra-lateral {
+    width: 250px;
+    background-color: #2B3A67 !important;
+    color: white;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+/* El contenido principal tiene margen izquierdo para no quedar debajo de la sidebar */
+.contenido-principal {
+    margin-left: 250px;
+    min-height: 100vh;
+    background: #f4f6fc;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Restantes estilos personalizados */
+.elemento-menu {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.elemento-menu:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.bg-primary {
+    background-color: #2B3A67 !important;
+}
+
+.encabezado-derecha {
+    display: flex;
+    align-items: center;
+}
+
+.container-fluid {
+    background-color: #778ee9 !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+}
+body {
+    margin: 0;
+    padding: 0;
+}
+.navbar {
+    top: 0;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+.card.tarjeta-dashboard {
+  border-radius: 18px;
+  box-shadow: 0 4px 18px rgba(44,62,80,0.07);
+  border: none;
+  transition: box-shadow 0.25s, transform 0.18s;
+  min-height: 140px;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative; /* necesario para el ::before */
+  overflow: hidden;
+}
+.card.tarjeta-dashboard:hover {
+  transform: translateY(-3px) scale(1.015);
+  box-shadow: 0 8px 32px rgba(44,62,80,0.13);
+}
+/* Franja de color a la izquierda con sombra */
+.card.tarjeta-dashboard::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 18px;
+  bottom: 18px;
+  width: 7px;
+  border-radius: 8px;
+  box-shadow: 0 4px 14px 0 rgba(44,62,80,0.18);
+  background: #3b82f6; /* color por default, se sobreescribe abajo */
+  transition: background 0.2s;
+  z-index: 1;
+}
+/* Cambia el color por tarjeta */
+.card.tarjeta-dashboard.azul::before               { background: #3b82f6; }
+.card.tarjeta-dashboard.verde-azul::before         { background: #06b6d4; }
+.card.tarjeta-dashboard.naranja::before            { background: #f59e0b; }
+.card.tarjeta-dashboard.azul-oscuro::before        { background: #1e40af; }
+.card.tarjeta-dashboard.naranja-alternativo::before{ background: #ea580c; }
+.card.tarjeta-dashboard.morado::before             { background: #7c3aed; }
+.card.tarjeta-dashboard.rosa::before               { background: #e11d48; }
+
+/* Importante: eleva el contenido sobre la franja */
+.card.tarjeta-dashboard > * {
+  position: relative;
+  z-index: 2;
+}

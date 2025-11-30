@@ -1,0 +1,67 @@
+/* ===== Sidebar fijo ===== */
+.barra-lateral {
+  width: 250px;
+  background-color: #2B3A67 !important;
+  color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+/* ===== Contenido principal separado del sidebar ===== */
+.contenido-principal {
+  margin-left: 250px;
+  min-height: 100vh;
+  background: #f4f6fc;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== Items del menú ===== */
+.elemento-menu {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+}
+.elemento-menu:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+/* ===== Estado activo (proveedores.css lo tenía) ===== */
+.elemento-menu.activo {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+/* ===== Navbar ===== */
+.container-fluid {
+  background-color: #778ee9 !important;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+}
+.navbar {
+  top: 0;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* ===== Reset mínimo ===== */
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5; /* igual que proveedores */
+}
