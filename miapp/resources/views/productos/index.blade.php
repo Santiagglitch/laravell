@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <title>Productos</title>
 
-    {{-- Bootstrap y Font Awesome --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-
-    {{-- Tu CSS --}}
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/menu.css') }}">
 </head>
 <body>
+
 <div class="d-flex" style="min-height: 100vh;">
 
+  
     {{-- BARRA LATERAL --}}
     <div class="barra-lateral d-flex flex-column flex-shrink-0 p-3 bg-primary text-white">
         <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
@@ -26,23 +26,38 @@
                     <i class="fa-solid fa-tachometer-alt"></i><span>Dashboard</span>
                 </a>
                 <a href="#" class="elemento-menu">
-                    <i class="fa-solid fa-shopping-cart"></i><span>Compras</span>
+                    <i class="ri-shopping-cart-2-line"></i><span>Compras</span>
                 </a>
                 <a href="#" class="elemento-menu">
-                    <i class="fa-solid fa-undo"></i><span>Devoluciones</span>
+                    <i class="ri-arrow-go-back-line"></i><span>Devoluciones</span>
                 </a>
                 <a href="#" class="elemento-menu">
-                    <i class="fa-solid fa-chart-line"></i><span>Ventas</span>
+                    <i class="ri-price-tag-3-line"></i><span>Ventas</span>
                 </a>
             </div>
             <hr>
             <div class="seccion-menu">
-                <a href="#" class="elemento-menu">
-                    <i class="fa-solid fa-users"></i><span>Proveedores</span>
+
+                <a href="{{ route('productos.index') }}" class="elemento-menu">
+                   <i class="ri-box-3-line"></i>
+                    <span>Productos</span>
                 </a>
-                <a href="{{ route('productos.index') }}" class="elemento-menu active">
-                    <i class="fa-solid fa-boxes"></i><span>Productos</span>
+
+                <a href="{{ route('proveedor.index') }}" class="elemento-menu activo">
+                <i class="ri-truck-line"></i>
+                    <span>Proveedores</span>
                 </a>
+
+                <div class="dropdown">
+                    <a class="elemento-menu d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+                       href="#" id="rolesMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="ri-user-line"></i><span>Usuarios</span>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="rolesMenu">
+                        <li><a class="dropdown-item" href="{{ route('clientes.index') }}">Cliente</a></li>
+                        <li><a class="dropdown-item" href="{{ route('empleados.index') }}">Empleado</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
@@ -50,180 +65,331 @@
     {{-- CONTENIDO PRINCIPAL --}}
     <div class="contenido-principal flex-grow-1">
 
-        {{-- NAVBAR --}}
+        {{-- NAVBAR SUPERIOR --}}
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
                 <a class="navbar-brand">Sistema gestión de inventarios</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarNav" aria-controls="navbarNav"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNav"></div>
 
                 <div class="dropdown ms-auto">
                     <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle"
-                       data-bs-toggle="dropdown">
-                        <img src="{{ asset('php/fotos_empleados/686fe89fe865f_Foto Kevin.jpeg') }}"
-                             width="32" height="32" class="rounded-circle me-2">
-                        <strong>Perfil</strong>
+                       id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="{{ asset('fotos_empleados/686fe89fe865f_Foto Kevin.jpeg') }}"
+                             alt="Perfil" width="32" height="32" class="rounded-circle me-2">
+                        <strong>{{ session('nombre') ?? 'Perfil' }}</strong>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+                    <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
                         <li><a class="dropdown-item" href="#">Mi perfil</a></li>
                         <li><a class="dropdown-item" href="#">Editar perfil</a></li>
-                        <li><a class="dropdown-item" href="#">Registrarse</a></li>
-                        <li><a class="dropdown-item" href="{{ route('logout') }}">Cerrar Sesión</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form action="{{ route('logout') }}" method="POST" class="m-0">
+                                @csrf
+                                <button type="submit" class="dropdown-item">Cerrar sesión</button>
+                            </form>
+                        </li>
                     </ul>
                 </div>
             </div>
         </nav>
 
         <div class="container py-4">
-            <div class="d-flex align-items-center justify-content-center gap-3">
+
+            {{-- TÍTULO --}}
+            <div class="d-flex justify-content-center align-items-center gap-3">
                 <img src="{{ asset('Imagenes/Logo.webp') }}" style="height:48px;">
-                <h1 class="m-0">Gestión de Productos</h1>
+                <h1>Gestión de Productos</h1>
             </div>
 
             {{-- MENSAJE --}}
-            @if (!empty($mensaje ?? null))
-                <div class="alert alert-info mt-3">{{ $mensaje }}</div>
+            @if(session('mensaje'))
+                <div class="alert alert-success mt-3 text-center">{{ session('mensaje') }}</div>
             @endif
 
-            {{-- TABLA DE PRODUCTOS --}}
-            @if (!empty($productos) && is_array($productos))
-                <div class="table-responsive mt-4">
-                    <table class="table table-bordered table-striped align-middle text-center">
-                        <thead class="table-dark">
-                        <tr>
-                            <th>ID Producto</th>
-                            <th>Nombre</th>
-                            <th>Descripción</th>
-                            <th>Precio Venta</th>
-                            <th>Stock Mínimo</th>
-                            <th>Categoría</th>
-                            <th>Estado</th>
-                            <th>Gama</th>
-                            <th>Foto</th>
-                        </tr>
-                        </thead>
-
-                        <tbody>
-                        @foreach ($productos as $producto)
-                            <tr>
-                                <td>{{ $producto['ID_Producto'] }}</td>
-                                <td>{{ $producto['Nombre_Producto'] }}</td>
-                                <td>{{ $producto['Descripcion'] }}</td>
-                                <td>${{ $producto['Precio_Venta'] }}</td>
-                                <td>{{ $producto['Stock_Minimo'] }}</td>
-                                <td>{{ $producto['ID_Categoria'] }}</td>
-                                <td>{{ $producto['ID_Estado'] }}</td>
-                                <td>{{ $producto['ID_Gama'] }}</td>
-
-                                <td>
-                                    @php
-                                        $nombre = $producto['Nombre_Producto'] ?? 'Producto';
-                                        $foto   = trim($producto['Fotos'] ?? '');
-
-                                        if ($foto === '') {
-                                            $src = 'https://via.placeholder.com/80x50?text='.urlencode($nombre);
-                                        } elseif (str_starts_with($foto, 'data:image')) {
-                                            $src = $foto;
-                                        } elseif (preg_match('~^https?://~i', $foto)) {
-                                            $src = $foto;
-                                        } else {
-                                            $src = asset(ltrim($foto, '/'));
-                                        }
-                                    @endphp
-
-                                    <img src="{{ $src }}" style="width:80px; border-radius:4px;">
-                                </td>
-                            </tr>
-                        @endforeach
-                        </tbody>
-
-                    </table>
-                </div>
-            @else
-                <p class="text-center text-muted mt-4">No hay productos disponibles.</p>
-            @endif
-
-            {{-- FORMULARIOS --}}
-            <div class="row mt-5 g-4">
-
-                {{-- AÑADIR --}}
-                <div class="col-md-6">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h2 class="h4 mb-3">Añadir Producto</h2>
-
-                            <form method="POST" action="{{ route('productos.store') }}" class="row g-3">
-                                @csrf
-
-                                <input type="text" name="ID_Producto" placeholder="ID Producto" class="form-control" required>
-                                <input type="text" name="Nombre_Producto" placeholder="Nombre" class="form-control" required>
-                                <input type="text" name="Descripcion" placeholder="Descripción" class="form-control">
-                                <input type="number" step="0.01" name="Precio_Venta" placeholder="Precio Venta" class="form-control">
-                                <input type="number" name="Stock_Minimo" placeholder="Stock Mínimo" class="form-control">
-                                <input type="text" name="ID_Categoria" placeholder="ID Categoría" class="form-control">
-                                <input type="text" name="ID_Estado" placeholder="ID Estado" class="form-control">
-                                <input type="text" name="ID_Gama" placeholder="ID Gama" class="form-control">
-                                <input type="text" name="Fotos" placeholder="URL Foto" class="form-control">
-
-                                <div class="col-12 text-center">
-                                    <button class="btn btn-success">Guardar</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- ACTUALIZAR --}}
-                <div class="col-md-6">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h2 class="h4 mb-3">Actualizar Producto</h2>
-
-                            <form method="POST" action="{{ route('productos.update') }}" class="row g-3">
-                                @csrf
-                                @method('PUT')
-
-                                <input type="text" name="ID_Producto" placeholder="ID Producto a actualizar" class="form-control" required>
-                                <input type="text" name="Nombre_Producto" placeholder="Nuevo nombre" class="form-control">
-                                <input type="text" name="Descripcion" placeholder="Nueva descripción" class="form-control">
-                                <input type="number" step="0.01" name="Precio_Venta" placeholder="Nuevo precio" class="form-control">
-                                <input type="number" name="Stock_Minimo" placeholder="Nuevo stock mínimo" class="form-control">
-                                <input type="text" name="ID_Categoria" placeholder="Nueva categoría" class="form-control">
-                                <input type="text" name="ID_Estado" placeholder="Nuevo estado" class="form-control">
-                                <input type="text" name="ID_Gama" placeholder="Nueva gama" class="form-control">
-                                <input type="text" name="Fotos" placeholder="Nueva foto" class="form-control">
-
-                                <div class="col-12 text-center">
-                                    <button class="btn btn-warning">Actualizar</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- ELIMINAR --}}
-                <div class="col-md-6">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h2 class="h4 mb-3">Eliminar Producto</h2>
-
-                            <form method="POST" action="{{ route('productos.destroy') }}" class="row g-3">
-                                @csrf
-                                @method('DELETE')
-
-                                <input type="text" name="ID_Producto" placeholder="ID Producto a eliminar" class="form-control" required>
-
-                                <div class="col-12 text-center">
-                                    <button class="btn btn-danger">Eliminar</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
+            {{-- BOTÓN CREAR --}}
+            <div class="text-end mt-4">
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#crearModal">
+                    <i class="fa fa-plus"></i> Añadir Producto
+                </button>
             </div>
 
-            <footer class="footer mt-5 text-center text-muted">
-                <p>Copyright © 2025 Fonrio</p>
-            </footer>
+            {{-- TABLA --}}
+            <div class="table-responsive mt-4">
+                <table class="table table-bordered table-hover table-striped align-middle text-center">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Precio</th>
+                        <th>Stock Mín</th>
+                        <th>Categoría</th>
+                        <th>Estado</th>
+                        <th>Gama</th>
+                        <th>Foto</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    @forelse($productos as $pro)
+                        <tr>
+                            <td>{{ $pro['ID_Producto'] }}</td>
+                            <td>{{ $pro['Nombre_Producto'] }}</td>
+                            <td>{{ $pro['Descripcion'] }}</td>
+                            <td>{{ $pro['Precio_Venta'] }}</td>
+                            <td>{{ $pro['Stock_Minimo'] }}</td>
+                            <td>{{ $pro['ID_Categoria'] }}</td>
+                            <td>{{ $pro['ID_Estado'] }}</td>
+                            <td>{{ $pro['ID_Gama'] }}</td>
+
+                            {{-- FOTO OPCIONAL --}}
+                            <td>
+                                @if(!empty($pro['Fotos']))
+                                    <img src="{{ asset('storage/' . $pro['Fotos']) }}" width="50" class="rounded">
+                                @else
+                                    <i class="fa-solid fa-image text-secondary" style="font-size: 30px;"></i>
+                                @endif
+                            </td>
+
+                            <td class="text-center">
+                                {{-- BOTÓN EDITAR --}}
+                                <button class="btn btn-warning btn-sm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editarModal{{ $pro['ID_Producto'] }}">
+                                    <i class="fa fa-edit"></i>
+                                </button>
+
+                                {{-- BOTÓN ELIMINAR --}}
+                                <button class="btn btn-danger btn-sm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#eliminarModal{{ $pro['ID_Producto'] }}">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+
+                        {{-- MODAL EDITAR --}}
+                        <div class="modal fade" id="editarModal{{ $pro['ID_Producto'] }}">
+                            <div class="modal-dialog modal-lg">
+                                <form method="POST" action="{{ route('productos.update') }}" enctype="multipart/form-data">
+                                    @csrf
+                                    @method('PUT')
+
+                                    <input type="hidden" name="ID_Producto" value="{{ $pro['ID_Producto'] }}">
+
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-warning">
+                                            <h5 class="modal-title">Editar Producto</h5>
+                                            <button class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+
+                                        <div class="modal-body row g-3">
+
+                                            <div class="col-md-6">
+                                                <label>Nombre</label>
+                                                <input class="form-control"
+                                                       name="Nombre_Producto"
+                                                       value="{{ $pro['Nombre_Producto'] }}" required>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <label>Precio Venta</label>
+                                                <input class="form-control"
+                                                       name="Precio_Venta"
+                                                       value="{{ $pro['Precio_Venta'] }}" required>
+                                            </div>
+
+                                            <div class="col-md-12">
+                                                <label>Descripción</label>
+                                                <textarea class="form-control"
+                                                          name="Descripcion"
+                                                          required>{{ $pro['Descripcion'] }}</textarea>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <label>Stock Mínimo</label>
+                                                <input class="form-control"
+                                                       name="Stock_Minimo"
+                                                       value="{{ $pro['Stock_Minimo'] }}" required>
+                                            </div>
+
+                                            {{-- SELECTS --}}
+                                            <div class="col-md-6">
+                                                <label>Categoría</label>
+                                                <select name="ID_Categoria" class="form-control">
+                                                    <option value="CAT001" {{ $pro['ID_Categoria']=='CAT001'?'selected':'' }}>Celulares</option>
+                                                    <option value="CAT002" {{ $pro['ID_Categoria']=='CAT002'?'selected':'' }}>Cargadores</option>
+                                                    <option value="CAT003" {{ $pro['ID_Categoria']=='CAT003'?'selected':'' }}>Audifonos</option>
+                                                    <option value="CAT004" {{ $pro['ID_Categoria']=='CAT004'?'selected':'' }}>Forros</option>
+                                                    <option value="CAT005" {{ $pro['ID_Categoria']=='CAT005'?'selected':'' }}>Strap Phone</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <label>Estado</label>
+                                                <select name="ID_Estado" class="form-control">
+                                                    <option value="EST001" {{ $pro['ID_Estado']=='EST001'?'selected':'' }}>Activo</option>
+                                                    <option value="EST002" {{ $pro['ID_Estado']=='EST002'?'selected':'' }}>Inactivo</option>
+                                                    <option value="EST003" {{ $pro['ID_Estado']=='EST003'?'selected':'' }}>En proceso</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <label>Gama</label>
+                                                <select name="ID_Gama" class="form-control">
+                                                    <option value="GAM001" {{ $pro['ID_Gama']=='GAM001'?'selected':'' }}>Alta</option>
+                                                    <option value="GAM002" {{ $pro['ID_Gama']=='GAM002'?'selected':'' }}>Media</option>
+                                                    <option value="GAM003" {{ $pro['ID_Gama']=='GAM003'?'selected':'' }}>Baja</option>
+                                                </select>
+                                            </div>
+
+                                            {{-- FOTO OPCIONAL --}}
+                                            <div class="col-md-6">
+                                                <label>Nueva Foto (opcional)</label>
+                                                <input type="file" name="Fotos" class="form-control">
+                                            </div>
+
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <button class="btn btn-warning" type="submit">Actualizar</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        {{-- MODAL ELIMINAR --}}
+                        <div class="modal fade" id="eliminarModal{{ $pro['ID_Producto'] }}">
+                            <div class="modal-dialog">
+                                <form method="POST" action="{{ route('productos.destroy') }}">
+                                    @csrf
+                                    @method('DELETE')
+
+                                    <input type="hidden" name="ID_Producto" value="{{ $pro['ID_Producto'] }}">
+
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-danger text-white">
+                                            <h5 class="modal-title">Eliminar Producto</h5>
+                                            <button class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+
+                                        <div class="modal-body">
+                                            ¿Seguro que deseas eliminar este producto?
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <button class="btn btn-danger" type="submit">Eliminar</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                    @empty
+                        <tr>
+                            <td colspan="10" class="text-center text-muted">No hay productos registrados.</td>
+                        </tr>
+                    @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+
+            {{-- MODAL CREAR --}}
+            <div class="modal fade" id="crearModal">
+                <div class="modal-dialog modal-lg">
+                    <form method="POST" action="{{ route('productos.store') }}" enctype="multipart/form-data">
+                        @csrf
+
+                        <div class="modal-content">
+                            <div class="modal-header bg-success text-white">
+                                <h5 class="modal-title">Añadir Producto</h5>
+                                <button class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+
+                            <div class="modal-body row g-3">
+
+                                <div class="col-md-6">
+                                    <label>ID Producto</label>
+                                    <input name="ID_Producto" class="form-control" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label>Nombre</label>
+                                    <input name="Nombre_Producto" class="form-control" required>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <label>Descripción</label>
+                                    <textarea name="Descripcion" class="form-control" required></textarea>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label>Precio Venta</label>
+                                    <input name="Precio_Venta" class="form-control" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label>Stock Mínimo</label>
+                                    <input name="Stock_Minimo" class="form-control" required>
+                                </div>
+
+                                {{-- SELECTS --}}
+                                <div class="col-md-6">
+                                    <label>Categoría</label>
+                                    <select name="ID_Categoria" class="form-control">
+                                        <option value="">--Seleccione--</option>
+                                        <option value="CAT001">Celulares</option>
+                                        <option value="CAT002">Cargadores</option>
+                                        <option value="CAT003">Audifonos</option>
+                                        <option value="CAT004">Forros</option>
+                                        <option value="CAT005">Strap Phone</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label>Estado</label>
+                                    <select name="ID_Estado" class="form-control">
+                                        <option value="">--Seleccione--</option>
+                                        <option value="EST001">Activo</option>
+                                        <option value="EST002">Inactivo</option>
+                                        <option value="EST003">En proceso</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label>Gama</label>
+                                    <select name="ID_Gama" class="form-control">
+                                        <option value="">--Seleccione--</option>
+                                        <option value="GAM001">Baja</option>
+                                        <option value="GAM002">Media</option>
+                                        <option value="GAM003">Alta</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label>Foto (opcional)</label>
+                                    <input type="file" name="Fotos" class="form-control">
+                                </div>
+
+                            </div>
+
+                            <div class="modal-footer">
+                                <button class="btn btn-success" type="submit">Guardar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>

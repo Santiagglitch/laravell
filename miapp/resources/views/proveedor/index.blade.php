@@ -1,279 +1,283 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Proveedores</title>
+    <meta charset="UTF-8">
+    <title>Proveedores</title>
 
-  <!-- Bootstrap + Font Awesome -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-<link rel="stylesheet" href="{{ asset('css/ventas.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/menu.css') }}">
 </head>
 <body>
-  <div class="d-flex" style="min-height: 100vh;">
 
-    <!-- SIDEBAR -->
+<div class="d-flex" style="min-height: 100vh;">
+
+    {{-- BARRA LATERAL --}}
     <div class="barra-lateral d-flex flex-column flex-shrink-0 p-3 bg-primary text-white">
-      <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-        TECNICELL RM
-      </a>
-      <hr>
-      <div class="menu-barra-lateral">
-        <div class="seccion-menu">
-          <a href="/Fonrio//Vista/InicioA.php" class="elemento-menu">
-            <i class="fa-solid fa-tachometer-alt"></i><span>Dashboard</span>
-          </a>
-          <a href="/Fonrio/indexcompras.php" class="elemento-menu">
-            <i class="fa-solid fa-shopping-cart"></i><span>Compras</span>
-          </a>
-          <a href="/Fonrio/indexdev.php" class="elemento-menu">
-            <i class="fa-solid fa-undo"></i><span>Devoluciones</span>
-          </a>
-          <a href="/Fonrio/indexventas.php" class="elemento-menu">
-            <i class="fa-solid fa-chart-line"></i><span>Ventas</span>
-          </a>
-        </div>
+        <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+            TECNICELL RM
+        </a>
         <hr>
-        <div class="seccion-menu">
-          <a href="/Fonrio/indexproveedor.php" class="elemento-menu active">
-            <i class="fa-solid fa-users"></i><span>Proveedores</span>
-          </a>
-          <a href="/Fonrio/indexproducto.php" class="elemento-menu">
-            <i class="fa-solid fa-boxes"></i><span>Productos</span>
-          </a>
+        <div class="menu-barra-lateral">
+            <div class="seccion-menu">
+                <a href="{{ route('admin.inicio') }}" class="elemento-menu">
+                    <i class="fa-solid fa-tachometer-alt"></i><span>Dashboard</span>
+                </a>
+                <a href="#" class="elemento-menu">
+                    <i class="ri-shopping-cart-2-line"></i><span>Compras</span>
+                </a>
+                <a href="#" class="elemento-menu">
+                    <i class="ri-arrow-go-back-line"></i><span>Devoluciones</span>
+                </a>
+                <a href="#" class="elemento-menu">
+                    <i class="ri-price-tag-3-line"></i><span>Ventas</span>
+                </a>
+            </div>
+            <hr>
+            <div class="seccion-menu">
 
-          <a class="elemento-menu d-flex align-items-center text-white text-decoration-none dropdown-toggle"
-             href="#" id="rolesMenu" data-bs-toggle="dropdown">
-            <i class="fas fa-user-friends me-2"></i><span>Roles</span>
-          </a>
+                <a href="{{ route('productos.index') }}" class="elemento-menu">
+                   <i class="ri-box-3-line"></i>
+                    <span>Productos</span>
+                </a>
 
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="/Fonrio/indexcli.php">Cliente</a></li>
-            <li><a class="dropdown-item" href="/Fonrio/indexempleado.php">Empleado</a></li>
-          </ul>
+                <a href="{{ route('proveedor.index') }}" class="elemento-menu activo">
+                <i class="ri-truck-line"></i>
+                    <span>Proveedores</span>
+                </a>
 
+                <div class="dropdown">
+                    <a class="elemento-menu d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+                       href="#" id="rolesMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="ri-user-line"></i><span>Usuarios</span>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="rolesMenu">
+                        <li><a class="dropdown-item" href="{{ route('clientes.index') }}">Cliente</a></li>
+                        <li><a class="dropdown-item" href="{{ route('empleados.index') }}">Empleado</a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
 
-    <!-- CONTENIDO -->
+    {{-- CONTENIDO PRINCIPAL --}}
     <div class="contenido-principal flex-grow-1">
 
-      <!-- NAVBAR -->
-      <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
-          <a class="navbar-brand">Sistema gestión de inventarios</a>
+        {{-- NAVBAR --}}
+        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+            <div class="container-fluid">
+                <a class="navbar-brand">Sistema gestión de inventarios</a>
 
-          <div class="collapse navbar-collapse" id="navbarNav"></div>
-
-          <div class="dropdown ms-auto">
-            <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle"
-               id="dropdownUser1" data-bs-toggle="dropdown">
-              <img src="/Fonrio/php/fotos_empleados/686fe89fe865f_Foto Kevin.jpeg"
-                   width="32" height="32" class="rounded-circle me-2">
-              <strong>Perfil</strong>
-            </a>
-
-            <ul class="dropdown-menu dropdown-menu-dark shadow">
-              <li><a class="dropdown-item" href="Perfil.html">Mi perfil</a></li>
-              <li><a class="dropdown-item" href="EditarPerfil.php">Editar perfil</a></li>
-              <li><a class="dropdown-item" href="Registro.php">Registrarse</a></li>
-              <li><a class="dropdown-item" href="/Fonrio/Vista/Index.php">Cerrar Sesión</a></li>
-            </ul>
-
-          </div>
-
-        </div>
-      </nav>
-
-      <!-- CABECERA -->
-      <div class="container py-4">
-
-        <div class="d-flex align-items-center justify-content-center gap-3">
-          <img src="../Imagenes/Logo.webp" style="height:48px" />
-          <h1 class="m-0">Registro de Proveedores</h1>
-        </div>
-
-        <!-- MENSAJE LARAVEL -->
-        @if(session('mensaje'))
-          <div class="alert alert-success mt-3">
-            {{ session('mensaje') }}
-          </div>
-        @endif
-
-        <!-- TABLA -->
-        <div class="mt-4">
-          <div class="table-responsive">
-            <table class="table table-bordered table-hover table-striped align-middle">
-              <thead class="table-dark text-center">
-                <tr>
-                  <th>ID_Proveedor</th>
-                  <th>Nombre_Proveedor</th>
-                  <th>Correo_Electronico</th>
-                  <th>Telefono</th>
-                  <th>ID_Estado</th>
-                </tr>
-              </thead>
-              <tbody>
-
-              @forelse($proveedores as $prov)
-                <tr>
-                  <td>{{ $prov->ID_Proveedor }}</td>
-                  <td>{{ $prov->Nombre_Proveedor }}</td>
-                  <td>{{ $prov->Correo_Electronico }}</td>
-                  <td>{{ $prov->Telefono }}</td>
-                  <td>{{ $prov->ID_Estado }}</td>
-                </tr>
-              @empty
-                <tr>
-                  <td colspan="5" class="text-center text-muted">No hay proveedores para mostrar.</td>
-                </tr>
-              @endforelse
-
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- FORMULARIOS -->
-        <div class="mt-5">
-          <div class="row g-4">
-
-            <!-- CREAR -->
-            <div class="col-md-6">
-              <div class="card shadow-sm">
-                <div class="card-body">
-                  <h2 class="h4 mb-3">Añadir Proveedor</h2>
-
-                  <form method="POST" action="{{ route('proveedor.store') }}" class="row g-3">
-                    @csrf
-
-                    <div class="col-md-6">
-                      <label class="form-label">ID_Proveedor</label>
-                      <input type="text" name="ID_Proveedor" class="form-control" required>
-                    </div>
-
-                    <div class="col-md-6">
-                      <label class="form-label">Nombre_Proveedor</label>
-                      <input type="text" name="Nombre_Proveedor" class="form-control" required>
-                    </div>
-
-                    <div class="col-md-6">
-                      <label class="form-label">Correo_Electronico</label>
-                      <input type="email" name="Correo_Electronico" class="form-control" required>
-                    </div>
-
-                    <div class="col-md-6">
-                      <label class="form-label">Telefono</label>
-                      <input type="text" name="Telefono" class="form-control" required>
-                    </div>
-
-                    <div class="col-md-6">
-                      <label class="form-label">ID_Estado</label>
-                      <select name="ID_Estado" class="form-select" required>
-                        <option value="EST001">Activo</option>
-                        <option value="EST002">Inactivo</option>
-                        <option value="EST003">En Proceso</option>
-                      </select>
-                    </div>
-
-                    <div class="col-12 text-center mt-3">
-                      <button type="submit" class="btn btn-primary">Guardar</button>
-                    </div>
-
-                  </form>
-
+                <div class="dropdown ms-auto">
+                    <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle"
+                       id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="{{ asset('fotos_empleados/686fe89fe865f_Foto Kevin.jpeg') }}"
+                             alt="Perfil" width="32" height="32" class="rounded-circle me-2">
+                        <strong>{{ session('nombre') ?? 'Perfil' }}</strong>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+                        <li><a class="dropdown-item" href="#">Mi perfil</a></li>
+                        <li><a class="dropdown-item" href="#">Editar perfil</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form action="{{ route('logout') }}" method="POST" class="m-0">
+                                @csrf
+                                <button type="submit" class="dropdown-item">Cerrar sesión</button>
+                            </form>
+                        </li>
+                    </ul>
                 </div>
-              </div>
+            </div>
+        </nav>
+
+        <div class="container py-4">
+
+            {{-- TÍTULO --}}
+            <div class="d-flex justify-content-center align-items-center gap-3">
+                <img src="{{ asset('Imagenes/Logo.webp') }}" style="height:48px;">
+                <h1>Registro de Proveedores</h1>
             </div>
 
-            <!-- ACTUALIZAR -->
-            <div class="col-md-6">
-              <div class="card shadow-sm">
-                <div class="card-body">
-                  <h2 class="h4 mb-3">Actualizar Proveedor</h2>
+            {{-- MENSAJE --}}
+            @if(session('mensaje'))
+                <div class="alert alert-success text-center mt-3">{{ session('mensaje') }}</div>
+            @endif
 
-                  <form method="POST" action="{{ route('proveedor.update') }}" class="row g-3">
-                    @csrf
-                    @method('PUT')
-
-                    <div class="col-md-6">
-                      <label class="form-label">ID_Proveedor</label>
-                      <input type="text" name="ID_Proveedor" class="form-control" required>
-                    </div>
-
-                    <div class="col-md-6">
-                      <label class="form-label">Nombre_Proveedor</label>
-                      <input type="text" name="Nombre_Proveedor" class="form-control">
-                    </div>
-
-                    <div class="col-md-6">
-                      <label class="form-label">Correo_Electronico</label>
-                      <input type="email" name="Correo_Electronico" class="form-control">
-                    </div>
-
-                    <div class="col-md-6">
-                      <label class="form-label">Telefono</label>
-                      <input type="text" name="Telefono" class="form-control">
-                    </div>
-
-                    <div class="col-md-6">
-                      <label class="form-label">ID_Estado</label>
-                      <select name="ID_Estado" class="form-select">
-                        <option value="">(sin cambio)</option>
-                        <option value="EST001">Activo</option>
-                        <option value="EST002">Inactivo</option>
-                        <option value="EST003">En Proceso</option>
-                      </select>
-                    </div>
-
-                    <div class="col-12 text-center mt-3">
-                      <button type="submit" class="btn btn-warning">Actualizar</button>
-                    </div>
-
-                  </form>
-
-                </div>
-              </div>
+            {{-- BOTÓN CREAR --}}
+            <div class="text-end mt-4">
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#crearModal">
+                    <i class="fa fa-plus"></i> Añadir Proveedor
+                </button>
             </div>
 
-            <!-- ELIMINAR -->
-            <div class="col-md-6">
-              <div class="card shadow-sm">
-                <div class="card-body">
-                  <h2 class="h4 mb-3">Eliminar Proveedor</h2>
+            {{-- TABLA --}}
+            <div class="table-responsive mt-4">
+                <table class="table table-bordered table-hover table-striped align-middle text-center">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Correo</th>
+                            <th>Telefono</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
 
-                  <form method="POST" action="{{ route('proveedor.destroy') }}" class="row g-3">
-                    @csrf
-                    @method('DELETE')
+                    <tbody>
+                    @forelse($proveedores as $prov)
+                        <tr>
+                            <td>{{ $prov->ID_Proveedor }}</td>
+                            <td>{{ $prov->Nombre_Proveedor }}</td>
+                            <td>{{ $prov->Correo_Electronico }}</td>
+                            <td>{{ $prov->Telefono }}</td>
+                            <td>{{ $prov->ID_Estado }}</td>
 
-                    <div class="col-md-6">
-                      <label class="form-label">ID_Proveedor</label>
-                      <input type="text" name="ID_Proveedor" class="form-control" required>
-                    </div>
+                            <td>
+                                {{-- EDITAR --}}
+                                <button class="btn btn-warning btn-sm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editar{{ $prov->ID_Proveedor }}">
+                                    <i class="fa fa-edit"></i>
+                                </button>
 
-                    <div class="col-12 text-center mt-3">
-                      <button type="submit" class="btn btn-danger">Eliminar</button>
-                    </div>
+                                {{-- ELIMINAR --}}
+                                <button class="btn btn-danger btn-sm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#eliminar{{ $prov->ID_Proveedor }}">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
 
-                  </form>
+                        {{-- MODAL EDITAR --}}
+                        <div class="modal fade" id="editar{{ $prov->ID_Proveedor }}">
+                            <div class="modal-dialog">
+                                <form method="POST" action="{{ route('proveedor.update') }}">
+                                    @csrf
+                                    @method('PUT')
 
-                </div>
-              </div>
+                                    <input type="hidden" name="ID_Proveedor" value="{{ $prov->ID_Proveedor }}">
+
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-warning">
+                                            <h5 class="modal-title">Editar Proveedor</h5>
+                                            <button class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+
+                                        <div class="modal-body">
+
+                                            <label>Nombre</label>
+                                            <input class="form-control" name="Nombre_Proveedor"
+                                                   value="{{ $prov->Nombre_Proveedor }}" required>
+
+                                            <label>Correo</label>
+                                            <input class="form-control" name="Correo_Electronico"
+                                                   value="{{ $prov->Correo_Electronico }}" required>
+
+                                            <label>Telefono</label>
+                                            <input class="form-control" name="Telefono"
+                                                   value="{{ $prov->Telefono }}" required>
+
+                                            <label>Estado</label>
+                                            <select name="ID_Estado" class="form-control">
+                                                <option value="EST001" {{ $prov->ID_Estado=='EST001'?'selected':'' }}>Activo</option>
+                                                <option value="EST002" {{ $prov->ID_Estado=='EST002'?'selected':'' }}>Inactivo</option>
+                                            </select>
+
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <button class="btn btn-warning">Actualizar</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        {{-- MODAL ELIMINAR --}}
+                        <div class="modal fade" id="eliminar{{ $prov->ID_Proveedor }}">
+                            <div class="modal-dialog">
+                                <form method="POST" action="{{ route('proveedor.destroy') }}">
+                                    @csrf
+                                    @method('DELETE')
+
+                                    <input type="hidden" name="ID_Proveedor" value="{{ $prov->ID_Proveedor }}">
+
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-danger text-white">
+                                            <h5 class="modal-title">¿Eliminar proveedor?</h5>
+                                            <button class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+
+                                        <div class="modal-body">
+                                            Esta acción no se puede deshacer.
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <button class="btn btn-danger">Eliminar</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                    @empty
+                        <tr><td colspan="6" class="text-center text-muted">No hay proveedores registrados.</td></tr>
+                    @endforelse
+                    </tbody>
+                </table>
             </div>
 
-          </div>
+            {{-- MODAL CREAR --}}
+            <div class="modal fade" id="crearModal">
+                <div class="modal-dialog">
+                    <form method="POST" action="{{ route('proveedor.store') }}">
+                        @csrf
+
+                        <div class="modal-content">
+                            <div class="modal-header bg-success text-white">
+                                <h5 class="modal-title">Añadir Proveedor</h5>
+                                <button class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+
+                            <div class="modal-body">
+
+                                <label>ID</label>
+                                <input class="form-control" name="ID_Proveedor" required>
+
+                                <label>Nombre</label>
+                                <input class="form-control" name="Nombre_Proveedor" required>
+
+                                <label>Correo</label>
+                                <input type="email" class="form-control" name="Correo_Electronico" required>
+
+                                <label>Telefono</label>
+                                <input class="form-control" name="Telefono" required>
+
+                                <label>Estado</label>
+                                <select class="form-control" name="ID_Estado">
+                                    <option value="">--Seleccione--</option>
+                                    <option value="EST001">Activo</option>
+                                    <option value="EST002">Inactivo</option>
+                                </select>
+
+                            </div>
+
+                            <div class="modal-footer">
+                                <button class="btn btn-success">Guardar</button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
         </div>
-
-        <footer class="footer mt-5 text-center text-muted">
-          <p class="m-0">Copyright © 2025 Fonrio</p>
-        </footer>
-
-      </div>
     </div>
+</div>
 
-  </div>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

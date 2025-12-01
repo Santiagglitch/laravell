@@ -2,18 +2,18 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Productos</title>
+    <title>Empleados</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/menu.css') }}">
 </head>
-
 <body>
 
-<div class="d-flex" style="min-height:100vh">
+<div class="d-flex" style="min-height: 100vh;">
 
+ 
     {{-- BARRA LATERAL --}}
     <div class="barra-lateral d-flex flex-column flex-shrink-0 p-3 bg-primary text-white">
         <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
@@ -98,123 +98,155 @@
                 </div>
             </div>
         </nav>
+
         <div class="container py-4">
 
+            {{-- TÍTULO --}}
             <div class="d-flex justify-content-center align-items-center gap-3">
                 <img src="{{ asset('Imagenes/Logo.webp') }}" style="height:48px;">
-                <h1>Registro de Clientes</h1>
+                <h1>Registro de Empleados</h1>
             </div>
 
             {{-- MENSAJE --}}
             @if(session('mensaje'))
-                <div class="alert alert-success text-center mt-3">{{ session('mensaje') }}</div>
+                <div class="alert alert-success mt-3 text-center">{{ session('mensaje') }}</div>
             @endif
 
             {{-- BOTÓN CREAR --}}
             <div class="text-end mt-4">
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#crearModal">
-                    <i class="fa fa-plus"></i> Añadir Cliente
+                    <i class="fa fa-plus"></i> Añadir Empleado
                 </button>
             </div>
 
             {{-- TABLA --}}
             <div class="table-responsive mt-4">
-                <table class="table table-bordered table-striped table-hover align-middle text-center">
+                <table class="table table-bordered table-hover table-striped align-middle text-center">
                     <thead class="table-dark">
                         <tr>
                             <th>Documento</th>
+                            <th>Tipo Doc</th>
                             <th>Nombre</th>
                             <th>Apellido</th>
-                            <th>Teléfono</th>
-                            <th>Fecha Nacimiento</th>
-                            <th>Género</th>
+                            <th>Edad</th>
+                            <th>Correo</th>
+                            <th>Telefono</th>
+                            <th>Genero</th>
                             <th>Estado</th>
+                            <th>Rol</th>
+                            <th>Foto</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
 
                     <tbody>
-                    @forelse($clientes as $cli)
+                    @forelse($empleados as $emp)
                         <tr>
-                            <td>{{ $cli->Documento_Cliente }}</td>
-                            <td>{{ $cli->Nombre_Cliente }}</td>
-                            <td>{{ $cli->Apellido_Cliente }}</td>
-                            <td>{{ $cli->Telefono }}</td>
-                            <td>{{ $cli->Fecha_Nacimiento }}</td>
-                            <td>{{ $cli->Genero }}</td>
-                            <td>{{ $cli->ID_Estado }}</td>
+                            <td>{{ $emp->Documento_Empleado }}</td>
+                            <td>{{ $emp->Tipo_Documento }}</td>
+                            <td>{{ $emp->Nombre_Usuario }}</td>
+                            <td>{{ $emp->Apellido_Usuario }}</td>
+                            <td>{{ $emp->Edad }}</td>
+                            <td>{{ $emp->Correo_Electronico }}</td>
+                            <td>{{ $emp->Telefono }}</td>
+                            <td>{{ $emp->Genero }}</td>
+                            <td>{{ $emp->ID_Estado }}</td>
+                            <td>{{ $emp->ID_Rol }}</td>
+                            <td><img src="{{ asset($emp->Fotos) }}" width="50" class="rounded"></td>
 
-                            <td>
-                                {{-- EDITAR --}}
+                            <td class="text-center">
+
+                                {{-- BOTÓN EDITAR --}}
                                 <button class="btn btn-warning btn-sm"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#editarModal{{ $cli->Documento_Cliente }}">
+                                        data-bs-target="#editarModal{{ $emp->Documento_Empleado }}">
                                     <i class="fa fa-edit"></i>
                                 </button>
 
-                                {{-- ELIMINAR --}}
+                                {{-- BOTÓN ELIMINAR --}}
                                 <button class="btn btn-danger btn-sm"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#eliminarModal{{ $cli->Documento_Cliente }}">
+                                        data-bs-target="#eliminarModal{{ $emp->Documento_Empleado }}">
                                     <i class="fa fa-trash"></i>
                                 </button>
                             </td>
                         </tr>
 
                         {{-- MODAL EDITAR --}}
-                        <div class="modal fade" id="editarModal{{ $cli->Documento_Cliente }}">
+                        <div class="modal fade" id="editarModal{{ $emp->Documento_Empleado }}">
                             <div class="modal-dialog modal-lg">
-                                <form method="POST" action="{{ route('clientes.update') }}">
+                                <form method="POST" action="{{ route('empleados.update') }}" enctype="multipart/form-data">
                                     @csrf
                                     @method('PUT')
 
-                                    <input type="hidden" name="Documento_Cliente" value="{{ $cli->Documento_Cliente }}">
+                                    <input type="hidden" name="Documento_Empleado" value="{{ $emp->Documento_Empleado }}">
 
                                     <div class="modal-content">
                                         <div class="modal-header bg-warning">
-                                            <h5 class="modal-title">Editar Cliente</h5>
+                                            <h5 class="modal-title">Editar Empleado</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                         </div>
 
                                         <div class="modal-body row g-3">
 
                                             <div class="col-md-6">
+                                                <label>Tipo Documento</label>
+                                                <input class="form-control" name="Tipo_Documento" value="{{ $emp->Tipo_Documento }}" required>
+                                            </div>
+
+                                            <div class="col-md-6">
                                                 <label>Nombre</label>
-                                                <input class="form-control" name="Nombre_Cliente" value="{{ $cli->Nombre_Cliente }}" required>
+                                                <input class="form-control" name="Nombre_Usuario" value="{{ $emp->Nombre_Usuario }}" required>
                                             </div>
 
                                             <div class="col-md-6">
                                                 <label>Apellido</label>
-                                                <input class="form-control" name="Apellido_Cliente" value="{{ $cli->Apellido_Cliente }}" required>
+                                                <input class="form-control" name="Apellido_Usuario" value="{{ $emp->Apellido_Usuario }}" required>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <label>Edad</label>
+                                                <input class="form-control" name="Edad" value="{{ $emp->Edad }}" required>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <label>Correo</label>
+                                                <input type="email" class="form-control" name="Correo_Electronico" value="{{ $emp->Correo_Electronico }}" required>
                                             </div>
 
                                             <div class="col-md-6">
                                                 <label>Teléfono</label>
-                                                <input class="form-control" name="Telefono" value="{{ $cli->Telefono }}" required>
-                                            </div>
-
-                                            <div class="col-md-6">
-                                                <label>Fecha Nacimiento</label>
-                                                <input type="date" class="form-control" name="Fecha_Nacimiento" value="{{ $cli->Fecha_Nacimiento }}" required>
+                                                <input class="form-control" name="Telefono" value="{{ $emp->Telefono }}" required>
                                             </div>
 
                                             <div class="col-md-6">
                                                 <label>Género</label>
-                                                <select class="form-control" name="Genero" required>
-                                                    <option value="F" {{ $cli->Genero == 'F' ? 'selected' : '' }}>Femenino</option>
-                                                    <option value="M" {{ $cli->Genero == 'M' ? 'selected' : '' }}>Masculino</option>
+                                                <select name="Genero" class="form-control">
+                                                    <option value="F" {{ $emp->Genero=='F'?'selected':'' }}>Femenino</option>
+                                                    <option value="M" {{ $emp->Genero=='M'?'selected':'' }}>Masculino</option>
                                                 </select>
                                             </div>
 
                                             <div class="col-md-6">
                                                 <label>Estado</label>
                                                 <select name="ID_Estado" class="form-control">
-                                                    <option value="EST001" {{ $cli->ID_Estado=='EST001'?'selected':'' }}>Activo</option>
-                                                    <option value="EST002" {{ $cli->ID_Estado=='EST002'?'selected':'' }}>Inactivo</option>
-                                                    <option value="EST003" {{ $cli->ID_Estado=='EST003'?'selected':'' }}>Suspendido</option>
+                                                    <option value="EST001" {{ $emp->ID_Estado=='EST001'?'selected':'' }}>Activo</option>
+                                                    <option value="EST002" {{ $emp->ID_Estado=='EST002'?'selected':'' }}>Inactivo</option>
                                                 </select>
                                             </div>
 
+                                            <div class="col-md-6">
+                                                <label>Rol</label>
+                                                <select name="ID_Rol" class="form-control">
+                                                    <option value="ROL001 " {{ $emp->ID_Rol=='ROL001'?'selected':'' }}>Administrador</option>
+                                                    <option value="ROL002 " {{ $emp->ID_Rol=='ROL002'?'selected':'' }}>Empleado</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <label>Foto</label>
+                                                <input type="file" name="Fotos" class="form-control">
+                                            </div>
                                         </div>
 
                                         <div class="modal-footer">
@@ -226,22 +258,22 @@
                         </div>
 
                         {{-- MODAL ELIMINAR --}}
-                        <div class="modal fade" id="eliminarModal{{ $cli->Documento_Cliente }}">
+                        <div class="modal fade" id="eliminarModal{{ $emp->Documento_Empleado }}">
                             <div class="modal-dialog">
-                                <form method="POST" action="{{ route('clientes.destroy') }}">
+                                <form method="POST" action="{{ route('empleados.destroy') }}">
                                     @csrf
                                     @method('DELETE')
 
-                                    <input type="hidden" name="Documento_Cliente" value="{{ $cli->Documento_Cliente }}">
+                                    <input type="hidden" name="Documento_Empleado" value="{{ $emp->Documento_Empleado }}">
 
                                     <div class="modal-content">
                                         <div class="modal-header bg-danger text-white">
-                                            <h5 class="modal-title">Eliminar Cliente</h5>
+                                            <h5 class="modal-title">Eliminar Empleado</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                         </div>
 
                                         <div class="modal-body">
-                                            ¿Seguro que deseas eliminar este cliente?
+                                            ¿Seguro que deseas eliminar este empleado?
                                         </div>
 
                                         <div class="modal-footer">
@@ -253,22 +285,22 @@
                         </div>
 
                     @empty
-                        <tr><td colspan="8" class="text-center text-muted">No hay clientes registrados.</td></tr>
+                        <tr><td colspan="12" class="text-center text-muted">No hay empleados registrados.</td></tr>
                     @endforelse
                     </tbody>
                 </table>
             </div>
 
+
             {{-- MODAL CREAR --}}
             <div class="modal fade" id="crearModal">
                 <div class="modal-dialog modal-lg">
-                    <form method="POST" action="{{ route('clientes.store') }}">
+                    <form method="POST" action="{{ route('empleados.store') }}" enctype="multipart/form-data">
                         @csrf
 
                         <div class="modal-content">
-
                             <div class="modal-header bg-success text-white">
-                                <h5 class="modal-title">Añadir Cliente</h5>
+                                <h5 class="modal-title">Añadir Empleado</h5>
                                 <button class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
 
@@ -276,17 +308,32 @@
 
                                 <div class="col-md-6">
                                     <label>Documento</label>
-                                    <input name="Documento_Cliente" class="form-control" required>
+                                    <input name="Documento_Empleado" class="form-control" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label>Tipo Documento</label>
+                                    <input name="Tipo_Documento" class="form-control" required>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label>Nombre</label>
-                                    <input name="Nombre_Cliente" class="form-control" required>
+                                    <input name="Nombre_Usuario" class="form-control" required>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label>Apellido</label>
-                                    <input name="Apellido_Cliente" class="form-control" required>
+                                    <input name="Apellido_Usuario" class="form-control" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label>Edad</label>
+                                    <input name="Edad" class="form-control" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label>Correo</label>
+                                    <input type="email" name="Correo_Electronico" class="form-control" required>
                                 </div>
 
                                 <div class="col-md-6">
@@ -295,13 +342,8 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label>Fecha Nacimiento</label>
-                                    <input type="date" name="Fecha_Nacimiento" class="form-control" required>
-                                </div>
-
-                                <div class="col-md-6">
                                     <label>Género</label>
-                                    <select name="Genero" class="form-control" required>
+                                    <select name="Genero" class="form-control">
                                         <option value="">--Seleccione--</option>
                                         <option value="F">Femenino</option>
                                         <option value="M">Masculino</option>
@@ -314,8 +356,21 @@
                                         <option value="">--Seleccione--</option>
                                         <option value="EST001">Activo</option>
                                         <option value="EST002">Inactivo</option>
-                                        <option value="EST003">Suspendido</option>
                                     </select>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label>Rol</label>
+                                    <select name="ID_Rol" class="form-control">
+                                        <option value="">--Seleccione--</option>
+                                        <option value="ROL001">Administrador</option>
+                                        <option value="ROL002">Empleado</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label>Foto</label>
+                                    <input type="file" name="Fotos" class="form-control">
                                 </div>
 
                             </div>
@@ -323,20 +378,15 @@
                             <div class="modal-footer">
                                 <button class="btn btn-success" type="submit">Guardar</button>
                             </div>
-
                         </div>
-
                     </form>
                 </div>
             </div>
 
-        </div>
-
+        </div> {{-- cierre container --}}
     </div>
 </div>
-
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-

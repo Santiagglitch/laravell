@@ -1,25 +1,23 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel administrador</title>
+    <title>Administrador</title>
 
-    {{-- Bootstrap y FontAwesome --}}
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-
-    {{-- Tu CSS --}}
     <link rel="stylesheet" href="{{ asset('css/Inicio.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/menu.css') }}">
 </head>
 
 <body>
-<div class="d-flex" style="min-height: 100vh;">
+
+<div class="d-flex" style="min-height:100vh">
 
     {{-- BARRA LATERAL --}}
     <div class="barra-lateral d-flex flex-column flex-shrink-0 p-3 bg-primary text-white">
         <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+            <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
             TECNICELL RM
         </a>
         <hr>
@@ -29,33 +27,36 @@
                     <i class="fa-solid fa-tachometer-alt"></i><span>Dashboard</span>
                 </a>
                 <a href="#" class="elemento-menu">
-                    <i class="fa-solid fa-shopping-cart"></i><span>Compras</span>
+                    <i class="ri-shopping-cart-2-line"></i><span>Compras</span>
                 </a>
                 <a href="#" class="elemento-menu">
-                    <i class="fa-solid fa-undo"></i><span>Devoluciones</span>
+                    <i class="ri-arrow-go-back-line"></i><span>Devoluciones</span>
                 </a>
                 <a href="#" class="elemento-menu">
-                    <i class="fa-solid fa-chart-line"></i><span>Ventas</span>
+                    <i class="ri-price-tag-3-line"></i><span>Ventas</span>
                 </a>
             </div>
             <hr>
             <div class="seccion-menu">
-                <a href="#" class="elemento-menu">
-                    <i class="fas fa-users"></i>
+
+                <a href="{{ route('productos.index') }}" class="elemento-menu">
+                   <i class="ri-box-3-line"></i>
+                    <span>Productos</span>
+                </a>
+
+                <a href="{{ route('proveedor.index') }}" class="elemento-menu activo">
+                <i class="ri-truck-line"></i>
                     <span>Proveedores</span>
                 </a>
-               <a href="{{ route('productos.index') }}" class="elemento-menu">
-    <i class="fas fa-boxes"></i>
-    <span>Productos</span>
-</a>
+
                 <div class="dropdown">
                     <a class="elemento-menu d-flex align-items-center text-white text-decoration-none dropdown-toggle"
                        href="#" id="rolesMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-user-friends me-2"></i><span>Roles</span>
+                        <i class="ri-user-line"></i><span>Usuarios</span>
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="rolesMenu">
-                        <li><a class="dropdown-item" href="#">Cliente</a></li>
-                        <li><a class="dropdown-item" href="#">Empleado</a></li>
+                        <li><a class="dropdown-item" href="{{ route('clientes.index') }}">Cliente</a></li>
+                        <li><a class="dropdown-item" href="{{ route('empleados.index') }}">Empleado</a></li>
                     </ul>
                 </div>
             </div>
@@ -98,7 +99,7 @@
                 </div>
             </div>
         </nav>
-
+        <div class="container py-4">
         {{-- TARJETAS DASHBOARD --}}
         <div class="container mt-4">
             <div class="row g-4">
