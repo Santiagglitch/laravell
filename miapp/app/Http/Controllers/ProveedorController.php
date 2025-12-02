@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Proveedor;
 use Illuminate\Http\Request;
 
-class ProveedorController extends Controller
+class ProveedorController
 {
-    public function index()
+    public function get()
     {
         // Trae todos los proveedores
         $proveedores = Proveedor::all();
@@ -15,7 +15,7 @@ class ProveedorController extends Controller
     }
 
     // GUARDAR PROVEEDOR NUEVO
-    public function store(Request $request)
+    public function post(Request $request)
     {
         // Validar datos del formulario
         $validated = $request->validate([
@@ -35,7 +35,7 @@ class ProveedorController extends Controller
     }
 
     // ACTUALIZAR PROVEEDOR
-    public function update(Request $request)
+    public function put(Request $request)
     {
         // Validación
         $validated = $request->validate([
@@ -69,7 +69,7 @@ class ProveedorController extends Controller
     }
 
     // ELIMINAR PROVEEDOR
-    public function destroy(Request $request)
+    public function delete(Request $request)
     {
         // Validar PK
         $validated = $request->validate([

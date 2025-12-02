@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Cliente;
 use Illuminate\Http\Request;
 
-class ClienteController extends Controller
+class ClienteController
 {
-    public function index()
+    public function get()
     {
         // Trae todos los clientes
         $clientes = Cliente::all();
@@ -15,7 +15,7 @@ class ClienteController extends Controller
     }
 
     // GUARDAR CLIENTE NUEVO
-    public function store(Request $request)
+    public function post(Request $request)
     {
         // Validar datos del formulario
         $validated = $request->validate([
@@ -38,7 +38,7 @@ class ClienteController extends Controller
     }
 
     // ACTUALIZAR CLIENTE
-    public function update(Request $request)
+    public function put(Request $request)
     {
         // Validar datos
         $validated = $request->validate([
@@ -74,7 +74,7 @@ class ClienteController extends Controller
     }
 
     // 🆕 ELIMINAR CLIENTE
-    public function destroy(Request $request)
+    public function delete(Request $request)
     {
         // Validar que nos manden un documento que exista
         $validated = $request->validate([

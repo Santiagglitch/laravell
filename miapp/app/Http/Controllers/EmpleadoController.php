@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Empleado;
 use Illuminate\Http\Request;
 
-class EmpleadoController extends Controller
+class EmpleadoController
 {
-    public function index()
+    public function get()
     {
         // Trae todos los empleados
         $empleados = Empleado::all();
@@ -15,7 +15,7 @@ class EmpleadoController extends Controller
     }
 
     // GUARDAR EMPLEADO NUEVO
-public function store(Request $request)
+public function post(Request $request)
 {
     $request->validate([
         'Documento_Empleado'   => 'required|string|max:20',
@@ -58,7 +58,7 @@ public function store(Request $request)
     return back()->with('mensaje', 'Empleado registrado correctamente');
 }
 
-public function update(Request $request)
+public function put(Request $request)
 {
     // Validar (nota: Fotos ahora es image)
     $validated = $request->validate([
@@ -121,7 +121,7 @@ public function update(Request $request)
 
 
     // ELIMINAR EMPLEADO
-    public function destroy(Request $request)
+    public function delete(Request $request)
     {
         // Validación
         $validated = $request->validate([

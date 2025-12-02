@@ -2,7 +2,9 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Productos</title>
+
+    <link rel="icon" href="{{ asset('Imagenes/Logo.webp') }}" type="image/webp">
+    <title>Clientes</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
@@ -14,10 +16,11 @@
 
 <div class="d-flex" style="min-height:100vh">
 
-    {{-- BARRA LATERAL --}}
+   {{-- BARRA LATERAL --}}
     <div class="barra-lateral d-flex flex-column flex-shrink-0 p-3 bg-primary text-white">
         <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-            TECNICELL RM
+            <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+            TECNICELL RM <img src="{{ asset('Imagenes/Logo.webp') }}" style="height:48px;">
         </a>
         <hr>
         <div class="menu-barra-lateral">
@@ -25,13 +28,13 @@
                 <a href="{{ route('admin.inicio') }}" class="elemento-menu">
                     <i class="fa-solid fa-tachometer-alt"></i><span>Dashboard</span>
                 </a>
-                <a href="#" class="elemento-menu">
+                <a href="" class="elemento-menu">
                     <i class="ri-shopping-cart-2-line"></i><span>Compras</span>
                 </a>
                 <a href="#" class="elemento-menu">
                     <i class="ri-arrow-go-back-line"></i><span>Devoluciones</span>
                 </a>
-                <a href="#" class="elemento-menu">
+                <a href="{{ route('ventas.index') }}" class="elemento-menu">
                     <i class="ri-price-tag-3-line"></i><span>Ventas</span>
                 </a>
             </div>
@@ -106,9 +109,23 @@
             </div>
 
             {{-- MENSAJE --}}
+               
             @if(session('mensaje'))
-                <div class="alert alert-success text-center mt-3">{{ session('mensaje') }}</div>
-            @endif
+    <div id="alertaMensaje" class="alert alert-success text-center mt-3">
+        {{ session('mensaje') }}
+    </div>
+
+    <script>
+        setTimeout(() => {
+            let alerta = document.getElementById('alertaMensaje');
+            if (alerta) {
+                alerta.style.transition = "opacity 0.5s";
+                alerta.style.opacity = 0;
+                setTimeout(() => alerta.remove(), 500);
+            }
+        }, 2000); 
+    </script>
+@endif
 
             {{-- BOTÓN CREAR --}}
             <div class="text-end mt-4">

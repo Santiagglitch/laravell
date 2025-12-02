@@ -6,6 +6,11 @@
     <title>Iniciar Sesión</title>
 
     <link rel="icon" type="image/png" href="{{ asset('Imagenes/Logo.webp') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+
 
     {{-- CSS --}}
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet"/>
@@ -55,17 +60,41 @@
                         />
                     </div>
 
-                    <div class="mb-1">
-                        <label for="contrasena" class="form-label">Contraseña</label>
-                        <input
-                            type="password"
-                            class="form-control"
-                            id="contrasena"
-                            name="contrasena"
-                            placeholder="Ingrese su contraseña"
-                            required
-                        />
-                    </div>
+                 <div class="mb-1 position-relative">
+                <label for="contrasena" class="form-label">Contraseña</label>
+                <div class="input-group">
+                 <input
+                 type="password"
+                 class="form-control"
+                 id="contrasena"
+                 name="contrasena"
+                 placeholder="Ingrese su contraseña"
+                 required
+                 />
+        <span class="input-group-text" id="togglePassword" style="cursor:pointer;">
+            <i class="bi bi-eye"></i>
+        </span>
+    </div>
+        </div>
+        <script>
+    
+    
+    document.getElementById('togglePassword').addEventListener('click', function () {
+        const input = document.getElementById('contrasena');
+        const icon = this.querySelector('i');
+
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove("bi-eye");
+            icon.classList.add("bi-eye-slash");
+        } else {
+            input.type = "password";
+            icon.classList.remove("bi-eye-slash");
+            icon.classList.add("bi-eye");
+        }
+    });
+    </script>
+
 
                     <div class="mb-3 text-end">
                         {{-- Ajusta cuando tengas la vista en Laravel --}}

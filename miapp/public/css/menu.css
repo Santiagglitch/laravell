@@ -36,12 +36,6 @@
   color: white;
 }
 
-/* ===== Estado activo (proveedores.css lo tenía) ===== */
-.elemento-menu.activo {
-  background-color: rgba(255, 255, 255, 0.15);
-  color: #fff;
-}
-
 /* ===== Navbar ===== */
 .container-fluid {
   background-color: #778ee9 !important;
@@ -79,12 +73,3 @@ body {
     border-radius: 12px;
     transition: .2s;
 }
-
-.elemento-menu:hover {
-    background: #eef4ff;
-}
-.elemento-menu.activo {
-    background: transparent !important;
-}
-
-

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\ProductosService;
 use Illuminate\Http\Request;
 
-class ProductoController extends Controller
+class ProductoController
 {
     private ProductosService $productosService;
 
@@ -17,7 +17,7 @@ class ProductoController extends Controller
     // ==========================
     // LISTAR PRODUCTOS
     // ==========================
-    public function index()
+    public function get()
     {
         $productos = $this->productosService->obtenerProductos();
 
@@ -34,7 +34,7 @@ class ProductoController extends Controller
     // ==========================
     // GUARDAR (POST) - productos.store
     // ==========================
-    public function store(Request $request)
+    public function post(Request $request)
     {
         // Validar datos que vienen del formulario "Añadir Producto"
         $data = $request->validate([
@@ -64,7 +64,7 @@ class ProductoController extends Controller
     // ==========================
     // ACTUALIZAR (PUT) - productos.update
     // ==========================
-    public function update(Request $request)
+    public function put(Request $request)
     {
         // Validamos que venga el ID del producto
         $request->validate([
@@ -95,7 +95,7 @@ class ProductoController extends Controller
     // ==========================
     // ELIMINAR (DELETE) - productos.destroy
     // ==========================
-    public function destroy(Request $request)
+    public function delete(Request $request)
     {
         $request->validate([
             'ID_Producto' => 'required|string|max:20',
