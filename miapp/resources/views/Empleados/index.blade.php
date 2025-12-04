@@ -31,7 +31,7 @@
                 <a href="" class="elemento-menu">
                     <i class="ri-shopping-cart-2-line"></i><span>Compras</span>
                 </a>
-                <a href="#" class="elemento-menu">
+                <a href="{{ route('devolucion.index') }}" class="elemento-menu">
                     <i class="ri-arrow-go-back-line"></i><span>Devoluciones</span>
                 </a>
                 <a href="{{ route('ventas.index') }}" class="elemento-menu">

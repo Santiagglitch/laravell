@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
 
     <link rel="icon" href="{{ asset('Imagenes/Logo.webp') }}" type="image/webp">
-    <title>Proveedores</title>
+    <title>Devoluciones</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
@@ -13,7 +13,7 @@
 </head>
 <body>
 
-<div class="d-flex" style="min-height: 100vh;">
+<div class="d-flex" style="min-height:100vh">
 
    {{-- BARRA LATERAL --}}
     <div class="barra-lateral d-flex flex-column flex-shrink-0 p-3 bg-primary text-white">
@@ -64,30 +64,28 @@
         </div>
     </div>
 
-
-    {{-- CONTENIDO PRINCIPAL --}}
+    {{-- CONTENIDO --}}
     <div class="contenido-principal flex-grow-1">
-
-        {{-- NAVBAR --}}
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
                 <a class="navbar-brand">Sistema gestión de inventarios</a>
 
                 <div class="dropdown ms-auto">
                     <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle"
-                       id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                       id="dropdownUser1" data-bs-toggle="dropdown">
                         <img src="{{ asset('fotos_empleados/686fe89fe865f_Foto Kevin.jpeg') }}"
-                             alt="Perfil" width="32" height="32" class="rounded-circle me-2">
+                             width="32" height="32" class="rounded-circle me-2">
                         <strong>{{ session('nombre') ?? 'Perfil' }}</strong>
                     </a>
+
                     <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
                         <li><a class="dropdown-item" href="#">Mi perfil</a></li>
                         <li><a class="dropdown-item" href="#">Editar perfil</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
-                            <form action="{{ route('logout') }}" method="POST" class="m-0">
+                            <form action="{{ route('logout') }}" method="POST">
                                 @csrf
-                                <button type="submit" class="dropdown-item">Cerrar sesión</button>
+                                <button class="dropdown-item">Cerrar sesión</button>
                             </form>
                         </li>
                     </ul>
@@ -96,15 +94,12 @@
         </nav>
 
         <div class="container py-4">
-
-            {{-- TÍTULO --}}
             <div class="d-flex justify-content-center align-items-center gap-3">
                 <img src="{{ asset('Imagenes/Logo.webp') }}" style="height:48px;">
-                <h1>Registro de Proveedores</h1>
+                <h1>Registro de Devolución</h1>
             </div>
 
-            {{-- MENSAJE --}}
-              
+             
             @if(session('mensaje'))
     <div id="alertaMensaje" class="alert alert-success text-center mt-3">
         {{ session('mensaje') }}
@@ -121,93 +116,76 @@
         }, 2000); 
     </script>
 @endif
+            
 
-            {{-- BOTÓN CREAR --}}
-            <div class="text-end mt-4">
+            <div class="d-flex justify-content-end mt-4 gap-2">
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#crearModal">
-                    <i class="fa fa-plus"></i> Añadir Proveedor
+                    <i class="fa fa-plus"></i> Añadir Devolución
                 </button>
+
+                <a href="{{ route('detalledevolucion.index') }}" class="btn btn-primary">
+                    <i class="fa fa-list"></i> Detalle Devolución
+                </a>
             </div>
 
-            {{-- TABLA --}}
+            {{-- TABLA DE VENTAS --}}
             <div class="table-responsive mt-4">
-                <table class="table table-bordered table-hover table-striped align-middle text-center">
+                <table class="table table-bordered table-striped table-hover text-center">
                     <thead class="table-dark">
                         <tr>
-                            <th>ID</th>
-                            <th>Nombre</th>
-                            <th>Correo</th>
-                            <th>Telefono</th>
-                            <th>Estado</th>
+                            <th>ID Devolucion</th>
+                            <th>Fecha Devolucion</th>
+                            <th>Motivo</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
-
                     <tbody>
-                    @forelse($proveedores as $prov)
+                    @forelse($devolucion as $dev)
                         <tr>
-                            <td>{{ $prov->ID_Proveedor }}</td>
-                            <td>{{ $prov->Nombre_Proveedor }}</td>
-                            <td>{{ $prov->Correo_Electronico }}</td>
-                            <td>{{ $prov->Telefono }}</td>
-                            <td>{{ $prov->ID_Estado }}</td>
-
+                            <td>{{ $dev->ID_Devolucion }}</td>
+                            <td>{{ $dev->Fecha_Devolucion }}</td>
+                            <td>{{ $dev->Motivo }}</td>
                             <td>
-                                {{-- EDITAR --}}
                                 <button class="btn btn-warning btn-sm"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#editar{{ $prov->ID_Proveedor }}">
-                                    <i class="fa fa-edit"></i>
+                                        data-bs-target="#editarModal{{ $dev->ID_Devolucion }}">
+                                    <i class="fa fa-edit"></i> 
                                 </button>
 
-                                {{-- ELIMINAR --}}
                                 <button class="btn btn-danger btn-sm"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#eliminar{{ $prov->ID_Proveedor }}">
-                                    <i class="fa fa-trash"></i>
+                                        data-bs-target="#eliminarModal{{ $dev->ID_Devolucion }}">
+                                    <i class="fa fa-trash"></i> 
                                 </button>
                             </td>
                         </tr>
 
                         {{-- MODAL EDITAR --}}
-                        <div class="modal fade" id="editar{{ $prov->ID_Proveedor }}">
+                        <div class="modal fade" id="editarModal{{ $dev->ID_Devolucion }}">
                             <div class="modal-dialog">
-                                <form method="POST" action="{{ route('proveedor.update') }}">
+                                <form method="POST" action="{{ route('devolucion.update') }}">
                                     @csrf
                                     @method('PUT')
-
-                                    <input type="hidden" name="ID_Proveedor" value="{{ $prov->ID_Proveedor }}">
+                                    <input type="hidden" name="ID_Devolucion" value="{{ $dev->ID_Devolucion }}">
 
                                     <div class="modal-content">
                                         <div class="modal-header bg-warning">
-                                            <h5 class="modal-title">Editar Proveedor</h5>
+                                            <h5 class="modal-title">Editar Devolución</h5>
                                             <button class="btn-close" data-bs-dismiss="modal"></button>
                                         </div>
-
                                         <div class="modal-body">
+                                            
 
-                                            <label>Nombre</label>
-                                            <input class="form-control" name="Nombre_Proveedor"
-                                                   value="{{ $prov->Nombre_Proveedor }}" required>
+                                            <label class="mt-3">Fecha Devolucion</label>
+                                            <input type="date" name="Fecha_Devolucion" class="form-control"
+                                                   value="{{ $dev->Fecha_Devolucion }}">
 
-                                            <label>Correo</label>
-                                            <input class="form-control" name="Correo_Electronico"
-                                                   value="{{ $prov->Correo_Electronico }}" required>
-
-                                            <label>Telefono</label>
-                                            <input class="form-control" name="Telefono"
-                                                   value="{{ $prov->Telefono }}" required>
-
-                                            <label>Estado</label>
-                                            <select name="ID_Estado" class="form-control">
-                                                <option value="EST001" {{ $prov->ID_Estado=='EST001'?'selected':'' }}>Activo</option>
-                                                <option value="EST002" {{ $prov->ID_Estado=='EST002'?'selected':'' }}>Inactivo</option>
-                                            </select>
-
+                                            <label>Motivo</label>
+                                            <input name="Motivo" class="form-control"
+                                                   value="{{ $dev->Motivo }}">
                                         </div>
-
                                         <div class="modal-footer">
-                                            <button class="btn btn-warning">Actualizar</button>
+                                            <button class="btn btn-warning" type="submit">Actualizar</button>
                                         </div>
                                     </div>
                                 </form>
@@ -215,24 +193,20 @@
                         </div>
 
                         {{-- MODAL ELIMINAR --}}
-                        <div class="modal fade" id="eliminar{{ $prov->ID_Proveedor }}">
+                        <div class="modal fade" id="eliminarModal{{ $dev->ID_Devolucion }}">
                             <div class="modal-dialog">
-                                <form method="POST" action="{{ route('proveedor.destroy') }}">
+                                <form method="POST" action="{{ route('devolucion.destroy') }}">
                                     @csrf
                                     @method('DELETE')
-
-                                    <input type="hidden" name="ID_Proveedor" value="{{ $prov->ID_Proveedor }}">
-
+                                    <input type="hidden" name="ID_Devolucion" value="{{ $dev->ID_Devolucion }}">
                                     <div class="modal-content">
                                         <div class="modal-header bg-danger text-white">
-                                            <h5 class="modal-title">¿Eliminar proveedor?</h5>
+                                            <h5 class="modal-title">Eliminar Devolución</h5>
                                             <button class="btn-close" data-bs-dismiss="modal"></button>
                                         </div>
-
                                         <div class="modal-body">
-                                            Esta acción no se puede deshacer.
+                                            ¿Seguro que deseas eliminar esta Devolución?
                                         </div>
-
                                         <div class="modal-footer">
                                             <button class="btn btn-danger">Eliminar</button>
                                         </div>
@@ -242,7 +216,7 @@
                         </div>
 
                     @empty
-                        <tr><td colspan="6" class="text-center text-muted">No hay proveedores registrados.</td></tr>
+                        <tr><td colspan="4" class="text-muted">No hay Devoluciones registradas.</td></tr>
                     @endforelse
                     </tbody>
                 </table>
@@ -251,43 +225,25 @@
             {{-- MODAL CREAR --}}
             <div class="modal fade" id="crearModal">
                 <div class="modal-dialog">
-                    <form method="POST" action="{{ route('proveedor.store') }}">
+                    <form method="POST" action="{{ route('devolucion.store') }}">
                         @csrf
-
                         <div class="modal-content">
                             <div class="modal-header bg-success text-white">
-                                <h5 class="modal-title">Añadir Proveedor</h5>
+                                <h5 class="modal-title">Añadir Devolución</h5>
                                 <button class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
-
                             <div class="modal-body">
-
-                                <label>ID</label>
-                                <input class="form-control" name="ID_Proveedor" required>
-
-                                <label>Nombre</label>
-                                <input class="form-control" name="Nombre_Proveedor" required>
-
-                                <label>Correo</label>
-                                <input type="email" class="form-control" name="Correo_Electronico" required>
-
-                                <label>Telefono</label>
-                                <input class="form-control" name="Telefono" required>
-
-                                <label>Estado</label>
-                                <select class="form-control" name="ID_Estado">
-                                    <option value="">--Seleccione--</option>
-                                    <option value="EST001">Activo</option>
-                                    <option value="EST002">Inactivo</option>
-                                </select>
-
+                                <label>ID Devolución</label>
+                                <input name="ID_Devolucion" class="form-control" required>
+                                <label class="mt-3">Fecha Devolucion</label>
+                                <input type="date" name="Fecha_Devolucion" class="form-control" required>
+                                <label class="mt-3">Motivo</label>
+                                <input name="Motivo" class="form-control" required>
                             </div>
-
                             <div class="modal-footer">
-                                <button class="btn btn-success">Guardar</button>
+                                <button class="btn btn-success" type="submit">Guardar</button>
                             </div>
                         </div>
-
                     </form>
                 </div>
             </div>
@@ -297,5 +253,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>
