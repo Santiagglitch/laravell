@@ -28,7 +28,7 @@
                 <a href="{{ route('admin.inicio') }}" class="elemento-menu">
                     <i class="fa-solid fa-tachometer-alt"></i><span>Dashboard</span>
                 </a>
-                <a href="" class="elemento-menu">
+                <a href="{{ route('compras.index') }}" class="elemento-menu activo">
                     <i class="ri-shopping-cart-2-line"></i><span>Compras</span>
                 </a>
                 <a href="{{ route('devolucion.index') }}" class="elemento-menu">
