@@ -10,9 +10,8 @@ use App\Http\Controllers\DetalleVentaController;
 use App\Http\Controllers\DetalleDevolucionController;
 use App\Http\Controllers\DevolucionController;
 use App\Http\Controllers\AuthController;
-
-
-
+use App\Http\Controllers\ComprasController;
+use App\Http\Controllers\DetalleComprasController;
 
 
 Route::get('/', function () {
@@ -69,8 +68,6 @@ Route::put('/detalleventas', [DetalleVentaController::class, 'put'])->name('deta
 Route::delete('/detalleventas', [DetalleVentaController::class, 'delete'])->name('detalleventas.destroy');
 
 
-
-
 // Devolucion
 Route::get('/devolucion', [DevolucionController::class, 'get'])->name('devolucion.index');
 Route::post('/devolucion', [DevolucionController::class, 'post'])->name('devolucion.store');
@@ -86,6 +83,17 @@ Route::put('/detalledevolucion', [DetalleDevolucionController::class, 'put'])->n
 Route::delete('/detalledevolucion', [DetalleDevolucionController::class, 'delete'])->name('detalledevolucion.destroy');
 
 
+// Compras
+Route::get('/compras', [ComprasController::class, 'get'])->name('compras.index');
+Route::post('/compras', [ComprasController::class, 'post'])->name('compras.store');
+Route::put('/compras', [ComprasController::class, 'put'])->name('compras.update');
+Route::delete('/compras', [ComprasController::class, 'delete'])->name('compras.destroy');   
+
+// Detalle Compras
+Route::get('/detallecompras', [DetalleComprasController::class, 'get'])->name('detallecompras.index');
+Route::post('/detallecompras', [DetalleComprasController::class, 'post'])->name('detallecompras.store');
+Route::put('/detallecompras ', [DetalleComprasController::class, 'put'])->name('detallecompras.update');
+Route::delete('/detallecompras', [DetalleComprasController::class, 'delete'])-> name('detallecompras.destroy');  
 
 
 //Login
