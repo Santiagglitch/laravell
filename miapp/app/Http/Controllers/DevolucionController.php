@@ -82,5 +82,35 @@ class DevolucionController
             ->with('mensaje', 'Devolución eliminada correctamente.');
     }
 
+
+
+
+public function indexEmpleado()
+{
+    $devolucion = Devolucion::all();
+    return view('devolucion.indexEm', compact('devolucion'));
+}
+
+public function storeEmpleado(Request $request)
+{
+    $this->post($request);
+    return redirect()->route('devolucion.indexEm')
+                     ->with('mensaje', 'Devolución registrada correctamente.');
+}
+
+public function updateEmpleado(Request $request)
+{
+    $this->put($request); 
+    return redirect()->route('devolucion.indexEm')
+                     ->with('mensaje', 'Devolución actualizada correctamente.');
+}
+
+public function destroyEmpleado(Request $request)
+{
+    $this->delete($request); 
+    return redirect()->route('devolucion.indexEm')
+                     ->with('mensaje', 'Devolución eliminada correctamente.');
+}
+
     
 }

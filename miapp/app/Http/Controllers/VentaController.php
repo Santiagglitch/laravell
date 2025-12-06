@@ -83,4 +83,32 @@ class VentaController
     }
 
     
+    
+public function indexEmpleado()
+{
+    $ventas = Venta::all();
+    return view('ventas.indexEm', compact('ventas'));
+}
+
+
+public function storeEmpleado(Request $request)
+{
+    $this->post($request); 
+    return redirect()->route('ventas.indexEm')->with('mensaje', 'Venta registrada correctamente.');
+}
+
+
+public function updateEmpleado(Request $request)
+{
+    $this->put($request); 
+    return redirect()->route('ventas.indexEm')->with('mensaje', 'Venta actualizada correctamente.');
+}
+
+
+public function destroyEmpleado(Request $request)
+{
+    $this->delete($request); 
+    return redirect()->route('ventas.indexEm')->with('mensaje', 'Venta eliminada correctamente.');
+}
+
 }

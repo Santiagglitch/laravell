@@ -16,54 +16,58 @@
 
 <div class="d-flex" style="min-height:100vh">
 
-    {{-- BARRA LATERAL --}}
+    
+  {{-- BARRA LATERAL --}}
     <div class="barra-lateral d-flex flex-column flex-shrink-0 p-3 bg-primary text-white">
         <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
             <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
             TECNICELL RM <img src="{{ asset('Imagenes/Logo.webp') }}" style="height:48px;">
         </a>
+
         <hr>
+
         <div class="menu-barra-lateral">
-            <div class="seccion-menu">
-                <a href="{{ route('admin.inicio') }}" class="elemento-menu">
-                    <i class="fa-solid fa-tachometer-alt"></i><span>Dashboard</span>
-                </a>
-                <a href="{{ route('compras.index') }}" class="elemento-menu activo">
-                    <i class="ri-shopping-cart-2-line"></i><span>Compras</span>
-                </a>
-                <a href="{{ route('devolucion.index') }}" class="elemento-menu">
-                    <i class="ri-arrow-go-back-line"></i><span>Devoluciones</span>
-                </a>
-                <a href="{{ route('ventas.index') }}" class="elemento-menu">
-                    <i class="ri-price-tag-3-line"></i><span>Ventas</span>
-                </a>
-            </div>
-            <hr>
+
             <div class="seccion-menu">
 
-                <a href="{{ route('productos.index') }}" class="elemento-menu">
-                   <i class="ri-box-3-line"></i>
+                <!-- ✔ Dashboard -->
+                <a href="{{ route('InicioE.index') }}" class="elemento-menu">
+                    <i class="fa-solid fa-tachometer-alt"></i><span>Dashboard</span>
+                </a>
+
+                <!-- ✔ Ventas -->
+                <a href="{{ route('ventas.indexEm') }}" class="elemento-menu activo">
+                    <i class="ri-price-tag-3-line"></i><span>Ventas</span>
+                </a>
+
+                <!-- ✔ Devoluciones -->
+                <a href="{{ route('devolucion.indexEm') }}" class="elemento-menu">
+                    <i class="ri-arrow-go-back-line"></i><span>Devoluciones</span>
+                </a>
+
+            </div>
+
+            <hr>
+
+            <div class="seccion-menu">
+
+                <!-- ✔ Productos -->
+                 <a href="{{ route('productos.indexEm') }}" class="elemento-menu">
+                    <i class="ri-box-3-line"></i>
                     <span>Productos</span>
                 </a>
 
-                <a href="{{ route('proveedor.index') }}" class="elemento-menu activo">
-                <i class="ri-truck-line"></i>
-                    <span>Proveedores</span>
+                <!-- ✔ Cliente -->
+               <a href="{{ route('clientes.indexEm') }}" class="elemento-menu">
+                    <i class="ri-user-line"></i>
+                    <span>Cliente</span>
                 </a>
 
-                <div class="dropdown">
-                    <a class="elemento-menu d-flex align-items-center text-white text-decoration-none dropdown-toggle"
-                       href="#" id="rolesMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="ri-user-line"></i><span>Usuarios</span>
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="rolesMenu">
-                        <li><a class="dropdown-item" href="{{ route('clientes.index') }}">Cliente</a></li>
-                        <li><a class="dropdown-item" href="{{ route('empleados.index') }}">Empleado</a></li>
-                    </ul>
-                </div>
             </div>
+
         </div>
     </div>
+
 
     {{-- CONTENIDO --}}
     <div class="contenido-principal flex-grow-1">
@@ -177,7 +181,7 @@
                         <div class="modal fade"
                              id="editarModal{{ $detalle->ID_DetalleDev }}{{ $detalle->ID_Devolucion }}{{ $detalle->ID_Venta }}">
                             <div class="modal-dialog">
-                                <form method="POST" action="{{ route('detalledevolucion.update') }}">
+                                <form method="POST" action="{{ route('detalledevolucion.updateEm') }}">
                                     @csrf
                                     @method('PUT')
 
@@ -214,7 +218,7 @@
                         <div class="modal fade"
                              id="eliminarModal{{ $detalle->ID_DetalleDev }}{{ $detalle->ID_Devolucion }}{{ $detalle->ID_Venta }}">
                             <div class="modal-dialog">
-                                <form method="POST" action="{{ route('detalledevolucion.destroy') }}">
+                                <form method="POST" action="{{ route('detalledevolucion.destroyEm') }}">
                                     @csrf
                                     @method('DELETE')
                                     <input type="hidden" name="ID_DetalleDev" value="{{ $detalle->ID_DetalleDev }}">
@@ -255,7 +259,7 @@
             {{-- MODAL CREAR --}}
             <div class="modal fade" id="crearModal">
                 <div class="modal-dialog">
-                    <form method="POST" action="{{ route('detalledevolucion.store') }}">
+                    <form method="POST" action="{{ route('detalledevolucion.storeEm') }}">
                         @csrf
 
                         <div class="modal-content">

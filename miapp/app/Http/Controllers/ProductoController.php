@@ -113,4 +113,40 @@ class ProductoController
             ->route('productos.index')
             ->with('mensaje', $mensaje);
     }
+
+
+
+
+public function indexEmpleado()
+{
+    $productos = $this->productosService->obtenerProductos();
+    if (!$productos) {
+        $productos = [];
+    }
+    return view('productos.indexEm', compact('productos'));
 }
+
+
+public function storeEmpleado(Request $request)
+{
+    $this->post($request); 
+    return redirect()->route('productos.indexEm')->with('mensaje', 'Producto creado correctamente.');
+}
+
+
+public function updateEmpleado(Request $request)
+{
+    $this->put($request); 
+    return redirect()->route('productos.indexEm')->with('mensaje', 'Producto actualizado correctamente.');
+}
+
+
+public function destroyEmpleado(Request $request)
+{
+    $this->delete($request); 
+    return redirect()->route('productos.indexEm')->with('mensaje', 'Producto eliminado correctamente.');
+}
+
+
+}
+

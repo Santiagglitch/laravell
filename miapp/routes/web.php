@@ -27,7 +27,6 @@ Route::put('/clientes', [ClienteController::class, 'put'])->name('clientes.updat
 Route::delete('/clientes', [ClienteController::class, 'delete'])->name('clientes.destroy');
 
 
-
 //Proveedor
 Route::get('/proveedores', [ProveedorController::class, 'get'])->name('proveedor.index');
 Route::post('/proveedores', [ProveedorController::class, 'post'])->name('proveedor.store');
@@ -50,6 +49,9 @@ Route::post('/productos', [ProductoController::class, 'post'])->name('productos.
 Route::put('/productos',  [ProductoController::class, 'put'])->name('productos.update');
 Route::delete('/productos', [ProductoController::class, 'delete'])->name('productos.destroy');
 
+
+Route::get('/empleado/productos', [ProductoController::class, 'indexEmpleado'])
+    ->name('productos.indexEm');
 
 
 
@@ -109,4 +111,101 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/admin', function () {
     return view('admin.inicio');
 })->name('admin.inicio');
+
+
+
+// nuevas rutas para el rol de empleado 
+Route::prefix('empleado')->group(function () {
+
+    // CLIENTES 
+    Route::get('/clientes', [ClienteController::class, 'indexEmpleado'])
+        ->name('clientes.indexEm');
+
+    Route::post('/clientes/store', [ClienteController::class, 'storeEmpleado'])
+        ->name('clientes.storeEm');
+
+    Route::put('/clientes/update', [ClienteController::class, 'updateEmpleado'])
+        ->name('clientes.updateEm');
+
+    Route::delete('/clientes/destroy', [ClienteController::class, 'destroyEmpleado'])
+        ->name('clientes.destroyEm');
+
+
+    // PRODUCTOS
+    Route::get('/productos', [ProductoController::class, 'indexEmpleado'])
+    ->name('productos.indexEm');
+
+    Route::post('/productos/store', [ProductoController::class, 'storeEmpleado'])
+    ->name('productos.storeEm');
+
+    Route::put('/productos/update', [ProductoController::class, 'updateEmpleado'])
+    ->name('productos.updateEm');
+
+    Route::delete('/productos/destroy', [ProductoController::class, 'destroyEmpleado'])
+    ->name('productos.destroyEm');
+
+    // VENTAS 
+    Route::get('/ventas', [VentaController::class, 'indexEmpleado'])
+    ->name('ventas.indexEm');
+
+    Route::post('/ventas/store', [VentaController::class, 'storeEmpleado'])
+    ->name('ventas.storeEm');
+
+    Route::put('/ventas/update', [VentaController::class, 'updateEmpleado'])
+    ->name('ventas.updateEm');
+
+    Route::delete('/ventas/destroy', [VentaController::class, 'destroyEmpleado'])
+    ->name('ventas.destroyEm');
+
+
+    // DETALLE VENTAS
+    Route::get('/detalleventas', [DetalleVentaController::class, 'indexEmpleado'])
+    ->name('detalleventas.indexEm');
+
+    Route::post('/detalleventas/store', [DetalleVentaController::class, 'storeEmpleado'])
+    ->name('detalleventas.storeEm');
+
+    Route::put('/detalleventas/update', [DetalleVentaController::class, 'updateEmpleado'])
+    ->name('detalleventas.updateEm');
+
+    Route::delete('/detalleventas/destroy', [DetalleVentaController::class, 'destroyEmpleado'])
+    ->name('detalleventas.destroyEm');
+
+
+    // DEVOLUCIONES 
+    Route::get('/devolucion', [DevolucionController::class, 'indexEmpleado'])
+    ->name('devolucion.indexEm');
+
+    Route::post('/devolucion/store', [DevolucionController::class, 'storeEmpleado'])
+    ->name('devolucion.storeEm');
+
+    Route::put('/devolucion/update', [DevolucionController::class, 'updateEmpleado'])
+    ->name('devolucion.updateEm');
+
+    Route::delete('/devolucion/destroy', [DevolucionController::class, 'destroyEmpleado'])
+    ->name('devolucion.destroyEm');
+
+
+    // DETALLE DEVOLUCIONES 
+    Route::get('/detalledevolucion', [DetalleDevolucionController::class, 'indexEmpleado'])
+    ->name('detalledevolucion.indexEm');
+
+    Route::post('/detalledevolucion/store', [DetalleDevolucionController::class, 'storeEmpleado'])
+    ->name('detalledevolucion.storeEm');
+
+    Route::put('/detalledevolucion/update', [DetalleDevolucionController::class, 'updateEmpleado'])
+    ->name('detalledevolucion.updateEm');
+
+    Route::delete('/detalledevolucion/destroy', [DetalleDevolucionController::class, 'destroyEmpleado'])
+    ->name('detalledevolucion.destroyEm');
+
+  
+});
+
+        Route::get('/InicioE', function () {
+        return view('InicioE.index');
+        })->name('InicioE.index');
+
+
+
 

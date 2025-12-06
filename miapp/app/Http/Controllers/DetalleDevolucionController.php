@@ -82,4 +82,34 @@ class DetalleDevolucionController
         ->with('mensaje', 'Detalle eliminado correctamente.');
 }
 
+
+
+ public function indexEmpleado()
+    {
+        $detalles = DetalleDevolucion::all();
+       return view('detalle_devoluciones.indexEm', compact('detalles'));
+
+    }
+
+    public function storeEmpleado(Request $request)
+    {
+        $this->post($request);
+        return redirect()->route('detalledevolucion.indexEm')
+                         ->with('mensaje', 'Detalle registrado correctamente.');
+    }
+
+    public function updateEmpleado(Request $request)
+    {
+        $this->put($request);
+        return redirect()->route('detalledevolucion.indexEm')
+                         ->with('mensaje', 'Detalle actualizado correctamente.');
+    }
+
+    public function destroyEmpleado(Request $request)
+    {
+        $this->delete($request);
+        return redirect()->route('detalledevolucion.indexEm')
+                         ->with('mensaje', 'Detalle eliminado correctamente.');
+    }
+
 }

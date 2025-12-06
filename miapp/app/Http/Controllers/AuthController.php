@@ -80,7 +80,7 @@ class AuthController
 
         // 6. Redirección según el rol
         if ($empleado->ID_Rol === 'ROL002') {
-            return redirect()->route('clientes.index'); // rol empleado
+            return redirect()->route('InicioE.index'); // rol empleado
         } else {
             return redirect()->route('admin.inicio');   // rol admin
         }

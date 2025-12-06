@@ -79,4 +79,34 @@ class DetalleVentaController
         ->with('mensaje', 'Detalle eliminado correctamente.');
 }
 
+
+
+
+public function indexEmpleado()
+{
+    $detalles = DetalleVenta::all();
+    return view('detalle_ventas.indexEm', compact('detalles'));
+}
+public function storeEmpleado(Request $request)
+{
+    $this->post($request); 
+    return redirect()->route('detalleventas.indexEm')
+                     ->with('mensaje', 'Detalle registrado correctamente.');
+}
+
+public function updateEmpleado(Request $request)
+{
+    $this->put($request);
+    return redirect()->route('detalleventas.indexEm')
+                     ->with('mensaje', 'Detalle actualizado correctamente.');
+}
+
+public function destroyEmpleado(Request $request)
+{
+    $this->delete($request); 
+    return redirect()->route('detalleventas.indexEm')
+                     ->with('mensaje', 'Detalle eliminado correctamente.');
+}
+
+
 }

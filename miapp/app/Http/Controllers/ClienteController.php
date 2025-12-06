@@ -89,4 +89,27 @@ class ClienteController
             ->route('clientes.index')
             ->with('mensaje', 'Cliente eliminado correctamente.');
     }
+public function indexEmpleado()
+{
+    $clientes = Cliente::all();
+    return view('clientes.indexEm', compact('clientes'));
+}
+public function storeEmpleado(Request $request)
+{
+    $this->post($request); 
+    return redirect()->route('clientes.indexEm')->with('mensaje', 'Cliente creado correctamente.');
+}
+
+public function updateEmpleado(Request $request)
+{
+    $this->put($request);
+    return redirect()->route('clientes.indexEm')->with('mensaje', 'Cliente actualizado correctamente.');
+}
+
+public function destroyEmpleado(Request $request)
+{
+    $this->delete($request);
+    return redirect()->route('clientes.indexEm')->with('mensaje', 'Cliente eliminado correctamente.');
+}
+
 }
