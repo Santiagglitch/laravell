@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Empleado extends Model
 {
     // Nombre real de la tabla
-    protected $table = 'empleados';
+    protected $table = 'Empleados';
 
     // Clave primaria (tipo string)
     protected $primaryKey = 'Documento_Empleado';
@@ -31,4 +31,10 @@ class Empleado extends Model
         'ID_Rol',
         'Fotos'
     ];
+
+      // RELACIÓN CON LA CONTRASEÑA
+    public function contrasena()
+    {
+        return $this->hasOne(Contrasena::class, 'Documento_Empleado', 'Documento_Empleado');
+    }
 }
