@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Empleado;
 use App\Models\Contrasena;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
 class PerfilController
 {
@@ -26,7 +25,7 @@ class PerfilController
         return view('Perfil.Perfil', compact('empleado', 'contrasena'));
     }
 
-    public function actualizarContrasena(Request $request)
+   public function actualizarContrasena(Request $request)
 {
     $request->validate([
         'nueva_contrasena' => 'required|min:4',
@@ -34,12 +33,10 @@ class PerfilController
 
     $documento = session('documento');
 
-    // Generar SHA256 EXACTAMENTE como Java lo valida
-    $sha256 = hash('sha256', $request->nueva_contrasena);
-
+    // NO hashees aquí, manda la contraseña en TEXTO PLANO
     Contrasena::updateOrCreate(
         ['Documento_Empleado' => $documento],
-        ['Contrasena_Hash' => $sha256]
+        ['Contrasena_Hash' => $request->nueva_contrasena]
     );
 
     return back()->with('success', 'Contraseña actualizada correctamente');
