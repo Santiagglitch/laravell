@@ -88,7 +88,7 @@
                         <strong>{{ session('nombre') ?? 'Perfil' }}</strong>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
-                        <li><a class="dropdown-item" href="#">Mi perfil</a></li>
+                        <li><a class="dropdown-item" href="{{ route('perfil') }}">Mi perfil</a></li>
                         <li><a class="dropdown-item" href="#">Editar perfil</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>

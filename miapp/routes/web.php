@@ -12,7 +12,7 @@ use App\Http\Controllers\DevolucionController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ComprasController;
 use App\Http\Controllers\DetalleComprasController;
-
+use App\Http\Controllers\PerfilController;
 
 Route::get('/', function () {
     return view('inicio');
@@ -199,12 +199,20 @@ Route::prefix('empleado')->group(function () {
     Route::delete('/detalledevolucion/destroy', [DetalleDevolucionController::class, 'destroyEmpleado'])
     ->name('detalledevolucion.destroyEm');
 
-  
+
+    
 });
 
         Route::get('/InicioE', function () {
         return view('InicioE.index');
         })->name('InicioE.index');
+
+
+
+Route::get('/perfil', [PerfilController::class, 'mostrar'])->name('perfil');
+Route::put('/perfil/actualizar-datos', [PerfilController::class, 'actualizarDatos'])->name('perfil.actualizarDatos');
+Route::put('/perfil/actualizar-foto', [PerfilController::class, 'actualizarFoto'])->name('perfil.actualizarFoto');
+Route::post('/perfil/actualizar-contrasena', [PerfilController::class, 'actualizarContrasena'])->name('perfil.actualizarContrasena');
 
 
 
