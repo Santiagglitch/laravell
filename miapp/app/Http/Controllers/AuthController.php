@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Http;
 
-class AuthController 
+class AuthController
 {
     // Mostrar el formulario de login
     public function showLoginForm()
@@ -53,43 +53,50 @@ class AuthController
         Session::put('nombre',    $empleado->Nombre_Usuario);
         Session::put('rol',       $empleado->ID_Rol);
 
-        // 🔥 SIEMPRE BORRAR TOKEN VIEJO AL HACER LOGIN
+        // 🔥 borrar token viejo
         Session::forget('jwt_token');
+        Session::forget('rol_api');
 
-        // 5. Solicitar token JWT REAL a tu API de Spring
+        // 5. Solicitar token JWT REAL a la API Spring
         try {
             $baseUrl = rtrim(config('services.productos.base_url', 'http://localhost:8080'), '/');
 
-            // ⚠ Debe coincidir EXACTAMENTE con lo que recibe tu API:
-            // AuthController.java → recibe documento_Empleado y contrasena sin hash
             $tokenResponse = Http::post($baseUrl . '/auth/login', [
                 'documento_Empleado' => $documento,
                 'contrasena'         => $clave
             ]);
 
             if ($tokenResponse->successful()) {
-                $token = $tokenResponse->body(); // String plano
-                Session::put('jwt_token', $token); // Guardar nuevo token
+                $json  = $tokenResponse->json();
+                $token = $json['token'] ?? null;
+
+                if ($token) {
+                    Session::put('jwt_token', $token);
+                    Session::put('rol_api', $json['rol'] ?? null);
+                } else {
+                    Session::forget('jwt_token');
+                }
             } else {
-                Session::forget('jwt_token'); // Si falla, borrar token
+                Session::forget('jwt_token');
             }
         } catch (\Throwable $e) {
-            // API caída o error → no usar token previo
             Session::forget('jwt_token');
         }
 
         // 6. Redirección según el rol
         if ($empleado->ID_Rol === 'ROL002') {
-            return redirect()->route('InicioE.index'); // rol empleado
-        } else {
-            return redirect()->route('admin.inicio');   // rol admin
+            return redirect()->route('InicioE.index');
         }
+
+        return redirect()->route('admin.inicio');
     }
 
     // Cerrar sesión
     public function logout(Request $request)
     {
-        Session::forget('jwt_token'); // 🔥 limpiar token también aquí
+        Session::forget('jwt_token');
+        Session::forget('rol_api');
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
