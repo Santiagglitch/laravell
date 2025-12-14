@@ -155,11 +155,26 @@
                     <td>{{ $emp->Genero }}</td>
                     <td>{{ $emp->ID_Estado }}</td>
                     <td>{{ $emp->ID_Rol }}</td>
+
+                    {{-- ✅ FOTO (SOLO AQUÍ CAMBIÓ) --}}
                     <td>
                         @if($emp->Fotos)
-                            <img src="{{ asset($emp->Fotos) }}" width="50" class="rounded">
+                            @php
+                                $springBase = rtrim(config('services.spring.base_url', 'http://192.168.80.13:8080'), '/');
+                                $foto = trim($emp->Fotos);
+
+                                // 1) Si ya es URL completa -> usarla
+                                // 2) Si es "uploads/..." -> apuntar a Spring
+                                // 3) Si es cualquier otra ruta local -> asset()
+                                $fotoUrl = str_starts_with($foto, 'http')
+                                    ? $foto
+                                    : (str_starts_with($foto, 'uploads/') ? $springBase.'/'.$foto : asset($foto));
+                            @endphp
+
+                            <img src="{{ $fotoUrl }}" width="50" class="rounded">
                         @endif
                     </td>
+
                     <td>
                         {{-- Editar --}}
                         <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editarModal{{ $emp->Documento_Empleado }}">
