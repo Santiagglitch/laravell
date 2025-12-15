@@ -114,21 +114,21 @@
             {{-- MENSAJE --}}
                
             @if(session('mensaje'))
-    <div id="alertaMensaje" class="alert alert-success text-center mt-3">
-        {{ session('mensaje') }}
-    </div>
+                <div id="alertaMensaje" class="alert alert-success text-center mt-3">
+                    {{ session('mensaje') }}
+                </div>
 
-    <script>
-        setTimeout(() => {
-            let alerta = document.getElementById('alertaMensaje');
-            if (alerta) {
-                alerta.style.transition = "opacity 0.5s";
-                alerta.style.opacity = 0;
-                setTimeout(() => alerta.remove(), 500);
-            }
-        }, 2000); 
-    </script>
-@endif
+                <script>
+                    setTimeout(() => {
+                        let alerta = document.getElementById('alertaMensaje');
+                        if (alerta) {
+                            alerta.style.transition = "opacity 0.5s";
+                            alerta.style.opacity = 0;
+                            setTimeout(() => alerta.remove(), 500);
+                        }
+                    }, 2000);
+                </script>
+            @endif
 
             {{-- BOTÓN CREAR --}}
             <div class="text-end mt-4">
@@ -170,7 +170,23 @@
                             {{-- FOTO OPCIONAL --}}
                             <td>
                                 @if(!empty($pro['Fotos']))
-                                    <img src="{{ asset('storage/' . $pro['Fotos']) }}" width="50" class="rounded">
+                                    @php
+                                        $foto = $pro['Fotos'];
+
+                                        // Si ya viene URL absoluta (http/https), úsala tal cual
+                                        if (\Illuminate\Support\Str::startsWith($foto, ['http://', 'https://'])) {
+                                            $fotoUrl = $foto;
+                                        } else {
+                                            // Si viene "uploads/xxx.jpg" o "xxx.jpg", lo servimos desde Spring
+                                            $fotoLimpia = ltrim($foto, '/');
+                                            if (\Illuminate\Support\Str::startsWith($fotoLimpia, 'uploads/')) {
+                                                $fotoLimpia = substr($fotoLimpia, strlen('uploads/'));
+                                            }
+                                            $fotoUrl = 'http://localhost:8080/' . $fotoLimpia;
+                                        }
+                                    @endphp
+
+                                    <img src="{{ $fotoUrl }}" width="50" height="50" class="rounded" style="object-fit:cover;">
                                 @else
                                     <i class="fa-solid fa-image text-secondary" style="font-size: 30px;"></i>
                                 @endif

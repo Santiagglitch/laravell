@@ -11,20 +11,18 @@ class ProductosService
 
     public function __construct()
     {
+        // API Spring Boot
         $this->baseUrl = rtrim(config('services.productos.base_url', 'http://localhost:8080'), '/');
     }
 
-    /**
-     * Obtener el token JWT de la sesión (lo pone el AuthController al hacer login).
-     */
+    // ==========================
+    // TOKEN
+    // ==========================
     private function getToken(): ?string
     {
         return Session::get('jwt_token');
     }
 
-    /**
-     * Cliente HTTP con (o sin) token.
-     */
     private function client()
     {
         $token = $this->getToken();
@@ -32,20 +30,19 @@ class ProductosService
         $client = Http::acceptJson();
 
         if ($token) {
-            $client = $client->withToken($token); // Authorization: Bearer <token>
+            $client = $client->withToken($token);
         }
 
         return $client;
     }
 
-    /**
-     * GET /Productos
-     */
+    // ==========================
+    // GET /Productos
+    // ==========================
     public function obtenerProductos(): ?array
     {
         $response = $this->client()->get($this->baseUrl . '/Productos');
 
-        // 🔥 si el token está vencido o inválido
         if ($response->status() === 401) {
             Session::forget('jwt_token');
             return null;
@@ -57,41 +54,39 @@ class ProductosService
 
         $data = $response->json();
 
-        // Si la API devuelve un array de strings "ID________Nombre________..."
+        // 🔹 tu API devuelve strings separados por ________
         if (is_array($data) && isset($data[0]) && is_string($data[0])) {
             $resultado = [];
 
             foreach ($data as $fila) {
-                $partes = explode('________', $fila);
+                $p = explode('________', $fila);
 
                 $resultado[] = [
-                    'ID_Producto'     => $partes[0] ?? '',
-                    'Nombre_Producto' => $partes[1] ?? '',
-                    'Descripcion'     => $partes[2] ?? '',
-                    'Precio_Venta'    => $partes[3] ?? '',
-                    'Stock_Minimo'    => $partes[4] ?? '',
-                    'ID_Categoria'    => $partes[5] ?? '',
-                    'ID_Estado'       => $partes[6] ?? '',
-                    'ID_Gama'         => $partes[7] ?? '',
-                    'Fotos'           => $partes[8] ?? '',
+                    'ID_Producto'     => $p[0] ?? '',
+                    'Nombre_Producto' => $p[1] ?? '',
+                    'Descripcion'     => $p[2] ?? '',
+                    'Precio_Venta'    => $p[3] ?? '',
+                    'Stock_Minimo'    => $p[4] ?? '',
+                    'ID_Categoria'    => $p[5] ?? '',
+                    'ID_Estado'       => $p[6] ?? '',
+                    'ID_Gama'         => $p[7] ?? '',
+                    'Fotos'           => $p[8] ?? '', // 🔥 URL directa
                 ];
             }
 
             return $resultado;
         }
 
-        // Si ya viene como objetos/arrays JSON normales, lo devolvemos tal cual
         return $data;
     }
 
-    /**
-     * POST /RegistroP
-     */
+    // ==========================
+    // POST /RegistroP (SIN IMAGEN)
+    // ==========================
     public function agregarProducto(array $data): array
     {
         $response = $this->client()->post($this->baseUrl . '/RegistroP', $data);
 
-        // 🔥 token inválido / vencido
         if ($response->status() === 401) {
             Session::forget('jwt_token');
         }
@@ -103,14 +98,16 @@ class ProductosService
         ];
     }
 
-    /**
-     * PUT /ActualizaProd/{id}
-     */
+    // ==========================
+    // PUT /ActualizaProd/{id} (SIN IMAGEN)
+    // ==========================
     public function actualizarProducto(string $id, array $data): array
     {
-        $response = $this->client()->put($this->baseUrl . '/ActualizaProd/' . urlencode($id), $data);
+        $response = $this->client()->put(
+            $this->baseUrl . '/ActualizaProd/' . urlencode($id),
+            $data
+        );
 
-        // 🔥 token inválido / vencido
         if ($response->status() === 401) {
             Session::forget('jwt_token');
         }
@@ -122,14 +119,15 @@ class ProductosService
         ];
     }
 
-    /**
-     * DELETE /EliminarPro/{id}
-     */
+    // ==========================
+    // DELETE /EliminarPro/{id}
+    // ==========================
     public function eliminarProducto(string $id): array
     {
-        $response = $this->client()->delete($this->baseUrl . '/EliminarPro/' . urlencode($id));
+        $response = $this->client()->delete(
+            $this->baseUrl . '/EliminarPro/' . urlencode($id)
+        );
 
-        // 🔥 token inválido / vencido
         if ($response->status() === 401) {
             Session::forget('jwt_token');
         }
@@ -141,6 +139,86 @@ class ProductosService
         ];
     }
 
+    // =========================================================
+    // =============== 🔥 MULTIPART (IMAGEN) 🔥 =================
+    // =========================================================
 
+    // ==========================
+    // POST /RegistroPMultipart
+    // ==========================
+    public function agregarProductoMultipart(array $data, $file): array
+    {
+        $response = Http::asMultipart()
+            ->withToken($this->getToken())
+            ->attach(
+                'file',
+                file_get_contents($file->getRealPath()),
+                $file->getClientOriginalName()
+            )
+            ->post($this->baseUrl . '/RegistroPMultipart', [
+                [
+                    'name' => 'data',
+                    'contents' => json_encode([
+                        'ID_Producto'     => $data['ID_Producto'],
+                        'Nombre_Producto' => $data['Nombre_Producto'],
+                        'Descripcion'     => $data['Descripcion'] ?? '',
+                        'Precio_Venta'    => (string)($data['Precio_Venta'] ?? ''),
+                        'Stock_Minimo'    => (string)($data['Stock_Minimo'] ?? ''),
+                        'ID_Categoria'    => $data['ID_Categoria'] ?? '',
+                        'ID_Estado'       => $data['ID_Estado'] ?? '',
+                        'ID_Gama'         => $data['ID_Gama'] ?? '',
+                        'Fotos'           => ''
+                    ])
+                ]
+            ]);
 
+        if ($response->status() === 401) {
+            Session::forget('jwt_token');
+        }
+
+        return [
+            'success' => $response->successful(),
+            'status'  => $response->status(),
+            'body'    => $response->body(),
+        ];
+    }
+
+    // ==========================
+    // PUT /ActualizaProdMultipart/{id}
+    // ==========================
+    public function actualizarProductoMultipart(string $id, array $data, $file): array
+    {
+        $response = Http::asMultipart()
+            ->withToken($this->getToken())
+            ->attach(
+                'file',
+                file_get_contents($file->getRealPath()),
+                $file->getClientOriginalName()
+            )
+            ->put($this->baseUrl . '/ActualizaProdMultipart/' . urlencode($id), [
+                [
+                    'name' => 'data',
+                    'contents' => json_encode([
+                        'Nombre_Producto' => $data['Nombre_Producto'] ?? '',
+                        'Descripcion'     => $data['Descripcion'] ?? '',
+                        'Precio_Venta'    => (string)($data['Precio_Venta'] ?? ''),
+                        'Stock_Minimo'    => (string)($data['Stock_Minimo'] ?? ''),
+                        'ID_Categoria'    => $data['ID_Categoria'] ?? '',
+                        'ID_Estado'       => $data['ID_Estado'] ?? '',
+                        'ID_Gama'         => $data['ID_Gama'] ?? '',
+                        'Fotos'           => ''
+                    ])
+                ]
+            ]);
+
+        if ($response->status() === 401) {
+            Session::forget('jwt_token');
+        }
+
+        return [
+            'success' => $response->successful(),
+            'status'  => $response->status(),
+            'body'    => $response->body(),
+        ];
+    }
 }

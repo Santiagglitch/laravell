@@ -36,7 +36,7 @@ class ProductoController
     // ==========================
     public function post(Request $request)
     {
-        // Validar datos que vienen del formulario "Añadir Producto"
+        // ✅ ahora Fotos es archivo (opcional)
         $data = $request->validate([
             'ID_Producto'     => 'required|string|max:20',
             'Nombre_Producto' => 'required|string|max:50',
@@ -46,11 +46,17 @@ class ProductoController
             'ID_Categoria'    => 'nullable|string|max:20',
             'ID_Estado'       => 'nullable|string|max:20',
             'ID_Gama'         => 'nullable|string|max:20',
-            'Fotos'           => 'nullable|string|max:255',
+            'Fotos'           => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
         ]);
 
-        // Llamar a la API a través del service
-        $respuesta = $this->productosService->agregarProducto($data);
+        // ✅ Si viene imagen -> usar multipart hacia Spring
+        if ($request->hasFile('Fotos')) {
+            $respuesta = $this->productosService->agregarProductoMultipart($data, $request->file('Fotos'));
+        } else {
+            // Sin imagen -> flujo normal
+            $data['Fotos'] = ''; // para que tu service no falle si lo espera
+            $respuesta = $this->productosService->agregarProducto($data);
+        }
 
         $mensaje = $respuesta['success']
             ? 'Producto agregado correctamente.'
@@ -66,22 +72,28 @@ class ProductoController
     // ==========================
     public function put(Request $request)
     {
-        // Validamos que venga el ID del producto
         $request->validate([
             'ID_Producto' => 'required|string|max:20',
+            'Fotos'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
         ]);
 
         $id = $request->input('ID_Producto');
 
-        // Tomamos todos los campos excepto los de control
-        $data = $request->except(['_token', '_method', 'ID_Producto']);
+        // Tomamos todos los campos excepto los de control y Fotos (archivo)
+        $data = $request->except(['_token', '_method', 'ID_Producto', 'Fotos']);
 
         // Quitamos los campos vacíos para no sobrescribir con ""
         $data = array_filter($data, function ($valor) {
             return $valor !== null && $valor !== '';
         });
 
-        $respuesta = $this->productosService->actualizarProducto($id, $data);
+        // ✅ Si viene imagen -> multipart hacia Spring
+        if ($request->hasFile('Fotos')) {
+            $respuesta = $this->productosService->actualizarProductoMultipart($id, $data, $request->file('Fotos'));
+        } else {
+            // Sin imagen -> flujo normal
+            $respuesta = $this->productosService->actualizarProducto($id, $data);
+        }
 
         $mensaje = $respuesta['success']
             ? 'Producto actualizado correctamente.'
@@ -114,39 +126,34 @@ class ProductoController
             ->with('mensaje', $mensaje);
     }
 
+    // ==========================
+    // VISTAS EMPLEADO (LAS DEJÉ IGUAL)
+    // ==========================
 
-
-
-public function indexEmpleado()
-{
-    $productos = $this->productosService->obtenerProductos();
-    if (!$productos) {
-        $productos = [];
+    public function indexEmpleado()
+    {
+        $productos = $this->productosService->obtenerProductos();
+        if (!$productos) {
+            $productos = [];
+        }
+        return view('productos.indexEm', compact('productos'));
     }
-    return view('productos.indexEm', compact('productos'));
+
+    public function storeEmpleado(Request $request)
+    {
+        $this->post($request);
+        return redirect()->route('productos.indexEm')->with('mensaje', 'Producto creado correctamente.');
+    }
+
+    public function updateEmpleado(Request $request)
+    {
+        $this->put($request);
+        return redirect()->route('productos.indexEm')->with('mensaje', 'Producto actualizado correctamente.');
+    }
+
+    public function destroyEmpleado(Request $request)
+    {
+        $this->delete($request);
+        return redirect()->route('productos.indexEm')->with('mensaje', 'Producto eliminado correctamente.');
+    }
 }
-
-
-public function storeEmpleado(Request $request)
-{
-    $this->post($request); 
-    return redirect()->route('productos.indexEm')->with('mensaje', 'Producto creado correctamente.');
-}
-
-
-public function updateEmpleado(Request $request)
-{
-    $this->put($request); 
-    return redirect()->route('productos.indexEm')->with('mensaje', 'Producto actualizado correctamente.');
-}
-
-
-public function destroyEmpleado(Request $request)
-{
-    $this->delete($request); 
-    return redirect()->route('productos.indexEm')->with('mensaje', 'Producto eliminado correctamente.');
-}
-
-
-}
-
