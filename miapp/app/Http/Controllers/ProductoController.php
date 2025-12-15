@@ -14,9 +14,7 @@ class ProductoController
         $this->productosService = $productosService;
     }
 
-    // ==========================
-    // LISTAR PRODUCTOS
-    // ==========================
+  
     public function get()
     {
         $productos = $this->productosService->obtenerProductos();
@@ -25,18 +23,15 @@ class ProductoController
             $mensaje   = 'No se pudieron obtener los productos. Revisa el token o la API.';
             $productos = [];
         } else {
-            $mensaje = session('mensaje'); // por si venimos de store/update/destroy
+            $mensaje = session('mensaje');
         }
 
         return view('productos.index', compact('productos', 'mensaje'));
     }
 
-    // ==========================
-    // GUARDAR (POST) - productos.store
-    // ==========================
     public function post(Request $request)
     {
-        // ✅ ahora Fotos es archivo (opcional)
+    
         $data = $request->validate([
             'ID_Producto'     => 'required|string|max:20',
             'Nombre_Producto' => 'required|string|max:50',
@@ -49,12 +44,11 @@ class ProductoController
             'Fotos'           => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
         ]);
 
-        // ✅ Si viene imagen -> usar multipart hacia Spring
         if ($request->hasFile('Fotos')) {
             $respuesta = $this->productosService->agregarProductoMultipart($data, $request->file('Fotos'));
         } else {
-            // Sin imagen -> flujo normal
-            $data['Fotos'] = ''; // para que tu service no falle si lo espera
+       
+            $data['Fotos'] = ''; 
             $respuesta = $this->productosService->agregarProducto($data);
         }
 
@@ -67,9 +61,6 @@ class ProductoController
             ->with('mensaje', $mensaje);
     }
 
-    // ==========================
-    // ACTUALIZAR (PUT) - productos.update
-    // ==========================
     public function put(Request $request)
     {
         $request->validate([
@@ -79,19 +70,18 @@ class ProductoController
 
         $id = $request->input('ID_Producto');
 
-        // Tomamos todos los campos excepto los de control y Fotos (archivo)
         $data = $request->except(['_token', '_method', 'ID_Producto', 'Fotos']);
 
-        // Quitamos los campos vacíos para no sobrescribir con ""
+   
         $data = array_filter($data, function ($valor) {
             return $valor !== null && $valor !== '';
         });
 
-        // ✅ Si viene imagen -> multipart hacia Spring
+       
         if ($request->hasFile('Fotos')) {
             $respuesta = $this->productosService->actualizarProductoMultipart($id, $data, $request->file('Fotos'));
         } else {
-            // Sin imagen -> flujo normal
+            
             $respuesta = $this->productosService->actualizarProducto($id, $data);
         }
 
@@ -104,9 +94,7 @@ class ProductoController
             ->with('mensaje', $mensaje);
     }
 
-    // ==========================
-    // ELIMINAR (DELETE) - productos.destroy
-    // ==========================
+   
     public function delete(Request $request)
     {
         $request->validate([
@@ -126,9 +114,7 @@ class ProductoController
             ->with('mensaje', $mensaje);
     }
 
-    // ==========================
-    // VISTAS EMPLEADO (LAS DEJÉ IGUAL)
-    // ==========================
+  
 
     public function indexEmpleado()
     {

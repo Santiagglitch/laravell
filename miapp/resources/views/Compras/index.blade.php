@@ -15,7 +15,7 @@
 
 <div class="d-flex" style="min-height:100vh">
 
-     {{-- BARRA LATERAL --}}
+  
     <div class="barra-lateral d-flex flex-column flex-shrink-0 p-3 bg-primary text-white">
         <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
             <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
@@ -62,7 +62,6 @@
         </div>
     </div>
 
-    {{-- CONTENIDO PRINCIPAL --}}
     <div class="contenido-principal flex-grow-1">
 
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
@@ -98,7 +97,6 @@
                 <h1>Registro de Compras</h1>
             </div>
 
-            {{-- ALERTA DE MENSAJE --}}
             @if(session('mensaje'))
                 <div id="alertaMensaje" class="alert alert-success text-center mt-3">
                     {{ session('mensaje') }}
@@ -116,7 +114,7 @@
                 </script>
             @endif
 
-            {{-- BOTONES CREAR Y DETALLE --}}
+    
             <div class="d-flex justify-content-end mt-4 gap-2">
 
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#crearModal">
@@ -129,7 +127,6 @@
 
             </div>
 
-            {{-- TABLA --}}
             <div class="table-responsive mt-4">
                 <table class="table table-bordered table-striped table-hover text-center">
                     <thead class="table-dark">
@@ -150,14 +147,14 @@
                             <td>{{ $compra->ID_Producto }}</td>
                             <td>{{ $compra->Documento_Empleado }}</td>
                             <td>
-                                {{-- EDITAR --}}
+                           
                                 <button class="btn btn-warning btn-sm"
                                         data-bs-toggle="modal"
                                         data-bs-target="#editarModal{{ $compra->ID_Entrada }}">
                                     <i class="fa fa-edit"></i>
                                 </button>
 
-                                {{-- ELIMINAR --}}
+                        
                                 <button class="btn btn-danger btn-sm"
                                         data-bs-toggle="modal"
                                         data-bs-target="#eliminarModal{{ $compra->ID_Entrada }}">
@@ -166,7 +163,6 @@
                             </td>
                         </tr>
 
-                        {{-- MODAL EDITAR --}}
                         <div class="modal fade" id="editarModal{{ $compra->ID_Entrada }}">
                             <div class="modal-dialog">
                                 <form method="POST" action="{{ route('compras.update', $compra->ID_Entrada) }}">
@@ -193,7 +189,6 @@
                             </div>
                         </div>
 
-                        {{-- MODAL ELIMINAR --}}
                         <div class="modal fade" id="eliminarModal{{ $compra->ID_Entrada }}">
                             <div class="modal-dialog">
                                 <form method="POST" action="{{ route('compras.destroy', $compra->ID_Entrada) }}">
@@ -223,7 +218,6 @@
                 </table>
             </div>
 
-            {{-- MODAL CREAR --}}
             <div class="modal fade" id="crearModal">
                 <div class="modal-dialog">
                     <form method="POST" action="{{ route('compras.store') }}">

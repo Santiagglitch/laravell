@@ -11,13 +11,11 @@ class ProductosService
 
     public function __construct()
     {
-        // API Spring Boot
+      
         $this->baseUrl = rtrim(config('services.productos.base_url', 'http://localhost:8080'), '/');
     }
 
-    // ==========================
-    // TOKEN
-    // ==========================
+  
     private function getToken(): ?string
     {
         return Session::get('jwt_token');
@@ -36,9 +34,7 @@ class ProductosService
         return $client;
     }
 
-    // ==========================
-    // GET /Productos
-    // ==========================
+ 
     public function obtenerProductos(): ?array
     {
         $response = $this->client()->get($this->baseUrl . '/Productos');
@@ -54,7 +50,6 @@ class ProductosService
 
         $data = $response->json();
 
-        // 🔹 tu API devuelve strings separados por ________
         if (is_array($data) && isset($data[0]) && is_string($data[0])) {
             $resultado = [];
 
@@ -70,7 +65,7 @@ class ProductosService
                     'ID_Categoria'    => $p[5] ?? '',
                     'ID_Estado'       => $p[6] ?? '',
                     'ID_Gama'         => $p[7] ?? '',
-                    'Fotos'           => $p[8] ?? '', // 🔥 URL directa
+                    'Fotos'           => $p[8] ?? '', 
                 ];
             }
 
@@ -80,9 +75,7 @@ class ProductosService
         return $data;
     }
 
-    // ==========================
-    // POST /RegistroP (SIN IMAGEN)
-    // ==========================
+   
     public function agregarProducto(array $data): array
     {
         $response = $this->client()->post($this->baseUrl . '/RegistroP', $data);
@@ -98,9 +91,6 @@ class ProductosService
         ];
     }
 
-    // ==========================
-    // PUT /ActualizaProd/{id} (SIN IMAGEN)
-    // ==========================
     public function actualizarProducto(string $id, array $data): array
     {
         $response = $this->client()->put(
@@ -119,9 +109,7 @@ class ProductosService
         ];
     }
 
-    // ==========================
-    // DELETE /EliminarPro/{id}
-    // ==========================
+
     public function eliminarProducto(string $id): array
     {
         $response = $this->client()->delete(
@@ -139,13 +127,6 @@ class ProductosService
         ];
     }
 
-    // =========================================================
-    // =============== 🔥 MULTIPART (IMAGEN) 🔥 =================
-    // =========================================================
-
-    // ==========================
-    // POST /RegistroPMultipart
-    // ==========================
     public function agregarProductoMultipart(array $data, $file): array
     {
         $response = Http::asMultipart()
@@ -183,9 +164,7 @@ class ProductosService
         ];
     }
 
-    // ==========================
-    // PUT /ActualizaProdMultipart/{id}
-    // ==========================
+
     public function actualizarProductoMultipart(string $id, array $data, $file): array
     {
         $response = Http::asMultipart()

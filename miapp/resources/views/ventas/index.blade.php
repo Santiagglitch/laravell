@@ -15,10 +15,8 @@
 
 <div class="d-flex" style="min-height:100vh">
 
-   {{-- BARRA LATERAL --}}
     <div class="barra-lateral d-flex flex-column flex-shrink-0 p-3 bg-primary text-white">
         <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-            <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
             TECNICELL RM <img src="{{ asset('Imagenes/Logo.webp') }}" style="height:48px;">
         </a>
         <hr>
@@ -39,23 +37,18 @@
             </div>
             <hr>
             <div class="seccion-menu">
-
                 <a href="{{ route('productos.index') }}" class="elemento-menu">
-                   <i class="ri-box-3-line"></i>
-                    <span>Productos</span>
+                    <i class="ri-box-3-line"></i><span>Productos</span>
                 </a>
-
                 <a href="{{ route('proveedor.index') }}" class="elemento-menu activo">
-                <i class="ri-truck-line"></i>
-                    <span>Proveedores</span>
+                    <i class="ri-truck-line"></i><span>Proveedores</span>
                 </a>
-
                 <div class="dropdown">
                     <a class="elemento-menu d-flex align-items-center text-white text-decoration-none dropdown-toggle"
-                       href="#" id="rolesMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                       href="#" data-bs-toggle="dropdown">
                         <i class="ri-user-line"></i><span>Usuarios</span>
                     </a>
-                    <ul class="dropdown-menu" aria-labelledby="rolesMenu">
+                    <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="{{ route('clientes.index') }}">Cliente</a></li>
                         <li><a class="dropdown-item" href="{{ route('empleados.index') }}">Empleado</a></li>
                     </ul>
@@ -64,7 +57,6 @@
         </div>
     </div>
 
-    {{-- CONTENIDO --}}
     <div class="contenido-principal flex-grow-1">
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
@@ -72,7 +64,7 @@
 
                 <div class="dropdown ms-auto">
                     <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle"
-                       id="dropdownUser1" data-bs-toggle="dropdown">
+                       data-bs-toggle="dropdown">
                         <img src="{{ asset('fotos_empleados/686fe89fe865f_Foto Kevin.jpeg') }}"
                              width="32" height="32" class="rounded-circle me-2">
                         <strong>{{ session('nombre') ?? 'Perfil' }}</strong>
@@ -99,24 +91,21 @@
                 <h1>Registro de Ventas</h1>
             </div>
 
-             
             @if(session('mensaje'))
-    <div id="alertaMensaje" class="alert alert-success text-center mt-3">
-        {{ session('mensaje') }}
-    </div>
-
-    <script>
-        setTimeout(() => {
-            let alerta = document.getElementById('alertaMensaje');
-            if (alerta) {
-                alerta.style.transition = "opacity 0.5s";
-                alerta.style.opacity = 0;
-                setTimeout(() => alerta.remove(), 500);
-            }
-        }, 2000); 
-    </script>
-@endif
-            
+                <div id="alertaMensaje" class="alert alert-success text-center mt-3">
+                    {{ session('mensaje') }}
+                </div>
+                <script>
+                    setTimeout(() => {
+                        let alerta = document.getElementById('alertaMensaje');
+                        if (alerta) {
+                            alerta.style.transition = "opacity 0.5s";
+                            alerta.style.opacity = 0;
+                            setTimeout(() => alerta.remove(), 500);
+                        }
+                    }, 2000);
+                </script>
+            @endif
 
             <div class="d-flex justify-content-end mt-4 gap-2">
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#crearModal">
@@ -128,7 +117,6 @@
                 </a>
             </div>
 
-            {{-- TABLA DE VENTAS --}}
             <div class="table-responsive mt-4">
                 <table class="table table-bordered table-striped table-hover text-center">
                     <thead class="table-dark">
@@ -149,25 +137,23 @@
                                 <button class="btn btn-warning btn-sm"
                                         data-bs-toggle="modal"
                                         data-bs-target="#editarModal{{ $venta->ID_Venta }}">
-                                    <i class="fa fa-edit"></i> 
+                                    <i class="fa fa-edit"></i>
                                 </button>
 
                                 <button class="btn btn-danger btn-sm"
                                         data-bs-toggle="modal"
                                         data-bs-target="#eliminarModal{{ $venta->ID_Venta }}">
-                                    <i class="fa fa-trash"></i> 
+                                    <i class="fa fa-trash"></i>
                                 </button>
                             </td>
                         </tr>
 
-                        {{-- MODAL EDITAR --}}
                         <div class="modal fade" id="editarModal{{ $venta->ID_Venta }}">
                             <div class="modal-dialog">
                                 <form method="POST" action="{{ route('ventas.update') }}">
                                     @csrf
                                     @method('PUT')
                                     <input type="hidden" name="ID_Venta" value="{{ $venta->ID_Venta }}">
-
                                     <div class="modal-content">
                                         <div class="modal-header bg-warning">
                                             <h5 class="modal-title">Editar Venta</h5>
@@ -189,7 +175,6 @@
                             </div>
                         </div>
 
-                        {{-- MODAL ELIMINAR --}}
                         <div class="modal fade" id="eliminarModal{{ $venta->ID_Venta }}">
                             <div class="modal-dialog">
                                 <form method="POST" action="{{ route('ventas.destroy') }}">
@@ -213,13 +198,14 @@
                         </div>
 
                     @empty
-                        <tr><td colspan="4" class="text-muted">No hay ventas registradas.</td></tr>
+                        <tr>
+                            <td colspan="4" class="text-muted">No hay ventas registradas.</td>
+                        </tr>
                     @endforelse
                     </tbody>
                 </table>
             </div>
 
-            {{-- MODAL CREAR --}}
             <div class="modal fade" id="crearModal">
                 <div class="modal-dialog">
                     <form method="POST" action="{{ route('ventas.store') }}">
@@ -250,6 +236,5 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>

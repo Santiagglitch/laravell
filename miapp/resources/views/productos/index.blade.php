@@ -16,7 +16,6 @@
 <div class="d-flex" style="min-height: 100vh;">
 
   
-  {{-- BARRA LATERAL --}}
     <div class="barra-lateral d-flex flex-column flex-shrink-0 p-3 bg-primary text-white">
         <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
             <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
@@ -66,10 +65,10 @@
     </div>
 
 
-    {{-- CONTENIDO PRINCIPAL --}}
+ 
     <div class="contenido-principal flex-grow-1">
 
-        {{-- NAVBAR SUPERIOR --}}
+   
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
                 <a class="navbar-brand">Sistema gestión de inventarios</a>
@@ -105,13 +104,13 @@
 
         <div class="container py-4">
 
-            {{-- TÍTULO --}}
+        
             <div class="d-flex justify-content-center align-items-center gap-3">
                 <img src="{{ asset('Imagenes/Logo.webp') }}" style="height:48px;">
                 <h1>Gestión de Productos</h1>
             </div>
 
-            {{-- MENSAJE --}}
+           
                
             @if(session('mensaje'))
                 <div id="alertaMensaje" class="alert alert-success text-center mt-3">
@@ -130,14 +129,14 @@
                 </script>
             @endif
 
-            {{-- BOTÓN CREAR --}}
+          
             <div class="text-end mt-4">
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#crearModal">
                     <i class="fa fa-plus"></i> Añadir Producto
                 </button>
             </div>
 
-            {{-- TABLA --}}
+           
             <div class="table-responsive mt-4">
                 <table class="table table-bordered table-hover table-striped align-middle text-center">
                     <thead class="table-dark">
@@ -167,7 +166,7 @@
                             <td>{{ $pro['ID_Estado'] }}</td>
                             <td>{{ $pro['ID_Gama'] }}</td>
 
-                            {{-- FOTO OPCIONAL --}}
+                            
                             <td>
                                 @if(!empty($pro['Fotos']))
                                     @php
@@ -193,14 +192,14 @@
                             </td>
 
                             <td class="text-center">
-                                {{-- BOTÓN EDITAR --}}
+                               
                                 <button class="btn btn-warning btn-sm"
                                         data-bs-toggle="modal"
                                         data-bs-target="#editarModal{{ $pro['ID_Producto'] }}">
                                     <i class="fa fa-edit"></i>
                                 </button>
 
-                                {{-- BOTÓN ELIMINAR --}}
+                          
                                 <button class="btn btn-danger btn-sm"
                                         data-bs-toggle="modal"
                                         data-bs-target="#eliminarModal{{ $pro['ID_Producto'] }}">
@@ -209,7 +208,7 @@
                             </td>
                         </tr>
 
-                        {{-- MODAL EDITAR --}}
+                       
                         <div class="modal fade" id="editarModal{{ $pro['ID_Producto'] }}">
                             <div class="modal-dialog modal-lg">
                                 <form method="POST" action="{{ route('productos.update') }}" enctype="multipart/form-data">
@@ -254,7 +253,6 @@
                                                        value="{{ $pro['Stock_Minimo'] }}" required>
                                             </div>
 
-                                            {{-- SELECTS --}}
                                             <div class="col-md-6">
                                                 <label>Categoría</label>
                                                 <select name="ID_Categoria" class="form-control">
@@ -284,7 +282,7 @@
                                                 </select>
                                             </div>
 
-                                            {{-- FOTO OPCIONAL --}}
+                                           
                                             <div class="col-md-6">
                                                 <label>Nueva Foto (opcional)</label>
                                                 <input type="file" name="Fotos" class="form-control">
@@ -300,7 +298,7 @@
                             </div>
                         </div>
 
-                        {{-- MODAL ELIMINAR --}}
+              
                         <div class="modal fade" id="eliminarModal{{ $pro['ID_Producto'] }}">
                             <div class="modal-dialog">
                                 <form method="POST" action="{{ route('productos.destroy') }}">
@@ -337,7 +335,7 @@
             </div>
 
 
-            {{-- MODAL CREAR --}}
+ 
             <div class="modal fade" id="crearModal">
                 <div class="modal-dialog modal-lg">
                     <form method="POST" action="{{ route('productos.store') }}" enctype="multipart/form-data">
@@ -376,7 +374,7 @@
                                     <input name="Stock_Minimo" class="form-control" required>
                                 </div>
 
-                                {{-- SELECTS --}}
+                              
                                 <div class="col-md-6">
                                     <label>Categoría</label>
                                     <select name="ID_Categoria" class="form-control">

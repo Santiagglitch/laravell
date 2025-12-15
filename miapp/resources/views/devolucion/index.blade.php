@@ -15,10 +15,8 @@
 
 <div class="d-flex" style="min-height:100vh">
 
-   {{-- BARRA LATERAL --}}
     <div class="barra-lateral d-flex flex-column flex-shrink-0 p-3 bg-primary text-white">
         <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-            <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
             TECNICELL RM <img src="{{ asset('Imagenes/Logo.webp') }}" style="height:48px;">
         </a>
         <hr>
@@ -39,23 +37,18 @@
             </div>
             <hr>
             <div class="seccion-menu">
-
                 <a href="{{ route('productos.index') }}" class="elemento-menu">
-                   <i class="ri-box-3-line"></i>
-                    <span>Productos</span>
+                    <i class="ri-box-3-line"></i><span>Productos</span>
                 </a>
-
                 <a href="{{ route('proveedor.index') }}" class="elemento-menu activo">
-                <i class="ri-truck-line"></i>
-                    <span>Proveedores</span>
+                    <i class="ri-truck-line"></i><span>Proveedores</span>
                 </a>
-
                 <div class="dropdown">
                     <a class="elemento-menu d-flex align-items-center text-white text-decoration-none dropdown-toggle"
-                       href="#" id="rolesMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                       href="#" id="rolesMenu" role="button" data-bs-toggle="dropdown">
                         <i class="ri-user-line"></i><span>Usuarios</span>
                     </a>
-                    <ul class="dropdown-menu" aria-labelledby="rolesMenu">
+                    <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="{{ route('clientes.index') }}">Cliente</a></li>
                         <li><a class="dropdown-item" href="{{ route('empleados.index') }}">Empleado</a></li>
                     </ul>
@@ -64,7 +57,6 @@
         </div>
     </div>
 
-    {{-- CONTENIDO --}}
     <div class="contenido-principal flex-grow-1">
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
@@ -72,13 +64,13 @@
 
                 <div class="dropdown ms-auto">
                     <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle"
-                       id="dropdownUser1" data-bs-toggle="dropdown">
+                       data-bs-toggle="dropdown">
                         <img src="{{ asset('fotos_empleados/686fe89fe865f_Foto Kevin.jpeg') }}"
                              width="32" height="32" class="rounded-circle me-2">
                         <strong>{{ session('nombre') ?? 'Perfil' }}</strong>
                     </a>
 
-                    <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+                    <ul class="dropdown-menu dropdown-menu-dark">
                         <li><a class="dropdown-item" href="#">Mi perfil</a></li>
                         <li><a class="dropdown-item" href="#">Editar perfil</a></li>
                         <li><hr class="dropdown-divider"></li>
@@ -99,42 +91,37 @@
                 <h1>Registro de Devolución</h1>
             </div>
 
-             
             @if(session('mensaje'))
-    <div id="alertaMensaje" class="alert alert-success text-center mt-3">
-        {{ session('mensaje') }}
-    </div>
-
-    <script>
-        setTimeout(() => {
-            let alerta = document.getElementById('alertaMensaje');
-            if (alerta) {
-                alerta.style.transition = "opacity 0.5s";
-                alerta.style.opacity = 0;
-                setTimeout(() => alerta.remove(), 500);
-            }
-        }, 2000); 
-    </script>
-@endif
-            
+                <div id="alertaMensaje" class="alert alert-success text-center mt-3">
+                    {{ session('mensaje') }}
+                </div>
+                <script>
+                    setTimeout(() => {
+                        let alerta = document.getElementById('alertaMensaje');
+                        if (alerta) {
+                            alerta.style.transition = "opacity 0.5s";
+                            alerta.style.opacity = 0;
+                            setTimeout(() => alerta.remove(), 500);
+                        }
+                    }, 2000);
+                </script>
+            @endif
 
             <div class="d-flex justify-content-end mt-4 gap-2">
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#crearModal">
                     <i class="fa fa-plus"></i> Añadir Devolución
                 </button>
-
                 <a href="{{ route('detalledevolucion.index') }}" class="btn btn-primary">
                     <i class="fa fa-list"></i> Detalle Devolución
                 </a>
             </div>
 
-            {{-- TABLA DE VENTAS --}}
             <div class="table-responsive mt-4">
                 <table class="table table-bordered table-striped table-hover text-center">
                     <thead class="table-dark">
                         <tr>
-                            <th>ID Devolucion</th>
-                            <th>Fecha Devolucion</th>
+                            <th>ID Devolución</th>
+                            <th>Fecha Devolución</th>
                             <th>Motivo</th>
                             <th>Acciones</th>
                         </tr>
@@ -146,53 +133,44 @@
                             <td>{{ $dev->Fecha_Devolucion }}</td>
                             <td>{{ $dev->Motivo }}</td>
                             <td>
-                                <button class="btn btn-warning btn-sm"
-                                        data-bs-toggle="modal"
+                                <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
                                         data-bs-target="#editarModal{{ $dev->ID_Devolucion }}">
-                                    <i class="fa fa-edit"></i> 
+                                    <i class="fa fa-edit"></i>
                                 </button>
-
-                                <button class="btn btn-danger btn-sm"
-                                        data-bs-toggle="modal"
+                                <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
                                         data-bs-target="#eliminarModal{{ $dev->ID_Devolucion }}">
-                                    <i class="fa fa-trash"></i> 
+                                    <i class="fa fa-trash"></i>
                                 </button>
                             </td>
                         </tr>
 
-                        {{-- MODAL EDITAR --}}
                         <div class="modal fade" id="editarModal{{ $dev->ID_Devolucion }}">
                             <div class="modal-dialog">
                                 <form method="POST" action="{{ route('devolucion.update') }}">
                                     @csrf
                                     @method('PUT')
                                     <input type="hidden" name="ID_Devolucion" value="{{ $dev->ID_Devolucion }}">
-
                                     <div class="modal-content">
                                         <div class="modal-header bg-warning">
                                             <h5 class="modal-title">Editar Devolución</h5>
                                             <button class="btn-close" data-bs-dismiss="modal"></button>
                                         </div>
                                         <div class="modal-body">
-                                            
-
-                                            <label class="mt-3">Fecha Devolucion</label>
+                                            <label>Fecha Devolución</label>
                                             <input type="date" name="Fecha_Devolucion" class="form-control"
                                                    value="{{ $dev->Fecha_Devolucion }}">
-
-                                            <label>Motivo</label>
+                                            <label class="mt-3">Motivo</label>
                                             <input name="Motivo" class="form-control"
                                                    value="{{ $dev->Motivo }}">
                                         </div>
                                         <div class="modal-footer">
-                                            <button class="btn btn-warning" type="submit">Actualizar</button>
+                                            <button class="btn btn-warning">Actualizar</button>
                                         </div>
                                     </div>
                                 </form>
                             </div>
                         </div>
 
-                        {{-- MODAL ELIMINAR --}}
                         <div class="modal fade" id="eliminarModal{{ $dev->ID_Devolucion }}">
                             <div class="modal-dialog">
                                 <form method="POST" action="{{ route('devolucion.destroy') }}">
@@ -216,13 +194,14 @@
                         </div>
 
                     @empty
-                        <tr><td colspan="4" class="text-muted">No hay Devoluciones registradas.</td></tr>
+                        <tr>
+                            <td colspan="4" class="text-muted">No hay Devoluciones registradas.</td>
+                        </tr>
                     @endforelse
                     </tbody>
                 </table>
             </div>
 
-            {{-- MODAL CREAR --}}
             <div class="modal fade" id="crearModal">
                 <div class="modal-dialog">
                     <form method="POST" action="{{ route('devolucion.store') }}">
@@ -235,13 +214,13 @@
                             <div class="modal-body">
                                 <label>ID Devolución</label>
                                 <input name="ID_Devolucion" class="form-control" required>
-                                <label class="mt-3">Fecha Devolucion</label>
+                                <label class="mt-3">Fecha Devolución</label>
                                 <input type="date" name="Fecha_Devolucion" class="form-control" required>
                                 <label class="mt-3">Motivo</label>
                                 <input name="Motivo" class="form-control" required>
                             </div>
                             <div class="modal-footer">
-                                <button class="btn btn-success" type="submit">Guardar</button>
+                                <button class="btn btn-success">Guardar</button>
                             </div>
                         </div>
                     </form>

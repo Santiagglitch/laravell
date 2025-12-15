@@ -6,17 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class DetalleVenta extends Model
 {
-    // Nombre real de la tabla
     protected $table = 'detalle_ventas';
 
-    // Esta tabla NO tiene clave primaria definida
     protected $primaryKey = null;
     public $incrementing = false;
 
-    // No tiene timestamps
     public $timestamps = false;
 
-    // Campos rellenables
     protected $fillable = [
         'Cantidad',
         'Fecha_Salida',
@@ -24,7 +20,6 @@ class DetalleVenta extends Model
         'ID_Venta'
     ];
 
-    // Relaciones
     public function producto()
     {
         return $this->belongsTo(Producto::class, 'ID_Producto', 'ID_Producto');

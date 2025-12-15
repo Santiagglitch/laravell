@@ -104,7 +104,7 @@ Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.form
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 
 
-// (Opcional para después)
+
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 
@@ -114,7 +114,7 @@ Route::get('/admin', function () {
 
 
 
-// nuevas rutas para el rol de empleado 
+
 Route::prefix('empleado')->group(function () {
 
     // CLIENTES 
@@ -199,8 +199,6 @@ Route::prefix('empleado')->group(function () {
     Route::delete('/detalledevolucion/destroy', [DetalleDevolucionController::class, 'destroyEmpleado'])
     ->name('detalledevolucion.destroyEm');
 
-
-    
 });
 
         Route::get('/InicioE', function () {
