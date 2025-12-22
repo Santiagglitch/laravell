@@ -27,9 +27,7 @@ class PerfilService
         return $client;
     }
 
-    /**
-     * Obtener empleado por documento (consume GET /Empleados y filtra)
-     */
+    
     public function obtenerEmpleado(string $documento): ?array
     {
         $response = $this->client()->get($this->baseUrl . '/Empleados');
@@ -43,7 +41,7 @@ class PerfilService
 
         $data = $response->json();
 
-        // Si el API devuelve array de strings con ________ (tu formato)
+      
         if (is_array($data) && isset($data[0]) && is_string($data[0])) {
             foreach ($data as $fila) {
                 $p = explode('________', $fila);
@@ -66,7 +64,6 @@ class PerfilService
             return null;
         }
 
-        // Si viene JSON estructurado
         foreach ($data as $obj) {
             if (isset($obj['Documento_Empleado']) && $obj['Documento_Empleado'] === $documento) {
                 return $obj;
@@ -76,9 +73,7 @@ class PerfilService
         return null;
     }
 
-    /**
-     * Obtener contrasena (consume GET /Contrasenas y filtra por documento)
-     */
+   
     public function obtenerContrasenaPorDocumento(string $documento): ?array
     {
         $response = $this->client()->get($this->baseUrl . '/Contrasenas');
@@ -92,7 +87,6 @@ class PerfilService
 
         $data = $response->json();
 
-        // formato string "ID________Documento________Hash________Fecha"
         if (is_array($data) && isset($data[0]) && is_string($data[0])) {
             foreach ($data as $fila) {
                 $p = explode('________', $fila);
@@ -108,7 +102,6 @@ class PerfilService
             return null;
         }
 
-        // si viene JSON normal
         foreach ($data as $obj) {
             if (isset($obj['Documento_Empleado']) && $obj['Documento_Empleado'] === $documento) {
                 return $obj;
@@ -118,10 +111,7 @@ class PerfilService
         return null;
     }
 
-    /**
-     * Actualizar empleado (PUT /EmpleadoActualizar/{Documento_Empleado})
-     * $data es array con los campos que quieras actualizar. Si envías 'Fotos' debe ser base64.
-     */
+  
     public function actualizarEmpleado(string $documento, array $data): array
     {
         $response = $this->client()->put($this->baseUrl . '/EmpleadoActualizar/' . urlencode($documento), $data);
@@ -137,10 +127,7 @@ class PerfilService
         ];
     }
 
-    /**
-     * Actualizar contraseña (PUT /ActualizarContrasena/{ID_Contrasena})
-     * Enviamos Contrasena_Hash (preferible: SHA256 del nuevo password)
-     */
+   
     public function actualizarContrasena(string $idContrasena, array $payload): array
     {
         $response = $this->client()->put($this->baseUrl . '/ActualizarContrasena/' . urlencode($idContrasena), $payload);
@@ -156,9 +143,7 @@ class PerfilService
         ];
     }
 
-    /**
-     * Validar login contra API (POST /EmpleadoLogin) — usado para verificar contraseña actual
-     */
+    
     public function validarLogin(string $documento, string $contrasenaPlano): bool
     {
         try {

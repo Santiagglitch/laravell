@@ -18,7 +18,6 @@
 
   
   
-  {{-- BARRA LATERAL --}}
     <div class="barra-lateral d-flex flex-column flex-shrink-0 p-3 bg-primary text-white">
         <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
             <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
@@ -31,17 +30,14 @@
 
             <div class="seccion-menu">
 
-                <!-- ✔ Dashboard -->
                 <a href="{{ route('InicioE.index') }}" class="elemento-menu">
                     <i class="fa-solid fa-tachometer-alt"></i><span>Dashboard</span>
                 </a>
 
-                <!-- ✔ Ventas -->
                 <a href="{{ route('ventas.indexEm') }}" class="elemento-menu activo">
                     <i class="ri-price-tag-3-line"></i><span>Ventas</span>
                 </a>
 
-                <!-- ✔ Devoluciones -->
                 <a href="{{ route('devolucion.indexEm') }}" class="elemento-menu">
                     <i class="ri-arrow-go-back-line"></i><span>Devoluciones</span>
                 </a>
@@ -52,14 +48,12 @@
 
             <div class="seccion-menu">
 
-                <!-- ✔ Productos -->
 
                  <a href="{{ route('productos.indexEm') }}"class="elemento-menu">
                     <i class="ri-box-3-line"></i>
                     <span>Productos</span>
                 </a>
 
-                <!-- ✔ Cliente -->
                 <a href="{{ route('clientes.indexEm') }}" class="elemento-menu">
                     <i class="ri-user-line"></i>
                     <span>Cliente</span>
@@ -70,10 +64,8 @@
         </div>
     </div>
 
-    {{-- CONTENIDO --}}
     <div class="contenido-principal flex-grow-1">
 
-        {{-- NAV --}}
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
                 <a class="navbar-brand">Sistema gestión de inventarios</a>
@@ -112,7 +104,6 @@
                 <h1>Detalle de Ventas</h1>
             </div>
 
-            {{-- MENSAJE --}}
                
             @if(session('mensaje'))
     <div id="alertaMensaje" class="alert alert-success text-center mt-3">
@@ -131,14 +122,14 @@
     </script>
 @endif
 
-            {{-- BOTÓN CREAR --}}
+          
             <div class="text-end mt-4">
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#crearModal">
                     <i class="fa fa-plus"></i> Añadir Detalle
                 </button>
             </div>
 
-            {{-- TABLA --}}
+        
             <div class="table-responsive mt-4">
                 <table class="table table-bordered table-striped table-hover text-center">
                     <thead class="table-dark">
@@ -161,14 +152,14 @@
 
                             <td>
 
-                                {{-- EDITAR --}}
+                             
                                 <button class="btn btn-warning btn-sm"
                                         data-bs-toggle="modal"
                                         data-bs-target="#editarModal{{ $detalle->ID_Producto }}{{ $detalle->ID_Venta }}">
                                     <i class="fa fa-edit"></i>
                                 </button>
 
-                                {{-- ELIMINAR --}}
+                             
                                 <button class="btn btn-danger btn-sm"
                                         data-bs-toggle="modal"
                                         data-bs-target="#eliminarModal{{ $detalle->ID_Producto }}{{ $detalle->ID_Venta }}">
@@ -178,7 +169,6 @@
                             </td>
                         </tr>
 
-                        {{-- MODAL EDITAR --}}
                         <div class="modal fade"
                              id="editarModal{{ $detalle->ID_Producto }}{{ $detalle->ID_Venta }}">
                             <div class="modal-dialog">
@@ -218,7 +208,6 @@
                             </div>
                         </div>
 
-                        {{-- MODAL ELIMINAR --}}
                         <div class="modal fade"
                              id="eliminarModal{{ $detalle->ID_Producto }}{{ $detalle->ID_Venta }}">
                             <div class="modal-dialog">
@@ -260,7 +249,6 @@
                 </table>
             </div>
 
-            {{-- MODAL CREAR --}}
             <div class="modal fade" id="crearModal">
                 <div class="modal-dialog">
                     <form method="POST" action="{{ route('detalleventas.storeEm') }}">

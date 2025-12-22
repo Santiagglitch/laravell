@@ -2,7 +2,6 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-
     <link rel="icon" href="{{ asset('Imagenes/Logo.webp') }}" type="image/webp">
     <title>Mi Perfil</title>
 
@@ -15,7 +14,6 @@
 
 <div class="d-flex" style="min-height: 100vh;">
 
-    {{-- BARRA LATERAL --}}
     <div class="barra-lateral d-flex flex-column flex-shrink-0 p-3 bg-primary text-white">
         <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
             TECNICELL RM <img src="{{ asset('Imagenes/Logo.webp') }}" style="height:48px;">
@@ -59,10 +57,8 @@
         </div>
     </div>
 
-    {{-- CONTENIDO PRINCIPAL --}}
     <div class="contenido-principal flex-grow-1">
 
-        {{-- NAVBAR SUPERIOR --}}
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
                 <a class="navbar-brand">Sistema gestión de inventarios</a>
@@ -98,7 +94,6 @@
             </div>
         </nav>
 
-        {{-- CONTENIDO DEL PERFIL --}}
         <div class="container py-4">
 
             <div class="d-flex justify-content-center align-items-center gap-3">
@@ -121,31 +116,31 @@
                 <p><strong>Rol:</strong> {{ $empleado->ID_Rol }}</p>
 
                 @if ($empleado->Fotos)
-                <img src="{{ asset('storage/'.$empleado->Fotos) }}" width="150">
+                    <img src="{{ asset('storage/'.$empleado->Fotos) }}" width="150">
                 @endif
+
                 <div class="mt-4 p-4 bg-light rounded shadow-sm">
-    <h3>Contraseña</h3>
+                    <h3>Contraseña</h3>
 
-    <form action="{{ route('perfil.actualizarContrasena') }}" method="POST">
-        @csrf
+                    <form action="{{ route('perfil.actualizarContrasena') }}" method="POST">
+                        @csrf
 
-        <label>Nueva contraseña:</label>
-        <input
-            type="password"
-            name="nueva_contrasena"
-            class="form-control"
-            placeholder="********"
-            value=""
-            required
-        >
+                        <label>Nueva contraseña:</label>
+                        <input
+                            type="password"
+                            name="nueva_contrasena"
+                            class="form-control"
+                            placeholder="********"
+                            required
+                        >
 
-        <button class="btn btn-primary mt-2">Actualizar contraseña</button>
-    </form>
-</div>
+                        <button class="btn btn-primary mt-2">Actualizar contraseña</button>
+                    </form>
+                </div>
 
             </div>
 
-        </div> {{-- cierre container --}}
+        </div>
     </div>
 </div>
 

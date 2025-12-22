@@ -9,16 +9,16 @@ use Illuminate\Support\Facades\Http;
 
 class AuthController
 {
-    // Mostrar el formulario de login
+    
     public function showLoginForm()
     {
         return view('auth.login');
     }
 
-    // Procesar el login (POST)
+   
     public function login(Request $request)
     {
-        // 1. Validar campos
+        
         $request->validate([
             'usuario'    => 'required|string',
             'contrasena' => 'required|string',
@@ -30,10 +30,10 @@ class AuthController
         $documento = trim($request->input('usuario'));
         $clave     = $request->input('contrasena');
 
-        // 2. Hash igual a tu trigger (SHA2 256)
+    
         $hashClave = hash('sha256', $clave);
 
-        // 3. Validar contra tu BD local (MySQL FONRIO)
+    
         $empleado = DB::table('Empleados as E')
             ->join('Contrasenas as C', 'C.Documento_Empleado', '=', 'E.Documento_Empleado')
             ->where('E.Documento_Empleado', $documento)
@@ -47,17 +47,14 @@ class AuthController
                 ->withInput();
         }
 
-        // 4. Regenerar sesión y guardar datos
         $request->session()->regenerate();
         Session::put('documento', $empleado->Documento_Empleado);
         Session::put('nombre',    $empleado->Nombre_Usuario);
         Session::put('rol',       $empleado->ID_Rol);
 
-        // 🔥 borrar token viejo
         Session::forget('jwt_token');
         Session::forget('rol_api');
 
-        // 5. Solicitar token JWT REAL a la API Spring
         try {
             $baseUrl = rtrim(config('services.productos.base_url', 'http://localhost:8080'), '/');
 
@@ -83,7 +80,6 @@ class AuthController
             Session::forget('jwt_token');
         }
 
-        // 6. Redirección según el rol
         if ($empleado->ID_Rol === 'ROL002') {
             return redirect()->route('InicioE.index');
         }
@@ -91,7 +87,7 @@ class AuthController
         return redirect()->route('admin.inicio');
     }
 
-    // Cerrar sesión
+
     public function logout(Request $request)
     {
         Session::forget('jwt_token');

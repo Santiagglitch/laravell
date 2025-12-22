@@ -16,30 +16,25 @@ class PerfilController
             return redirect('/login')->with('error', 'No hay empleado en sesión');
         }
 
-        // Datos del empleado
         $empleado = Empleado::where('Documento_Empleado', $documento)->first();
-
-        // Contraseña del empleado
         $contrasena = Contrasena::where('Documento_Empleado', $documento)->first();
 
         return view('Perfil.Perfil', compact('empleado', 'contrasena'));
     }
 
-   public function actualizarContrasena(Request $request)
-{
-    $request->validate([
-        'nueva_contrasena' => 'required|min:4',
-    ]);
+    public function actualizarContrasena(Request $request)
+    {
+        $request->validate([
+            'nueva_contrasena' => 'required|min:4',
+        ]);
 
-    $documento = session('documento');
+        $documento = session('documento');
 
-    // NO hashees aquí, manda la contraseña en TEXTO PLANO
-    Contrasena::updateOrCreate(
-        ['Documento_Empleado' => $documento],
-        ['Contrasena_Hash' => $request->nueva_contrasena]
-    );
+        Contrasena::updateOrCreate(
+            ['Documento_Empleado' => $documento],
+            ['Contrasena_Hash' => $request->nueva_contrasena]
+        );
 
-    return back()->with('success', 'Contraseña actualizada correctamente');
-}
-
+        return back()->with('success', 'Contraseña actualizada correctamente');
+    }
 }

@@ -16,7 +16,7 @@
 
 <div class="d-flex" style="min-height:100vh">
 
-   {{-- BARRA LATERAL --}}
+   
     <div class="barra-lateral d-flex flex-column flex-shrink-0 p-3 bg-primary text-white">
         <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
             <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
@@ -65,10 +65,10 @@
         </div>
     </div>
 
-    {{-- CONTENIDO PRINCIPAL --}}
+
     <div class="contenido-principal flex-grow-1">
 
-        {{-- NAVBAR SUPERIOR --}}
+    
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
                 <a class="navbar-brand">Sistema gestión de inventarios</a>
@@ -108,7 +108,6 @@
                 <h1>Registro de Clientes</h1>
             </div>
 
-            {{-- MENSAJE --}}
                
             @if(session('mensaje'))
     <div id="alertaMensaje" class="alert alert-success text-center mt-3">
@@ -127,14 +126,14 @@
     </script>
 @endif
 
-            {{-- BOTÓN CREAR --}}
+        
             <div class="text-end mt-4">
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#crearModal">
                     <i class="fa fa-plus"></i> Añadir Cliente
                 </button>
             </div>
 
-            {{-- TABLA --}}
+        
             <div class="table-responsive mt-4">
                 <table class="table table-bordered table-striped table-hover align-middle text-center">
                     <thead class="table-dark">
@@ -162,14 +161,14 @@
                             <td>{{ $cli->ID_Estado }}</td>
 
                             <td>
-                                {{-- EDITAR --}}
+                               
                                 <button class="btn btn-warning btn-sm"
                                         data-bs-toggle="modal"
                                         data-bs-target="#editarModal{{ $cli->Documento_Cliente }}">
                                     <i class="fa fa-edit"></i>
                                 </button>
 
-                                {{-- ELIMINAR --}}
+                              
                                 <button class="btn btn-danger btn-sm"
                                         data-bs-toggle="modal"
                                         data-bs-target="#eliminarModal{{ $cli->Documento_Cliente }}">
@@ -178,7 +177,7 @@
                             </td>
                         </tr>
 
-                        {{-- MODAL EDITAR --}}
+                   
                         <div class="modal fade" id="editarModal{{ $cli->Documento_Cliente }}">
                             <div class="modal-dialog modal-lg">
                                 <form method="POST" action="{{ route('clientes.update') }}">
@@ -242,7 +241,7 @@
                             </div>
                         </div>
 
-                        {{-- MODAL ELIMINAR --}}
+                        
                         <div class="modal fade" id="eliminarModal{{ $cli->Documento_Cliente }}">
                             <div class="modal-dialog">
                                 <form method="POST" action="{{ route('clientes.destroy') }}">
@@ -276,7 +275,6 @@
                 </table>
             </div>
 
-            {{-- MODAL CREAR --}}
             <div class="modal fade" id="crearModal">
                 <div class="modal-dialog modal-lg">
                     <form method="POST" action="{{ route('clientes.store') }}">

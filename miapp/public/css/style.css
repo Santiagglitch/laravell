@@ -1,4 +1,4 @@
-/* Reset general y configuración*/
+
 * {
     margin: 0;
     padding: 0;
@@ -12,19 +12,17 @@ body {
     color: #333;
 }
 
-/*Contenedor reutilizable*/
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
 }
 
-/*Portada*/
+
 .header {
     background-position: center;
     background-size: cover;
-    /* min-height: 70vh;  👈 quítalo o coméntalo */
-    min-height: 80px;    /* o lo que quieras de alto */
+    min-height: 80px;   
     color: white;
     position: relative;
 }
@@ -39,7 +37,6 @@ body {
     pointer-events: none;
 }
 
-/*Navbar*/
 .menu {
     display: flex;
     justify-content: right;
@@ -64,7 +61,7 @@ body {
     color: #00b4d8;
 }
 
-/*Botón general*/
+
 .btn-1 {
     display: inline-block;
     background-color: #00b4d8;
@@ -84,7 +81,6 @@ body {
 
 
 
-/*TECNICELL: Celulares y accesorios*/
 .TECNICELL {
     padding: 60px 0;
     background-color: #ffffff;
@@ -105,7 +101,6 @@ body {
     margin-right: auto;
 }
 
-/*Celulares*/
 .celulares {
     display: flex;
     gap: 20px;
@@ -126,7 +121,6 @@ body {
     margin-bottom: 10px;
 }
 
-/* Accesorios */
 .accesorios-container {
     display: flex;
     gap: 20px;
@@ -148,7 +142,6 @@ body {
     margin-bottom: 10px;
 }
 
-/*Pie de página*/
 * {
     margin: 0;
     padding: 0;
@@ -217,7 +210,6 @@ body {
     text-decoration: none;
 }
 
-/*¿Quiénes somos?*/
 .contenedor-quienes {
     max-width: 1200px;
     margin: 60px auto;

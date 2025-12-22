@@ -12,7 +12,6 @@
 
 
 
-    {{-- CSS --}}
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet"/>
     <link href="{{ asset('css/IniciarSesion.css') }}" rel="stylesheet"/>
 </head>
@@ -26,14 +25,12 @@
                     <p>Inicia sesión para continuar</p>
                 </div>
 
-                {{-- Mensaje de error general de login --}}
                 @if ($errors->has('login'))
                     <div class="alert alert-danger">
                         {{ $errors->first('login') }}
                     </div>
                 @endif
 
-                {{-- Errores de validación de campos --}}
                 @if ($errors->any() && !$errors->has('login'))
                     <div class="alert alert-danger">
                         <ul class="mb-0">
