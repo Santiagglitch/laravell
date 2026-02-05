@@ -13,7 +13,7 @@ class EmpleadoController
 {
     public function get()
     {
-        // ✅ CAMBIO NECESARIO: cargar estado y rol para poder mostrar el NOMBRE en la vista
+       
         $empleados = Empleado::with(['contrasena', 'estado', 'rol'])->get();
         return view('empleados.index', compact('empleados'));
     }
