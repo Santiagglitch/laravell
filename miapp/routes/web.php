@@ -205,6 +205,9 @@ Route::prefix('empleado')->group(function () {
         return view('InicioE.index');
         })->name('InicioE.index');
 
+Route::get('/pie-pag', function () {
+    return view('Pie_pag.index');
+})->name('pie.pag');
 
 
 Route::get('/perfil', [PerfilController::class, 'mostrar'])->name('perfil');
