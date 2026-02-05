@@ -32,4 +32,13 @@ class Empleado extends Model
     {
         return $this->hasOne(Contrasena::class, 'Documento_Empleado', 'Documento_Empleado');
     }
+      public function estado()
+    {
+        return $this->belongsTo(Estado::class, 'ID_Estado', 'ID_Estado');
+    }
+
+    public function rol()
+    {
+        return $this->belongsTo(Rol::class, 'ID_Rol', 'ID_Rol');
+    }
 }

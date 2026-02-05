@@ -19,6 +19,7 @@
             TECNICELL RM <img src="{{ asset('Imagenes/Logo.webp') }}" style="height:48px;">
         </a>
         <hr>
+
         <div class="menu-barra-lateral">
             <div class="seccion-menu">
                 <a href="{{ route('admin.inicio') }}" class="elemento-menu">
@@ -34,7 +35,9 @@
                     <i class="ri-price-tag-3-line"></i><span>Ventas</span>
                 </a>
             </div>
+
             <hr>
+
             <div class="seccion-menu">
                 <a href="{{ route('productos.index') }}" class="elemento-menu">
                     <i class="ri-box-3-line"></i><span>Productos</span>
@@ -63,25 +66,23 @@
             <div class="container-fluid">
                 <a class="navbar-brand">Sistema gestión de inventarios</a>
 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#navbarNav" aria-controls="navbarNav"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="collapse navbar-collapse" id="navbarNav"></div>
-
                 <div class="dropdown ms-auto">
                     <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle"
                        data-bs-toggle="dropdown">
-                        <img src="{{ asset('fotos_empleados/' . (session('foto') ?? 'default.png')) }}"
-                             alt="Perfil" width="32" height="32" class="rounded-circle me-2">
+
+                        <img
+                            src="{{ session('foto') ?? asset('Imagenes/default-user.png') }}"
+                            alt="Perfil"
+                            width="32"
+                            height="32"
+                            class="rounded-circle me-2"
+                        >
+
                         <strong>{{ session('nombre') ?? 'Perfil' }}</strong>
                     </a>
 
                     <ul class="dropdown-menu dropdown-menu-dark">
                         <li><a class="dropdown-item" href="{{ route('perfil') }}">Mi perfil</a></li>
-                        <li><a class="dropdown-item" href="#">Editar perfil</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <form action="{{ route('logout') }}" method="POST">
@@ -115,8 +116,19 @@
                 <p><strong>Estado:</strong> {{ $empleado->ID_Estado }}</p>
                 <p><strong>Rol:</strong> {{ $empleado->ID_Rol }}</p>
 
-                @if ($empleado->Fotos)
-                    <img src="{{ asset('storage/'.$empleado->Fotos) }}" width="150">
+                @php
+                    
+                    $fotoGrande = $fotoUrl ?? session('foto');
+                @endphp
+
+                @if(!empty($fotoGrande))
+                    <div class="mt-3">
+                        <img src="{{ $fotoGrande }}" width="150" class="rounded shadow-sm" alt="Foto de perfil">
+                    </div>
+                @else
+                    <div class="mt-3">
+                        <img src="{{ asset('Imagenes/default-user.png') }}" width="150" class="rounded shadow-sm" alt="Foto de perfil">
+                    </div>
                 @endif
 
                 <div class="mt-4 p-4 bg-light rounded shadow-sm">

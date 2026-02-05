@@ -15,7 +15,6 @@
 
 <div class="d-flex" style="min-height: 100vh;">
 
-  
     <div class="barra-lateral d-flex flex-column flex-shrink-0 p-3 bg-primary text-white">
         <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
             <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
@@ -41,12 +40,12 @@
             <div class="seccion-menu">
 
                 <a href="{{ route('productos.index') }}" class="elemento-menu">
-                   <i class="ri-box-3-line"></i>
+                    <i class="ri-box-3-line"></i>
                     <span>Productos</span>
                 </a>
 
                 <a href="{{ route('proveedor.index') }}" class="elemento-menu activo">
-                <i class="ri-truck-line"></i>
+                    <i class="ri-truck-line"></i>
                     <span>Proveedores</span>
                 </a>
 
@@ -64,11 +63,8 @@
         </div>
     </div>
 
-
- 
     <div class="contenido-principal flex-grow-1">
 
-   
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
                 <a class="navbar-brand">Sistema gestión de inventarios</a>
@@ -104,14 +100,11 @@
 
         <div class="container py-4">
 
-        
             <div class="d-flex justify-content-center align-items-center gap-3">
                 <img src="{{ asset('Imagenes/Logo.webp') }}" style="height:48px;">
                 <h1>Gestión de Productos</h1>
             </div>
 
-           
-               
             @if(session('mensaje'))
                 <div id="alertaMensaje" class="alert alert-success text-center mt-3">
                     {{ session('mensaje') }}
@@ -129,14 +122,12 @@
                 </script>
             @endif
 
-          
             <div class="text-end mt-4">
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#crearModal">
                     <i class="fa fa-plus"></i> Añadir Producto
                 </button>
             </div>
 
-           
             <div class="table-responsive mt-4">
                 <table class="table table-bordered table-hover table-striped align-middle text-center">
                     <thead class="table-dark">
@@ -162,21 +153,19 @@
                             <td>{{ $pro['Descripcion'] }}</td>
                             <td>{{ $pro['Precio_Venta'] }}</td>
                             <td>{{ $pro['Stock_Minimo'] }}</td>
-                            <td>{{ $pro['ID_Categoria'] }}</td>
-                            <td>{{ $pro['ID_Estado'] }}</td>
-                            <td>{{ $pro['ID_Gama'] }}</td>
 
-                            
+                            <td>{{ $pro['Categoria'] ?? $pro['ID_Categoria'] }}</td>
+                            <td>{{ $pro['Estado'] ?? $pro['ID_Estado'] }}</td>
+                            <td>{{ $pro['Gama'] ?? $pro['ID_Gama'] }}</td>
+
                             <td>
                                 @if(!empty($pro['Fotos']))
                                     @php
                                         $foto = $pro['Fotos'];
 
-                                        // Si ya viene URL absoluta (http/https), úsala tal cual
                                         if (\Illuminate\Support\Str::startsWith($foto, ['http://', 'https://'])) {
                                             $fotoUrl = $foto;
                                         } else {
-                                            // Si viene "uploads/xxx.jpg" o "xxx.jpg", lo servimos desde Spring
                                             $fotoLimpia = ltrim($foto, '/');
                                             if (\Illuminate\Support\Str::startsWith($fotoLimpia, 'uploads/')) {
                                                 $fotoLimpia = substr($fotoLimpia, strlen('uploads/'));
@@ -192,14 +181,12 @@
                             </td>
 
                             <td class="text-center">
-                               
                                 <button class="btn btn-warning btn-sm"
                                         data-bs-toggle="modal"
                                         data-bs-target="#editarModal{{ $pro['ID_Producto'] }}">
                                     <i class="fa fa-edit"></i>
                                 </button>
 
-                          
                                 <button class="btn btn-danger btn-sm"
                                         data-bs-toggle="modal"
                                         data-bs-target="#eliminarModal{{ $pro['ID_Producto'] }}">
@@ -208,7 +195,9 @@
                             </td>
                         </tr>
 
-                       
+                        {{-- =======================
+                             EDITAR
+                        ======================= --}}
                         <div class="modal fade" id="editarModal{{ $pro['ID_Producto'] }}">
                             <div class="modal-dialog modal-lg">
                                 <form method="POST" action="{{ route('productos.update') }}" enctype="multipart/form-data">
@@ -255,34 +244,37 @@
 
                                             <div class="col-md-6">
                                                 <label>Categoría</label>
-                                                <select name="ID_Categoria" class="form-control">
-                                                    <option value="CAT001" {{ $pro['ID_Categoria']=='CAT001'?'selected':'' }}>Celulares</option>
-                                                    <option value="CAT002" {{ $pro['ID_Categoria']=='CAT002'?'selected':'' }}>Cargadores</option>
-                                                    <option value="CAT003" {{ $pro['ID_Categoria']=='CAT003'?'selected':'' }}>Audifonos</option>
-                                                    <option value="CAT004" {{ $pro['ID_Categoria']=='CAT004'?'selected':'' }}>Forros</option>
-                                                    <option value="CAT005" {{ $pro['ID_Categoria']=='CAT005'?'selected':'' }}>Strap Phone</option>
+                                                <select name="ID_Categoria" class="form-control" required>
+                                                    @foreach($categorias as $id => $nombre)
+                                                        <option value="{{ $id }}" {{ (int)$pro['ID_Categoria']===(int)$id ? 'selected' : '' }}>
+                                                            {{ $nombre }}
+                                                        </option>
+                                                    @endforeach
                                                 </select>
                                             </div>
 
                                             <div class="col-md-6">
                                                 <label>Estado</label>
-                                                <select name="ID_Estado" class="form-control">
-                                                    <option value="EST001" {{ $pro['ID_Estado']=='EST001'?'selected':'' }}>Activo</option>
-                                                    <option value="EST002" {{ $pro['ID_Estado']=='EST002'?'selected':'' }}>Inactivo</option>
-                                                    <option value="EST003" {{ $pro['ID_Estado']=='EST003'?'selected':'' }}>En proceso</option>
+                                                <select name="ID_Estado" class="form-control" required>
+                                                    @foreach($estados as $id => $nombre)
+                                                        <option value="{{ $id }}" {{ (int)$pro['ID_Estado']===(int)$id ? 'selected' : '' }}>
+                                                            {{ $nombre }}
+                                                        </option>
+                                                    @endforeach
                                                 </select>
                                             </div>
 
                                             <div class="col-md-6">
                                                 <label>Gama</label>
-                                                <select name="ID_Gama" class="form-control">
-                                                    <option value="GAM001" {{ $pro['ID_Gama']=='GAM001'?'selected':'' }}>Alta</option>
-                                                    <option value="GAM002" {{ $pro['ID_Gama']=='GAM002'?'selected':'' }}>Media</option>
-                                                    <option value="GAM003" {{ $pro['ID_Gama']=='GAM003'?'selected':'' }}>Baja</option>
+                                                <select name="ID_Gama" class="form-control" required>
+                                                    @foreach($gamas as $id => $nombre)
+                                                        <option value="{{ $id }}" {{ (int)$pro['ID_Gama']===(int)$id ? 'selected' : '' }}>
+                                                            {{ $nombre }}
+                                                        </option>
+                                                    @endforeach
                                                 </select>
                                             </div>
 
-                                           
                                             <div class="col-md-6">
                                                 <label>Nueva Foto (opcional)</label>
                                                 <input type="file" name="Fotos" class="form-control">
@@ -298,7 +290,9 @@
                             </div>
                         </div>
 
-              
+                        {{-- =======================
+                             ELIMINAR
+                        ======================= --}}
                         <div class="modal fade" id="eliminarModal{{ $pro['ID_Producto'] }}">
                             <div class="modal-dialog">
                                 <form method="POST" action="{{ route('productos.destroy') }}">
@@ -334,8 +328,9 @@
                 </table>
             </div>
 
-
- 
+            {{-- =======================
+                 CREAR
+            ======================= --}}
             <div class="modal fade" id="crearModal">
                 <div class="modal-dialog modal-lg">
                     <form method="POST" action="{{ route('productos.store') }}" enctype="multipart/form-data">
@@ -349,10 +344,7 @@
 
                             <div class="modal-body row g-3">
 
-                                <div class="col-md-6">
-                                    <label>ID Producto</label>
-                                    <input name="ID_Producto" class="form-control" required>
-                                </div>
+                                {{-- ✅ BORRADO: ID_Producto (AUTO_INCREMENT) --}}
 
                                 <div class="col-md-6">
                                     <label>Nombre</label>
@@ -374,36 +366,33 @@
                                     <input name="Stock_Minimo" class="form-control" required>
                                 </div>
 
-                              
                                 <div class="col-md-6">
                                     <label>Categoría</label>
-                                    <select name="ID_Categoria" class="form-control">
-                                        <option value="">--Seleccione--</option>
-                                        <option value="CAT001">Celulares</option>
-                                        <option value="CAT002">Cargadores</option>
-                                        <option value="CAT003">Audifonos</option>
-                                        <option value="CAT004">Forros</option>
-                                        <option value="CAT005">Strap Phone</option>
+                                    <select name="ID_Categoria" class="form-control" required>
+                                        <option value="" selected>--Seleccione--</option>
+                                        @foreach($categorias as $id => $nombre)
+                                            <option value="{{ $id }}">{{ $nombre }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label>Estado</label>
-                                    <select name="ID_Estado" class="form-control">
-                                        <option value="">--Seleccione--</option>
-                                        <option value="EST001">Activo</option>
-                                        <option value="EST002">Inactivo</option>
-                                        <option value="EST003">En proceso</option>
+                                    <select name="ID_Estado" class="form-control" required>
+                                        <option value="" selected>--Seleccione--</option>
+                                        @foreach($estados as $id => $nombre)
+                                            <option value="{{ $id }}">{{ $nombre }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label>Gama</label>
-                                    <select name="ID_Gama" class="form-control">
-                                        <option value="">--Seleccione--</option>
-                                        <option value="GAM001">Baja</option>
-                                        <option value="GAM002">Media</option>
-                                        <option value="GAM003">Alta</option>
+                                    <select name="ID_Gama" class="form-control" required>
+                                        <option value="" selected>--Seleccione--</option>
+                                        @foreach($gamas as $id => $nombre)
+                                            <option value="{{ $id }}">{{ $nombre }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
 

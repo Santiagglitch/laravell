@@ -131,16 +131,34 @@
                             <td>{{ $pro['Descripcion'] }}</td>
                             <td>{{ $pro['Precio_Venta'] }}</td>
                             <td>{{ $pro['Stock_Minimo'] }}</td>
-                            <td>{{ $pro['ID_Categoria'] }}</td>
-                            <td>{{ $pro['ID_Estado'] }}</td>
-                            <td>{{ $pro['ID_Gama'] }}</td>
+
+                            {{-- ✅ CAMBIO: mostrar NOMBRES en vez de IDs --}}
+                            <td>{{ $pro['Categoria'] ?? $pro['ID_Categoria'] }}</td>
+                            <td>{{ $pro['Estado'] ?? $pro['ID_Estado'] }}</td>
+                            <td>{{ $pro['Gama'] ?? $pro['ID_Gama'] }}</td>
+
                             <td>
                                 @if(!empty($pro['Fotos']))
-                                    <img src="{{ asset('storage/' . $pro['Fotos']) }}" width="50" class="rounded">
+                                    @php
+                                        $foto = $pro['Fotos'];
+
+                                        if (\Illuminate\Support\Str::startsWith($foto, ['http://', 'https://'])) {
+                                            $fotoUrl = $foto;
+                                        } else {
+                                            $fotoLimpia = ltrim($foto, '/');
+                                            if (\Illuminate\Support\Str::startsWith($fotoLimpia, 'uploads/')) {
+                                                $fotoLimpia = substr($fotoLimpia, strlen('uploads/'));
+                                            }
+                                            $fotoUrl = 'http://localhost:8080/' . $fotoLimpia;
+                                        }
+                                    @endphp
+
+                                    <img src="{{ $fotoUrl }}" width="50" height="50" class="rounded" style="object-fit:cover;">
                                 @else
                                     <i class="fa-solid fa-image text-secondary" style="font-size:30px;"></i>
                                 @endif
                             </td>
+
                             <td>
                                 <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
                                         data-bs-target="#editarModal{{ $pro['ID_Producto'] }}">

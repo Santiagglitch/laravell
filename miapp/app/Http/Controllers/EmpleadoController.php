@@ -6,12 +6,15 @@ use App\Models\Empleado;
 use App\Models\Contrasena;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use App\Models\Estado;
+use App\Models\Rol;
 
 class EmpleadoController
 {
     public function get()
     {
-        $empleados = Empleado::with('contrasena')->get();
+        // ✅ CAMBIO NECESARIO: cargar estado y rol para poder mostrar el NOMBRE en la vista
+        $empleados = Empleado::with(['contrasena', 'estado', 'rol'])->get();
         return view('empleados.index', compact('empleados'));
     }
 
@@ -26,8 +29,11 @@ class EmpleadoController
             'Correo_Electronico'   => 'required|email|unique:Empleados,Correo_Electronico',
             'Telefono'             => 'required|string|max:10',
             'Genero'               => 'required|in:F,M',
-            'ID_Estado'            => 'required|string|max:20',
-            'ID_Rol'               => 'required|string|max:20',
+
+            // ✅ CAMBIO NECESARIO (eran string)
+            'ID_Estado'            => 'required|integer|exists:Estados,ID_Estado',
+            'ID_Rol'               => 'required|integer|exists:Roles,ID_Rol',
+
             'Fotos'                => 'nullable|image|max:2048',
             'Contrasena'           => 'required|string|min:4',
         ]);
@@ -35,7 +41,7 @@ class EmpleadoController
         $fotoUrl = null;
 
         if ($request->hasFile('Fotos')) {
-            $springBase = rtrim(config('services.spring.base_url', 'http://192.168.0.11:8080'), '/');
+            $springBase = rtrim(config('services.spring.base_url', 'http://192.168.1.190:8080'), '/');
             $foto = $request->file('Fotos');
 
             $resp = Http::asMultipart()
@@ -49,6 +55,7 @@ class EmpleadoController
             $fotoUrl = trim($resp->body());
         }
 
+
         $empleado = Empleado::create([
             'Documento_Empleado' => $request->Documento_Empleado,
             'Tipo_Documento'     => $request->Tipo_Documento,
@@ -58,8 +65,11 @@ class EmpleadoController
             'Correo_Electronico' => $request->Correo_Electronico,
             'Telefono'           => $request->Telefono,
             'Genero'             => $request->Genero,
-            'ID_Estado'          => $request->ID_Estado,
-            'ID_Rol'             => $request->ID_Rol,
+
+            // ✅ CAMBIO NECESARIO (asegurar int)
+            'ID_Estado'          => (int) $request->ID_Estado,
+            'ID_Rol'             => (int) $request->ID_Rol,
+
             'Fotos'              => $fotoUrl,
         ]);
 
@@ -82,8 +92,11 @@ class EmpleadoController
             'Correo_Electronico' => 'nullable|string|email|max:100',
             'Telefono'           => 'nullable|string|max:10',
             'Genero'             => 'nullable|in:F,M',
-            'ID_Estado'          => 'nullable|string|max:20',
-            'ID_Rol'             => 'nullable|string|max:20',
+
+            // ✅ CAMBIO NECESARIO (eran string)
+            'ID_Estado'          => 'nullable|integer|exists:Estados,ID_Estado',
+            'ID_Rol'             => 'nullable|integer|exists:Roles,ID_Rol',
+
             'Fotos'              => 'nullable|image|max:2048',
             'Contrasena'         => 'nullable|string|min:4',
         ]);
@@ -92,8 +105,12 @@ class EmpleadoController
 
         $empleado->fill($request->except(['Documento_Empleado', 'Contrasena', 'Fotos']));
 
+        // ✅ CAMBIO NECESARIO (asegurar int si vienen)
+        if (!is_null($request->ID_Estado)) $empleado->ID_Estado = (int) $request->ID_Estado;
+        if (!is_null($request->ID_Rol))    $empleado->ID_Rol    = (int) $request->ID_Rol;
+
         if ($request->hasFile('Fotos')) {
-            $springBase = rtrim(config('services.spring.base_url', 'http://192.168.80.13:8080'), '/');
+            $springBase = rtrim(config('services.spring.base_url', 'http://10.197.10.210:8080'), '/');
             $foto = $request->file('Fotos');
 
             $resp = Http::asMultipart()

@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
     <link rel="stylesheet" href="{{ asset('css/Inicio.css') }}">
     <link rel="stylesheet" href="{{ asset('css/menu.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
 </head>
 
 <body>
@@ -17,7 +18,6 @@
 
     <div class="barra-lateral d-flex flex-column flex-shrink-0 p-3 bg-primary text-white">
         <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-            <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
             TECNICELL RM <img src="{{ asset('Imagenes/Logo.webp') }}" style="height:48px;">
         </a>
 
@@ -25,11 +25,11 @@
 
         <div class="menu-barra-lateral">
             <div class="seccion-menu">
-                <a href="{{ route('InicioE.index') }}" class="elemento-menu">
+                <a href="{{ route('InicioE.index') }}" class="elemento-menu activo">
                     <i class="fa-solid fa-tachometer-alt"></i><span>Dashboard</span>
                 </a>
 
-                <a href="{{ route('ventas.indexEm') }}" class="elemento-menu activo">
+                <a href="{{ route('ventas.indexEm') }}" class="elemento-menu">
                     <i class="ri-price-tag-3-line"></i><span>Ventas</span>
                 </a>
 
@@ -70,14 +70,13 @@
                 <div class="dropdown ms-auto">
                     <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle"
                        id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="{{ asset('fotos_empleados/686fe89fe865f_Foto Kevin.jpeg') }}"
+                        <img src="{{ session('foto') ?? asset('Imagenes/default-user.png') }}"
                              alt="Perfil" width="32" height="32" class="rounded-circle me-2">
                         <strong>{{ session('nombre') ?? 'Perfil' }}</strong>
                     </a>
 
                     <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
-                        <li><a class="dropdown-item" href="#">Mi perfil</a></li>
-                        <li><a class="dropdown-item" href="#">Editar perfil</a></li>
+                        <li><a class="dropdown-item" href="{{ route('perfil') }}">Mi perfil</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <form action="{{ route('logout') }}" method="POST" class="m-0">

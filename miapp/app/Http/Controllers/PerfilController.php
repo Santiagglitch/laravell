@@ -19,7 +19,18 @@ class PerfilController
         $empleado = Empleado::where('Documento_Empleado', $documento)->first();
         $contrasena = Contrasena::where('Documento_Empleado', $documento)->first();
 
-        return view('Perfil.Perfil', compact('empleado', 'contrasena'));
+        
+        $fotoUrl = null;
+        if ($empleado && $empleado->Fotos) {
+            $springBase = rtrim(config('services.spring.base_url', 'http://192.168.80.13:8080'), '/');
+            $foto = trim($empleado->Fotos);
+
+            $fotoUrl = str_starts_with($foto, 'http')
+                ? $foto
+                : (str_starts_with($foto, 'uploads/') ? $springBase.'/'.$foto : asset($foto));
+        }
+
+        return view('Perfil.Perfil', compact('empleado', 'contrasena', 'fotoUrl'));
     }
 
     public function actualizarContrasena(Request $request)

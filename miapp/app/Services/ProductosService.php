@@ -11,11 +11,9 @@ class ProductosService
 
     public function __construct()
     {
-      
         $this->baseUrl = rtrim(config('services.productos.base_url', 'http://localhost:8080'), '/');
     }
 
-  
     private function getToken(): ?string
     {
         return Session::get('jwt_token');
@@ -34,7 +32,98 @@ class ProductosService
         return $client;
     }
 
- 
+    // =========================
+    // ✅ construir mapas id => nombre desde tu API Spring
+    // =========================
+    private function construirMapaDesdeListaStrings(?array $data): array
+    {
+        $map = [];
+
+        if (!is_array($data)) return $map;
+
+        foreach ($data as $fila) {
+            if (!is_string($fila)) continue;
+
+            $p = explode('________', $fila);
+
+            $a = isset($p[0]) ? trim($p[0]) : '';
+            $b = isset($p[1]) ? trim($p[1]) : '';
+
+            if ($a === '' || $b === '') continue;
+
+            if (ctype_digit($a)) {
+                $map[(string)$a] = $b;
+                continue;
+            }
+
+            if (ctype_digit($b)) {
+                $map[(string)$b] = $a;
+                continue;
+            }
+
+            $map[(string)$a] = $b;
+        }
+
+        return $map;
+    }
+
+    private function obtenerEstadosMap(): array
+    {
+        $response = $this->client()->get($this->baseUrl . '/Estado');
+
+        if ($response->status() === 401) {
+            Session::forget('jwt_token');
+            return [];
+        }
+
+        if (! $response->successful()) return [];
+
+        return $this->construirMapaDesdeListaStrings($response->json());
+    }
+
+    private function obtenerCategoriasMap(): array
+    {
+        $response = $this->client()->get($this->baseUrl . '/Categorias');
+
+        if ($response->status() === 401) {
+            Session::forget('jwt_token');
+            return [];
+        }
+
+        if (! $response->successful()) return [];
+
+        return $this->construirMapaDesdeListaStrings($response->json());
+    }
+
+    private function obtenerGamasMap(): array
+    {
+        $response = $this->client()->get($this->baseUrl . '/Gamas');
+
+        if ($response->status() === 401) {
+            Session::forget('jwt_token');
+            return [];
+        }
+
+        if (! $response->successful()) return [];
+
+        return $this->construirMapaDesdeListaStrings($response->json());
+    }
+
+    // =========================
+    // ✅ Catálogos para selects
+    // =========================
+    public function obtenerCatalogos(): array
+    {
+        return [
+            'categorias' => $this->obtenerCategoriasMap(),
+            'estados'    => $this->obtenerEstadosMap(),
+            'gamas'      => $this->obtenerGamasMap(),
+        ];
+    }
+
+    // =========================
+    // ✅ obtenerProductos agrega nombres
+    // =========================
     public function obtenerProductos(): ?array
     {
         $response = $this->client()->get($this->baseUrl . '/Productos');
@@ -44,11 +133,13 @@ class ProductosService
             return null;
         }
 
-        if (! $response->successful()) {
-            return null;
-        }
+        if (! $response->successful()) return null;
 
         $data = $response->json();
+
+        $mapEstados    = $this->obtenerEstadosMap();
+        $mapCategorias = $this->obtenerCategoriasMap();
+        $mapGamas      = $this->obtenerGamasMap();
 
         if (is_array($data) && isset($data[0]) && is_string($data[0])) {
             $resultado = [];
@@ -56,16 +147,26 @@ class ProductosService
             foreach ($data as $fila) {
                 $p = explode('________', $fila);
 
+                $idCategoria = (string)($p[5] ?? '');
+                $idEstado    = (string)($p[6] ?? '');
+                $idGama      = (string)($p[7] ?? '');
+
                 $resultado[] = [
                     'ID_Producto'     => $p[0] ?? '',
                     'Nombre_Producto' => $p[1] ?? '',
                     'Descripcion'     => $p[2] ?? '',
                     'Precio_Venta'    => $p[3] ?? '',
                     'Stock_Minimo'    => $p[4] ?? '',
-                    'ID_Categoria'    => $p[5] ?? '',
-                    'ID_Estado'       => $p[6] ?? '',
-                    'ID_Gama'         => $p[7] ?? '',
-                    'Fotos'           => $p[8] ?? '', 
+
+                    'ID_Categoria'    => $idCategoria,
+                    'ID_Estado'       => $idEstado,
+                    'ID_Gama'         => $idGama,
+
+                    'Categoria'       => $mapCategorias[$idCategoria] ?? $idCategoria,
+                    'Estado'          => $mapEstados[$idEstado] ?? $idEstado,
+                    'Gama'            => $mapGamas[$idGama] ?? $idGama,
+
+                    'Fotos'           => $p[8] ?? '',
                 ];
             }
 
@@ -75,14 +176,18 @@ class ProductosService
         return $data;
     }
 
-   
+    // ✅ Crear normal (JSON). OJO: no mandar ID_Producto
     public function agregarProducto(array $data): array
     {
+        unset($data['ID_Producto']); // ✅ importante
+
+        // ✅ tipado recomendado
+        if (isset($data['Precio_Venta']) && $data['Precio_Venta'] !== '') $data['Precio_Venta'] = (float) $data['Precio_Venta'];
+        if (isset($data['Stock_Minimo']) && $data['Stock_Minimo'] !== '') $data['Stock_Minimo'] = (int) $data['Stock_Minimo'];
+
         $response = $this->client()->post($this->baseUrl . '/RegistroP', $data);
 
-        if ($response->status() === 401) {
-            Session::forget('jwt_token');
-        }
+        if ($response->status() === 401) Session::forget('jwt_token');
 
         return [
             'success' => $response->successful(),
@@ -91,16 +196,18 @@ class ProductosService
         ];
     }
 
-    public function actualizarProducto(string $id, array $data): array
+    public function actualizarProducto(int $id, array $data): array
     {
+        // ✅ tipado recomendado
+        if (isset($data['Precio_Venta']) && $data['Precio_Venta'] !== '') $data['Precio_Venta'] = (float) $data['Precio_Venta'];
+        if (isset($data['Stock_Minimo']) && $data['Stock_Minimo'] !== '') $data['Stock_Minimo'] = (int) $data['Stock_Minimo'];
+
         $response = $this->client()->put(
-            $this->baseUrl . '/ActualizaProd/' . urlencode($id),
+            $this->baseUrl . '/ActualizaProd/' . urlencode((string)$id),
             $data
         );
 
-        if ($response->status() === 401) {
-            Session::forget('jwt_token');
-        }
+        if ($response->status() === 401) Session::forget('jwt_token');
 
         return [
             'success' => $response->successful(),
@@ -109,16 +216,13 @@ class ProductosService
         ];
     }
 
-
-    public function eliminarProducto(string $id): array
+    public function eliminarProducto(int $id): array
     {
         $response = $this->client()->delete(
-            $this->baseUrl . '/EliminarPro/' . urlencode($id)
+            $this->baseUrl . '/EliminarPro/' . urlencode((string)$id)
         );
 
-        if ($response->status() === 401) {
-            Session::forget('jwt_token');
-        }
+        if ($response->status() === 401) Session::forget('jwt_token');
 
         return [
             'success' => $response->successful(),
@@ -129,6 +233,17 @@ class ProductosService
 
     public function agregarProductoMultipart(array $data, $file): array
     {
+        // ✅ importante: NO enviar ID_Producto
+        unset($data['ID_Producto']);
+
+        // ✅ tipado correcto (DTO: Double/Integer)
+        if (isset($data['Precio_Venta']) && $data['Precio_Venta'] !== '') $data['Precio_Venta'] = (float) $data['Precio_Venta'];
+        if (isset($data['Stock_Minimo']) && $data['Stock_Minimo'] !== '') $data['Stock_Minimo'] = (int) $data['Stock_Minimo'];
+
+        if (isset($data['ID_Categoria']) && $data['ID_Categoria'] !== '') $data['ID_Categoria'] = (int) $data['ID_Categoria'];
+        if (isset($data['ID_Estado'])    && $data['ID_Estado']    !== '') $data['ID_Estado']    = (int) $data['ID_Estado'];
+        if (isset($data['ID_Gama'])      && $data['ID_Gama']      !== '') $data['ID_Gama']      = (int) $data['ID_Gama'];
+
         $response = Http::asMultipart()
             ->withToken($this->getToken())
             ->attach(
@@ -140,22 +255,19 @@ class ProductosService
                 [
                     'name' => 'data',
                     'contents' => json_encode([
-                        'ID_Producto'     => $data['ID_Producto'],
                         'Nombre_Producto' => $data['Nombre_Producto'],
                         'Descripcion'     => $data['Descripcion'] ?? '',
-                        'Precio_Venta'    => (string)($data['Precio_Venta'] ?? ''),
-                        'Stock_Minimo'    => (string)($data['Stock_Minimo'] ?? ''),
-                        'ID_Categoria'    => $data['ID_Categoria'] ?? '',
-                        'ID_Estado'       => $data['ID_Estado'] ?? '',
-                        'ID_Gama'         => $data['ID_Gama'] ?? '',
+                        'Precio_Venta'    => $data['Precio_Venta'] ?? null,
+                        'Stock_Minimo'    => $data['Stock_Minimo'] ?? null,
+                        'ID_Categoria'    => $data['ID_Categoria'] ?? null,
+                        'ID_Estado'       => $data['ID_Estado'] ?? null,
+                        'ID_Gama'         => $data['ID_Gama'] ?? null,
                         'Fotos'           => ''
                     ])
                 ]
             ]);
 
-        if ($response->status() === 401) {
-            Session::forget('jwt_token');
-        }
+        if ($response->status() === 401) Session::forget('jwt_token');
 
         return [
             'success' => $response->successful(),
@@ -164,9 +276,16 @@ class ProductosService
         ];
     }
 
-
-    public function actualizarProductoMultipart(string $id, array $data, $file): array
+    public function actualizarProductoMultipart(int $id, array $data, $file): array
     {
+        // ✅ tipado correcto
+        if (isset($data['Precio_Venta']) && $data['Precio_Venta'] !== '') $data['Precio_Venta'] = (float) $data['Precio_Venta'];
+        if (isset($data['Stock_Minimo']) && $data['Stock_Minimo'] !== '') $data['Stock_Minimo'] = (int) $data['Stock_Minimo'];
+
+        if (isset($data['ID_Categoria']) && $data['ID_Categoria'] !== '') $data['ID_Categoria'] = (int) $data['ID_Categoria'];
+        if (isset($data['ID_Estado'])    && $data['ID_Estado']    !== '') $data['ID_Estado']    = (int) $data['ID_Estado'];
+        if (isset($data['ID_Gama'])      && $data['ID_Gama']      !== '') $data['ID_Gama']      = (int) $data['ID_Gama'];
+
         $response = Http::asMultipart()
             ->withToken($this->getToken())
             ->attach(
@@ -174,25 +293,23 @@ class ProductosService
                 file_get_contents($file->getRealPath()),
                 $file->getClientOriginalName()
             )
-            ->put($this->baseUrl . '/ActualizaProdMultipart/' . urlencode($id), [
+            ->put($this->baseUrl . '/ActualizaProdMultipart/' . urlencode((string)$id), [
                 [
                     'name' => 'data',
                     'contents' => json_encode([
                         'Nombre_Producto' => $data['Nombre_Producto'] ?? '',
                         'Descripcion'     => $data['Descripcion'] ?? '',
-                        'Precio_Venta'    => (string)($data['Precio_Venta'] ?? ''),
-                        'Stock_Minimo'    => (string)($data['Stock_Minimo'] ?? ''),
-                        'ID_Categoria'    => $data['ID_Categoria'] ?? '',
-                        'ID_Estado'       => $data['ID_Estado'] ?? '',
-                        'ID_Gama'         => $data['ID_Gama'] ?? '',
+                        'Precio_Venta'    => $data['Precio_Venta'] ?? null,
+                        'Stock_Minimo'    => $data['Stock_Minimo'] ?? null,
+                        'ID_Categoria'    => $data['ID_Categoria'] ?? null,
+                        'ID_Estado'       => $data['ID_Estado'] ?? null,
+                        'ID_Gama'         => $data['ID_Gama'] ?? null,
                         'Fotos'           => ''
                     ])
                 ]
             ]);
 
-        if ($response->status() === 401) {
-            Session::forget('jwt_token');
-        }
+        if ($response->status() === 401) Session::forget('jwt_token');
 
         return [
             'success' => $response->successful(),

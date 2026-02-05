@@ -145,8 +145,9 @@
                             <td>{{ $emp->Correo_Electronico }}</td>
                             <td>{{ $emp->Telefono }}</td>
                             <td>{{ $emp->Genero }}</td>
-                            <td>{{ $emp->ID_Estado }}</td>
-                            <td>{{ $emp->ID_Rol }}</td>
+                            <td>{{ $emp->estado->Nombre_Estado ?? 'Sin estado' }}</td>
+                            <td>{{ $emp->rol->Nombre ?? 'Sin rol' }}</td>
+
                             <td>
                                 @if($emp->Fotos)
                                     @php
@@ -194,20 +195,23 @@
                                                     <option value="M" {{ $emp->Genero=='M'?'selected':'' }}>Masculino</option>
                                                 </select>
                                             </div>
+
                                             <div class="col-md-6">
                                                 <label>Estado</label>
                                                 <select name="ID_Estado" class="form-control" required>
-                                                    <option value="EST001" {{ $emp->ID_Estado=='EST001'?'selected':'' }}>Activo</option>
-                                                    <option value="EST002" {{ $emp->ID_Estado=='EST002'?'selected':'' }}>Inactivo</option>
+                                                    <option value="1" {{ (int)$emp->ID_Estado===1?'selected':'' }}>Activo</option>
+                                                    <option value="2" {{ (int)$emp->ID_Estado===2?'selected':'' }}>Inactivo</option>
                                                 </select>
                                             </div>
+
                                             <div class="col-md-6">
                                                 <label>Rol</label>
                                                 <select name="ID_Rol" class="form-control" required>
-                                                    <option value="ROL001" {{ $emp->ID_Rol=='ROL001'?'selected':'' }}>Administrador</option>
-                                                    <option value="ROL002" {{ $emp->ID_Rol=='ROL002'?'selected':'' }}>Empleado</option>
+                                                    <option value="1" {{ (int)$emp->ID_Rol===1?'selected':'' }}>Administrador</option>
+                                                    <option value="2" {{ (int)$emp->ID_Rol===2?'selected':'' }}>Empleado</option>
                                                 </select>
                                             </div>
+
                                             <div class="col-md-6 position-relative">
                                                 <label>Nueva Contraseña</label>
                                                 <input type="password" name="Contrasena" id="editarContrasena{{ $emp->Documento_Empleado }}" class="form-control">
@@ -271,27 +275,32 @@
                                 <div class="col-md-6">
                                     <label>Género</label>
                                     <select name="Genero" class="form-control" required>
-                                        <option value="">--Seleccione--</option>
+                                        <option value="" selected disabled>--Seleccione--</option>
                                         <option value="F">Femenino</option>
                                         <option value="M">Masculino</option>
                                     </select>
                                 </div>
+
+                                <!-- ✅ CAMBIO: obligar a escoger (evita que quede siempre en 1) -->
                                 <div class="col-md-6">
                                     <label>Estado</label>
                                     <select name="ID_Estado" class="form-control" required>
-                                        <option value="">--Seleccione--</option>
-                                        <option value="EST001">Activo</option>
-                                        <option value="EST002">Inactivo</option>
+                                        <option value="" selected disabled>--Seleccione--</option>
+                                        <option value="1">Activo</option>
+                                        <option value="2">Inactivo</option>
                                     </select>
                                 </div>
+
+                                <!-- ✅ CAMBIO: obligar a escoger (evita que quede siempre en 1 = Admin) -->
                                 <div class="col-md-6">
                                     <label>Rol</label>
                                     <select name="ID_Rol" class="form-control" required>
-                                        <option value="">--Seleccione--</option>
-                                        <option value="ROL001">Administrador</option>
-                                        <option value="ROL002">Empleado</option>
+                                        <option value="" selected disabled>--Seleccione--</option>
+                                        <option value="1">Administrador</option>
+                                        <option value="2">Empleado</option>
                                     </select>
                                 </div>
+
                                 <div class="col-md-6"><label>Foto</label><input type="file" name="Fotos" class="form-control"></div>
                                 <div class="col-md-6 position-relative">
                                     <label>Contraseña</label>
