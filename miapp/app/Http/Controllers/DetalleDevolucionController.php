@@ -2,101 +2,117 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use App\Models\DetalleDevolucion;
+use App\Models\Devolucion;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
-class DetalleDevolucionController
+class DetalleDevolucionController 
 {
+    /* ======================
+       LISTAR (ADMIN)
+    ====================== */
     public function get()
     {
         $detalles = DetalleDevolucion::all();
-        return view('detalle_devoluciones.index', compact('detalles'));
+        $devoluciones = Devolucion::select('ID_Devolucion')->get();
+
+        return view('detalle_devoluciones.index', compact(
+            'detalles',
+            'devoluciones'
+        ));
     }
 
+    /* ======================
+       CREAR
+    ====================== */
     public function post(Request $request)
     {
         $validated = $request->validate([
-            'ID_DetalleDev'     => 'required|string|unique:detalle_devoluciones,ID_DetalleDev',
-            'ID_Devolucion'    => 'required|string|max:20|exists:devoluciones,ID_Devolucion',
-            'Cantidad_Devuelta'=> 'required|integer|min:1',
-            'ID_Venta'         => 'required|string|max:20|exists:ventas,ID_Venta',
+            'ID_Devolucion'     => 'required|exists:devoluciones,ID_Devolucion',
+            'Cantidad_Devuelta' => 'required|integer|min:1',
+            'ID_Venta'          => 'required|exists:ventas,ID_Venta',
         ]);
 
         DetalleDevolucion::create($validated);
 
         return redirect()
-            ->route('detalledevolucion.index')
+            ->back()
             ->with('mensaje', 'Detalle registrado correctamente.');
     }
 
-    public function put(Request $request)
+    /* ======================
+       ACTUALIZAR
+    ====================== */
+    public function update(Request $request, $ID_Devolucion)
     {
-        $validated = $request->validate([
-            'ID_DetalleDev'     => 'required|string|exists:detalle_devoluciones,ID_DetalleDev',
-            'ID_Devolucion'    => 'required|string|max:20|exists:devoluciones,ID_Devolucion',
-            'Cantidad_Devuelta'=> 'required|integer|min:1',
-            'ID_Venta'         => 'required|string|max:20|exists:ventas,ID_Venta',
+        $request->validate([
+            'Cantidad_Devuelta' => 'required|integer|min:1',
         ]);
 
-        $data = $validated;
-        unset($data['ID_DetalleDev'], $data['ID_Devolucion'], $data['ID_Venta']);
-
-        $data = array_filter($data, fn($v) => !is_null($v) && $v !== '');
-
-        \DB::table('detalle_devoluciones')
-            ->where('ID_DetalleDev', $validated['ID_DetalleDev'])
-            ->where('ID_Devolucion', $validated['ID_Devolucion'])
-            ->where('ID_Venta', $validated['ID_Venta'])
-            ->update($data);
+        DetalleDevolucion::where('ID_Devolucion', $ID_Devolucion)
+            ->update([
+                'Cantidad_Devuelta' => $request->Cantidad_Devuelta
+            ]);
 
         return redirect()
-            ->route('detalledevolucion.index')
+            ->back()
             ->with('mensaje', 'Detalle actualizado correctamente.');
     }
 
-    public function delete(Request $request)
+    /* ======================
+       ELIMINAR
+    ====================== */
+    public function destroy($ID_Devolucion)
     {
-        $validated = $request->validate([
-            'ID_DetalleDev' => 'required|string|exists:detalle_devoluciones,ID_DetalleDev',
-            'ID_Devolucion'=> 'required|string|max:20|exists:devoluciones,ID_Devolucion',
-            'ID_Venta'     => 'required|string|max:20|exists:ventas,ID_Venta',
-        ]);
-
-        \DB::table('detalle_devoluciones')
-            ->where('ID_DetalleDev', $validated['ID_DetalleDev'])
-            ->where('ID_Devolucion', $validated['ID_Devolucion'])
-            ->where('ID_Venta', $validated['ID_Venta'])
-            ->delete();
+        DetalleDevolucion::where('ID_Devolucion', $ID_Devolucion)->delete();
 
         return redirect()
-            ->route('detalledevolucion.index')
+            ->back()
             ->with('mensaje', 'Detalle eliminado correctamente.');
     }
 
+    /* ======================
+       BUSCAR VENTA POR DOCUMENTO (AJAX)
+    ====================== */
+    public function ventaPorDocumento($documento)
+    {
+        $venta = DB::table('ventas')
+            ->where('Documento_Cliente', $documento)
+            ->orderByDesc('ID_Venta')
+            ->select('ID_Venta')
+            ->first();
+
+        return response()->json($venta);
+    }
+
+    /* ======================
+       EMPLEADO
+    ====================== */
     public function indexEmpleado()
     {
         $detalles = DetalleDevolucion::all();
-        return view('detalle_devoluciones.indexEm', compact('detalles'));
+        $devoluciones = Devolucion::select('ID_Devolucion')->get();
+
+        return view('detalle_devoluciones.indexEm', compact(
+            'detalles',
+            'devoluciones'
+        ));
     }
 
     public function storeEmpleado(Request $request)
     {
-        $this->post($request);
-        return redirect()->route('detalledevolucion.indexEm')
-            ->with('mensaje', 'Detalle registrado correctamente.');
+        return $this->post($request);
     }
 
-    public function updateEmpleado(Request $request)
+    public function updateEmpleado(Request $request, $ID_Devolucion)
     {
-        $this->put($request);
-        return redirect()->route('detalledevolucion.indexEm')
-            ->with('mensaje', 'Detalle actualizado correctamente.');
+        return $this->update($request, $ID_Devolucion);
     }
 
-    public function destroyEmpleado(Request $request)
+    public function destroyEmpleado($ID_Devolucion)
     {
-        $this->delete($request);
-        return redirect()->route('detalledevolucion.indexEm')
-            ->with('mensaje', 'Detalle eliminado correctamente.');
+        return $this->destroy($ID_Devolucion);
     }
 }

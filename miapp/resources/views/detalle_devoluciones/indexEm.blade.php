@@ -97,17 +97,13 @@
                 </div>
             </div>
         </nav>
-
         <div class="container py-4">
 
             <div class="d-flex justify-content-center align-items-center gap-3">
                 <img src="{{ asset('Imagenes/Logo.webp') }}" style="height:48px;">
-                <h1>Detalle de Devolución</h1>
+                <h1>Detalle de devolucion</h1>
             </div>
-
-       
-               
-            @if(session('mensaje'))
+                    @if(session('mensaje'))
     <div id="alertaMensaje" class="alert alert-success text-center mt-3">
         {{ session('mensaje') }}
     </div>
@@ -124,172 +120,179 @@
     </script>
 @endif
 
-            <div class="text-end mt-4">
+            <!-- BOTÓN CREAR -->
+            <div class="text-end">
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#crearModal">
                     <i class="fa fa-plus"></i> Añadir Detalle
                 </button>
             </div>
 
+            <!-- TABLA -->
             <div class="table-responsive mt-4">
-                <table class="table table-bordered table-striped table-hover text-center">
+                <table class="table table-bordered table-hover text-center">
                     <thead class="table-dark">
-                    <tr>
-                        <th>ID Detalle Devolución</th>
-                        <th>ID Devolucion</th>
-                        <th>Cantidad Devuelta</th>
-                        <th>ID Venta</th>
-                        <th>Acciones</th>
-                    </tr>
+                        <tr>
+                            <th>ID Devolución</th>
+                            <th>Cantidad Devuelta</th>
+                            <th>ID Venta</th>
+                            <th>Acciones</th>
+                        </tr>
                     </thead>
-
                     <tbody>
                     @forelse($detalles as $detalle)
+                        @php $i = $loop->index; @endphp
                         <tr>
-                            <td>{{ $detalle->ID_DetalleDev }}</td>
                             <td>{{ $detalle->ID_Devolucion }}</td>
                             <td>{{ $detalle->Cantidad_Devuelta }}</td>
                             <td>{{ $detalle->ID_Venta }}</td>
-
                             <td>
-
-                               
-                                <button class="btn btn-warning btn-sm"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#editarModal{{ $detalle->ID_DetalleDev }}{{ $detalle->ID_Devolucion }}{{ $detalle->ID_Venta }}">
+                                <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editarModal{{ $i }}">
                                     <i class="fa fa-edit"></i>
                                 </button>
-
-                                <button class="btn btn-danger btn-sm"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#eliminarModal{{ $detalle->ID_DetalleDev }}{{ $detalle->ID_Devolucion }}{{ $detalle->ID_Venta }}">
+                                <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#eliminarModal{{ $i }}">
                                     <i class="fa fa-trash"></i>
                                 </button>
-
                             </td>
                         </tr>
 
-                        <div class="modal fade"
-                             id="editarModal{{ $detalle->ID_DetalleDev }}{{ $detalle->ID_Devolucion }}{{ $detalle->ID_Venta }}">
+                        <!-- MODAL EDITAR -->
+                        <div class="modal fade" id="editarModal{{ $i }}">
                             <div class="modal-dialog">
-                                <form method="POST" action="{{ route('detalledevolucion.updateEm') }}">
+                                <form method="POST" action="{{ route('detalledevolucion.update',$detalle->ID_Devolucion) }}">
                                     @csrf
                                     @method('PUT')
-
-                                    <input type="hidden" name="ID_DetalleDev" value="{{ $detalle->ID_DetalleDev }}">
-                                    <input type="hidden" name="ID_Devolucion" value="{{ $detalle->ID_Devolucion }}">
-                                    <input type="hidden" name="ID_Venta" value="{{ $detalle->ID_Venta }}">
-
                                     <div class="modal-content">
-
                                         <div class="modal-header bg-warning">
-                                            <h5 class="modal-title">Editar Detalle</h5>
-                                            <button class="btn-close" data-bs-dismiss="modal"></button>
+                                            <h5>Editar Detalle</h5>
                                         </div>
-
                                         <div class="modal-body">
 
+                                            <label>ID Devolución</label>
+                                            <select name="ID_Devolucion" class="form-control mb-3" required>
+                                                @foreach($devoluciones as $dev)
+                                                    <option value="{{ $dev->ID_Devolucion }}"
+                                                        {{ $dev->ID_Devolucion == $detalle->ID_Devolucion ? 'selected' : '' }}>
+                                                        {{ $dev->ID_Devolucion }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+
                                             <label>Cantidad Devuelta</label>
-                                            <input name="Cantidad_Devuelta" class="form-control"
-                                                   value="{{ $detalle->Cantidad_Devuelta }}">
-
+                                            <input type="number" name="Cantidad_Devuelta"
+                                                   class="form-control"
+                                                   value="{{ $detalle->Cantidad_Devuelta }}" required>
                                         </div>
-
                                         <div class="modal-footer">
                                             <button class="btn btn-warning">Actualizar</button>
                                         </div>
-
                                     </div>
-
                                 </form>
                             </div>
                         </div>
 
-                        <div class="modal fade"
-                             id="eliminarModal{{ $detalle->ID_DetalleDev }}{{ $detalle->ID_Devolucion }}{{ $detalle->ID_Venta }}">
+                        <!-- MODAL ELIMINAR -->
+                        <div class="modal fade" id="eliminarModal{{ $i }}">
                             <div class="modal-dialog">
-                                <form method="POST" action="{{ route('detalledevolucion.destroyEm') }}">
+                                <form method="POST" action="{{ route('detalledevolucion.destroy',$detalle->ID_Devolucion) }}">
                                     @csrf
                                     @method('DELETE')
-                                    <input type="hidden" name="ID_DetalleDev" value="{{ $detalle->ID_DetalleDev }}">
-                                    <input type="hidden" name="ID_Devolucion" value="{{ $detalle->ID_Devolucion }}">
-                                    <input type="hidden" name="ID_Venta" value="{{ $detalle->ID_Venta }}">
-
                                     <div class="modal-content">
-
                                         <div class="modal-header bg-danger text-white">
-                                            <h5 class="modal-title">Eliminar Detalle</h5>
-                                            <button class="btn-close" data-bs-dismiss="modal"></button>
+                                            <h5>Eliminar</h5>
                                         </div>
-
                                         <div class="modal-body">
-                                            ¿Seguro que quieres eliminar este detalle?
+                                            ¿Seguro que deseas eliminar este detalle?
                                         </div>
-
                                         <div class="modal-footer">
                                             <button class="btn btn-danger">Eliminar</button>
                                         </div>
-
                                     </div>
-
                                 </form>
                             </div>
                         </div>
 
                     @empty
                         <tr>
-                            <td colspan="5" class="text-muted">No hay detalles registrados.</td>
+                            <td colspan="4">No hay registros</td>
                         </tr>
                     @endforelse
                     </tbody>
-
                 </table>
             </div>
 
+            <!-- MODAL CREAR -->
             <div class="modal fade" id="crearModal">
                 <div class="modal-dialog">
                     <form method="POST" action="{{ route('detalledevolucion.storeEm') }}">
                         @csrf
-
                         <div class="modal-content">
-
                             <div class="modal-header bg-success text-white">
-                                <h5 class="modal-title">Añadir Detalle</h5>
-                                <button class="btn-close" data-bs-dismiss="modal"></button>
+                                <h5>Registrar Detalle</h5>
                             </div>
-
                             <div class="modal-body">
 
+                                <label>ID Devolución</label>
+                                <select name="ID_Devolucion" class="form-control mb-3" required>
+                                    <option value="">Seleccione...</option>
+                                    @foreach($devoluciones as $dev)
+                                        <option value="{{ $dev->ID_Devolucion }}">
+                                            {{ $dev->ID_Devolucion }}
+                                        </option>
+                                    @endforeach
+                                </select>
+
                                 <label>Cantidad Devuelta</label>
-                                <input name="Cantidad_Devuelta" class="form-control" required>
+                                <input type="number" name="Cantidad_Devuelta" class="form-control mb-3" required>
 
-                                <label class="mt-3">ID Detalle Devolución</label>
-                                <input name="ID_DetalleDev" class="form-control" required>
+                                <label>Documento Cliente</label>
+                                <input type="text" id="documento_cliente" class="form-control mb-2">
 
-                                <label class="mt-3">ID Devolucion</label>
-                                <input name="ID_Devolucion" class="form-control" required>
+                                <input type="hidden" name="ID_Venta" id="id_venta">
 
-                                <label class="mt-3">ID Venta</label>
-                                <input name="ID_Venta" class="form-control" required>
+                                <small id="mensajeError" class="text-danger d-none">
+                                    Cliente no encontrado o sin ventas
+                                </small>
 
                             </div>
-
                             <div class="modal-footer">
-                                <button class="btn btn-success">Guardar</button>
+                                <button class="btn btn-success" id="btnGuardar" disabled>Guardar</button>
                             </div>
-
                         </div>
-
                     </form>
                 </div>
             </div>
 
         </div>
-
     </div>
-
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+document.getElementById('documento_cliente').addEventListener('blur', function () {
+    let documento = this.value.trim();
+    let mensaje = document.getElementById('mensajeError');
+    let idVenta = document.getElementById('id_venta');
+    let btn = document.getElementById('btnGuardar');
+
+    mensaje.classList.add('d-none');
+    btn.disabled = true;
+
+    if (!documento) return;
+
+    fetch(`/ventas/por-documento/${documento}`)
+        .then(r => r.json())
+        .then(data => {
+            if (data?.ID_Venta) {
+                idVenta.value = data.ID_Venta;
+                btn.disabled = false;
+            } else {
+                mensaje.classList.remove('d-none');
+            }
+        })
+        .catch(() => mensaje.classList.remove('d-none'));
+});
+</script>
 
 </body>
 </html>

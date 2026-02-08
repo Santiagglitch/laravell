@@ -18,7 +18,14 @@ Route::get('/', function () {
     return view('inicio');
 })->name('inicio');
 
+// Buscar venta por documento (AJAX)
+Route::get('/ventas/por-documento/{documento}', [DetalleDevolucionController::class, 'ventaPorDocumento']);
 
+// Detalle Devolucion - ADMIN
+Route::get('/detalledevolucion', [DetalleDevolucionController::class, 'get'])->name('detalledevolucion.index');
+Route::post('/detalledevolucion', [DetalleDevolucionController::class, 'post'])->name('detalledevolucion.store');
+Route::put('/detalledevolucion/{ID_Devolucion}', [DetalleDevolucionController::class, 'update'])->name('detalledevolucion.update');
+Route::delete('/detalledevolucion/{ID_Devolucion}', [DetalleDevolucionController::class, 'destroy'])->name('detalledevolucion.destroy');
 
 // Clientes
 Route::get('/clientes', [ClienteController::class, 'get'])->name('clientes.index');

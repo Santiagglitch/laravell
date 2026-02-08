@@ -16,8 +16,7 @@ class DevolucionController
     public function post(Request $request)
     {
         $validated = $request->validate([
-            'ID_Devolucion'    => 'required|string|max:20|unique:devoluciones,ID_Devolucion',
-            'Fecha_Devolucion' => 'required|date|max:20',
+            'Fecha_Devolucion' => 'required|date',
             'Motivo'           => 'required|string|max:45',
         ]);
 
@@ -32,7 +31,7 @@ class DevolucionController
     {
         $validated = $request->validate([
             'ID_Devolucion'    => 'required|string|max:20|exists:devoluciones,ID_Devolucion',
-            'Fecha_Devolucion' => 'required|date|max:20',
+            'Fecha_Devolucion' => 'required|date',
             'Motivo'           => 'required|string|max:45',
         ]);
 
@@ -95,4 +94,4 @@ class DevolucionController
         return redirect()->route('devolucion.indexEm')
             ->with('mensaje', 'Devolución eliminada correctamente.');
     }
-}
+  }

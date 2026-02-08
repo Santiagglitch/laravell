@@ -6,20 +6,21 @@ use Illuminate\Database\Eloquent\Model;
 
 class DetalleDevolucion extends Model
 {
-    protected $table = 'detalle_devoluciones';
+    protected $table = 'Detalle_Devoluciones';
 
-    protected $primaryKey = 'ID_DetalleDev';
+    protected $primaryKey = 'ID_Devolucion';
+    public $incrementing = false;
+    protected $keyType = 'int';
 
     public $timestamps = false;
 
     protected $fillable = [
-        'ID_DetalleDev',
         'ID_Devolucion',
-        'Cantidad_Devuelta',
-        'ID_Venta'
+        'ID_Venta',
+        'Cantidad_Devuelta'
     ];
 
-    public function devoluciones()
+    public function devolucion()
     {
         return $this->belongsTo(Devolucion::class, 'ID_Devolucion', 'ID_Devolucion');
     }

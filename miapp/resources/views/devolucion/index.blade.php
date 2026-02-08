@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -114,6 +115,8 @@
                 <a href="{{ route('detalledevolucion.index') }}" class="btn btn-primary">
                     <i class="fa fa-list"></i> Detalle Devolución
                 </a>
+               
+
             </div>
 
             <div class="table-responsive mt-4">
@@ -157,8 +160,14 @@
                                         </div>
                                         <div class="modal-body">
                                             <label>Fecha Devolución</label>
-                                            <input type="date" name="Fecha_Devolucion" class="form-control"
-                                                   value="{{ $dev->Fecha_Devolucion }}">
+                                               <input type="date"
+       name="Fecha_Devolucion"
+       class="form-control"
+       value="{{ date('Y-m-d') }}"
+       min="{{ date('Y-m-d', strtotime('-5 days')) }}"
+       max="{{ date('Y-m-d') }}"
+       required>
+
                                             <label class="mt-3">Motivo</label>
                                             <input name="Motivo" class="form-control"
                                                    value="{{ $dev->Motivo }}">
@@ -212,12 +221,23 @@
                                 <button class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
                             <div class="modal-body">
-                                <label>ID Devolución</label>
-                                <input name="ID_Devolucion" class="form-control" required>
-                                <label class="mt-3">Fecha Devolución</label>
-                                <input type="date" name="Fecha_Devolucion" class="form-control" required>
-                                <label class="mt-3">Motivo</label>
-                                <input name="Motivo" class="form-control" required>
+                                   
+                        <input type="date"
+       name="Fecha_Devolucion"
+       class="form-control"
+       value="{{ date('Y-m-d') }}"
+       min="{{ date('Y-m-d', strtotime('-5 days')) }}"
+       max="{{ date('Y-m-d') }}"
+       required>
+
+    </label>
+                            <label class="form-label mt-3">Motivo</label>
+<textarea name="Motivo"
+          class="form-control"
+          rows="3"
+          placeholder="Ingrese el motivo de la devolución"
+          required></textarea>
+
                             </div>
                             <div class="modal-footer">
                                 <button class="btn btn-success">Guardar</button>
@@ -234,4 +254,4 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
-</html>
+</html> 
