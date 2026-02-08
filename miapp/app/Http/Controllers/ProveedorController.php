@@ -16,11 +16,10 @@ class ProveedorController
     public function post(Request $request)
     {
         $validated = $request->validate([
-            'ID_Proveedor'       => 'required|string|max:20|unique:proveedores,ID_Proveedor',
             'Nombre_Proveedor'   => 'required|string|max:45',
-            'Correo_Electronico' => 'required|string|email|max:30|unique:proveedores,Correo_Electronico',
+            'Correo_Electronico' => 'required|string|email|max:30|unique:Proveedores,Correo_Electronico',
             'Telefono'           => 'required|string|max:15',
-            'ID_Estado'          => 'required|in:EST001,EST002,EST003',
+            'ID_Estado'          => 'required|in:1,2,3',
         ]);
 
         Proveedor::create($validated);
@@ -33,11 +32,11 @@ class ProveedorController
     public function put(Request $request)
     {
         $validated = $request->validate([
-            'ID_Proveedor'       => 'required|string|max:20|exists:proveedores,ID_Proveedor',
+            'ID_Proveedor'       => 'required|int|exists:Proveedores,ID_Proveedor',
             'Nombre_Proveedor'   => 'nullable|string|max:45',
             'Correo_Electronico' => 'nullable|string|email|max:30',
             'Telefono'           => 'nullable|string|max:15',
-            'ID_Estado'          => 'nullable|in:EST001,EST002,EST003',
+            'ID_Estado'          => 'nullable|in:1,2,3',
         ]);
 
         $proveedor = Proveedor::findOrFail($validated['ID_Proveedor']);
@@ -62,7 +61,7 @@ class ProveedorController
     public function delete(Request $request)
     {
         $validated = $request->validate([
-            'ID_Proveedor' => 'required|string|max:20|exists:proveedores,ID_Proveedor',
+            'ID_Proveedor' => 'required|int|exists:Proveedores,ID_Proveedor',
         ]);
 
         $proveedor = Proveedor::findOrFail($validated['ID_Proveedor']);

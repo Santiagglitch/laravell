@@ -106,7 +106,7 @@
                         <li><hr></li>
                         <li>
                             <form action="{{ route('logout') }}" method="POST">@csrf
-                                <button class="dropdown-item">Cerrar sesión</button>
+                                <button type="submit" class="dropdown-item">Cerrar sesión</button>
                             </form>
                         </li>
                     </ul>
@@ -207,13 +207,13 @@
                                     <div class="modal-content">
                                         <div class="modal-header bg-warning">
                                             <h5 class="modal-title">Editar Compra #{{ $compra->ID_Entrada }}</h5>
-                                            <button class="btn-close" data-bs-dismiss="modal"></button>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                         </div>
                                         <div class="modal-body">
                                             <label>Precio Compra</label>
-                                            <input name="Precio_Compra" type="number" step="0.01" class="form-control" value="{{ $compra->Precio_Compra }}">
+                                            <input name="Precio_Compra" type="number" step="0.01" class="form-control mb-3" value="{{ $compra->Precio_Compra }}" required>
                                             
-                                            <label class="mt-3">Producto</label>
+                                            <label>Producto</label>
                                             <select name="ID_Producto" class="form-control" required>
                                                 @foreach($productos as $prod)
                                                     <option value="{{ $prod->ID_Producto }}" 
@@ -224,7 +224,8 @@
                                             </select>
                                         </div>
                                         <div class="modal-footer">
-                                            <button class="btn btn-warning">Actualizar</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            <button type="submit" class="btn btn-warning">Actualizar</button>
                                         </div>
                                     </div>
                                 </form>
@@ -240,13 +241,14 @@
                                     <div class="modal-content">
                                         <div class="modal-header bg-danger text-white">
                                             <h5 class="modal-title">Eliminar Compra</h5>
-                                            <button class="btn-close" data-bs-dismiss="modal"></button>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                         </div>
                                         <div class="modal-body">
                                             ¿Seguro que deseas eliminar esta compra?
                                         </div>
                                         <div class="modal-footer">
-                                            <button class="btn btn-danger">Eliminar</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            <button type="submit" class="btn btn-danger">Eliminar</button>
                                         </div>
                                     </div>
                                 </form>
@@ -269,13 +271,13 @@
                         <div class="modal-content">
                             <div class="modal-header bg-success text-white">
                                 <h5 class="modal-title">Añadir Compra</h5>
-                                <button class="btn-close" data-bs-dismiss="modal"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
                             <div class="modal-body">
                                 <label>Precio Compra</label>
-                                <input name="Precio_Compra" type="number" step="0.01" class="form-control">
+                                <input name="Precio_Compra" type="number" step="0.01" class="form-control mb-3" required>
                                 
-                                <label class="mt-3">Producto</label>
+                                <label>Producto</label>
                                 <select name="ID_Producto" class="form-control" required>
                                     <option value="">Seleccione un producto</option>
                                     @foreach($productos as $prod)
@@ -286,7 +288,8 @@
                                 <input type="hidden" name="Documento_Empleado" value="{{ session('documento') }}">
                             </div>
                             <div class="modal-footer">
-                                <button class="btn btn-success">Guardar</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-success">Guardar</button>
                             </div>
                         </div>
                     </form>
@@ -313,7 +316,7 @@ function abrirDetalleModal(idEntrada) {
     fetch(`/compras/${idEntrada}/detalles`)
         .then(response => response.json())
         .then(data => {
-            console.log('Datos recibidos:', data); // Para debug
+            console.log('Datos recibidos:', data);
             mostrarDetalles(data);
         })
         .catch(error => {
@@ -326,7 +329,6 @@ function abrirDetalleModal(idEntrada) {
 function mostrarDetalles(data) {
     const compra = data.compra;
     
-    // Determinar el nombre del empleado
     let nombreEmpleado = 'No disponible';
     if (compra.empleado) {
         if (compra.empleado.Nombre_Empleado) {

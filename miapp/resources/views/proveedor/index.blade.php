@@ -134,7 +134,15 @@
                             <td>{{ $prov->Nombre_Proveedor }}</td>
                             <td>{{ $prov->Correo_Electronico }}</td>
                             <td>{{ $prov->Telefono }}</td>
-                            <td>{{ $prov->ID_Estado }}</td>
+                            <td>
+                                @if($prov->ID_Estado == 1)
+                                    Activo
+                                @elseif($prov->ID_Estado == 2)
+                                    Inactivo
+                                @else
+                                    En proceso
+                                @endif
+                            </td>
                             <td>
                                 <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
                                         data-bs-target="#editar{{ $prov->ID_Proveedor }}">
@@ -147,6 +155,7 @@
                             </td>
                         </tr>
 
+                        <!-- MODAL EDITAR -->
                         <div class="modal fade" id="editar{{ $prov->ID_Proveedor }}">
                             <div class="modal-dialog">
                                 <form method="POST" action="{{ route('proveedor.update') }}">
@@ -156,35 +165,38 @@
                                     <div class="modal-content">
                                         <div class="modal-header bg-warning">
                                             <h5 class="modal-title">Editar Proveedor</h5>
-                                            <button class="btn-close" data-bs-dismiss="modal"></button>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                         </div>
                                         <div class="modal-body">
                                             <label>Nombre</label>
-                                            <input class="form-control" name="Nombre_Proveedor"
+                                            <input class="form-control mb-3" name="Nombre_Proveedor"
                                                    value="{{ $prov->Nombre_Proveedor }}" required>
 
                                             <label>Correo</label>
-                                            <input class="form-control" name="Correo_Electronico"
+                                            <input class="form-control mb-3" name="Correo_Electronico"
                                                    value="{{ $prov->Correo_Electronico }}" required>
 
                                             <label>Telefono</label>
-                                            <input class="form-control" name="Telefono"
+                                            <input class="form-control mb-3" name="Telefono"
                                                    value="{{ $prov->Telefono }}" required>
 
                                             <label>Estado</label>
-                                            <select name="ID_Estado" class="form-control">
-                                                <option value="EST001" {{ $prov->ID_Estado=='EST001'?'selected':'' }}>Activo</option>
-                                                <option value="EST002" {{ $prov->ID_Estado=='EST002'?'selected':'' }}>Inactivo</option>
+                                            <select name="ID_Estado" class="form-control" required>
+                                                <option value="1" {{ $prov->ID_Estado==1?'selected':'' }}>Activo</option>
+                                                <option value="2" {{ $prov->ID_Estado==2?'selected':'' }}>Inactivo</option>
+                                                <option value="3" {{ $prov->ID_Estado==3?'selected':'' }}>En proceso</option>
                                             </select>
                                         </div>
                                         <div class="modal-footer">
-                                            <button class="btn btn-warning">Actualizar</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            <button type="submit" class="btn btn-warning">Actualizar</button>
                                         </div>
                                     </div>
                                 </form>
                             </div>
                         </div>
 
+                        <!-- MODAL ELIMINAR -->
                         <div class="modal fade" id="eliminar{{ $prov->ID_Proveedor }}">
                             <div class="modal-dialog">
                                 <form method="POST" action="{{ route('proveedor.destroy') }}">
@@ -194,13 +206,14 @@
                                     <div class="modal-content">
                                         <div class="modal-header bg-danger text-white">
                                             <h5 class="modal-title">¿Eliminar proveedor?</h5>
-                                            <button class="btn-close" data-bs-dismiss="modal"></button>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                         </div>
                                         <div class="modal-body">
                                             Esta acción no se puede deshacer.
                                         </div>
                                         <div class="modal-footer">
-                                            <button class="btn btn-danger">Eliminar</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            <button type="submit" class="btn btn-danger">Eliminar</button>
                                         </div>
                                     </div>
                                 </form>
@@ -217,6 +230,7 @@
                 </table>
             </div>
 
+            <!-- MODAL CREAR -->
             <div class="modal fade" id="crearModal">
                 <div class="modal-dialog">
                     <form method="POST" action="{{ route('proveedor.store') }}">
@@ -224,30 +238,29 @@
                         <div class="modal-content">
                             <div class="modal-header bg-success text-white">
                                 <h5 class="modal-title">Añadir Proveedor</h5>
-                                <button class="btn-close" data-bs-dismiss="modal"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
                             <div class="modal-body">
-                                <label>ID</label>
-                                <input class="form-control" name="ID_Proveedor" required>
-
                                 <label>Nombre</label>
-                                <input class="form-control" name="Nombre_Proveedor" required>
+                                <input class="form-control mb-3" name="Nombre_Proveedor" required>
 
                                 <label>Correo</label>
-                                <input type="email" class="form-control" name="Correo_Electronico" required>
+                                <input type="email" class="form-control mb-3" name="Correo_Electronico" required>
 
                                 <label>Telefono</label>
-                                <input class="form-control" name="Telefono" required>
+                                <input class="form-control mb-3" name="Telefono" required>
 
                                 <label>Estado</label>
-                                <select class="form-control" name="ID_Estado">
+                                <select class="form-control" name="ID_Estado" required>
                                     <option value="">--Seleccione--</option>
-                                    <option value="EST001">Activo</option>
-                                    <option value="EST002">Inactivo</option>
+                                    <option value="1">Activo</option>
+                                    <option value="2">Inactivo</option>
+                                    <option value="3">En proceso</option>
                                 </select>
                             </div>
                             <div class="modal-footer">
-                                <button class="btn btn-success">Guardar</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-success">Guardar</button>
                             </div>
                         </div>
                     </form>

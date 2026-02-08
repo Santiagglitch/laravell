@@ -77,7 +77,7 @@
                         <li>
                             <form action="{{ route('logout') }}" method="POST">
                                 @csrf
-                                <button class="dropdown-item">Cerrar sesión</button>
+                                <button type="submit" class="dropdown-item">Cerrar sesión</button>
                             </form>
                         </li>
                     </ul>
@@ -87,7 +87,8 @@
 
         <div class="container py-4">
 
-            <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div></div>
                 <div class="d-flex align-items-center gap-3">
                     <img src="{{ asset('Imagenes/Logo.webp') }}" style="height:48px;">
                     <h1>Detalle de Compras</h1>
@@ -190,7 +191,7 @@
                                             <h5 class="modal-title">
                                                 <i class="fa fa-edit"></i> Editar Detalle
                                             </h5>
-                                            <button class="btn-close" data-bs-dismiss="modal"></button>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                         </div>
 
                                         <div class="modal-body">
@@ -204,14 +205,14 @@
                                             </div>
 
                                             <label>Fecha Entrada</label>
-                                            <input type="date" name="Fecha_Entrada" class="form-control"
+                                            <input type="date" name="Fecha_Entrada" class="form-control mb-3"
                                                    value="{{ $detalle->Fecha_Entrada }}"
                                                    min="{{ date('Y-m-d') }}" 
-                                                   max="{{ date('Y-m-d') }}">
+                                                   max="{{ date('Y-m-d') }}" required>
 
-                                            <label class="mt-3">Cantidad</label>
+                                            <label>Cantidad</label>
                                             <input type="number" name="Cantidad" class="form-control" min="1"
-                                                   value="{{ $detalle->Cantidad }}">
+                                                   value="{{ $detalle->Cantidad }}" required>
 
                                         </div>
 
@@ -244,7 +245,7 @@
                                             <h5 class="modal-title">
                                                 <i class="fa fa-trash"></i> Eliminar Detalle
                                             </h5>
-                                            <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                                         </div>
 
                                         <div class="modal-body">
@@ -292,13 +293,13 @@
                                 <h5 class="modal-title">
                                     <i class="fa fa-plus"></i> Añadir Detalle
                                 </h5>
-                                <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                             </div>
 
                             <div class="modal-body">
 
                                 <label>Compra (ID Entrada)</label>
-                                <select name="ID_Entrada" class="form-control" required>
+                                <select name="ID_Entrada" class="form-control mb-3" required>
                                     <option value="">Seleccione una compra</option>
                                     @foreach($compras as $compra)
                                         <option value="{{ $compra->ID_Entrada }}">
@@ -307,8 +308,8 @@
                                     @endforeach
                                 </select>
 
-                                <label class="mt-3">Proveedor</label>
-                                <select name="ID_Proveedor" class="form-control" required>
+                                <label>Proveedor</label>
+                                <select name="ID_Proveedor" class="form-control mb-3" required>
                                     <option value="">Seleccione un proveedor</option>
                                     @foreach($proveedores as $prov)
                                         <option value="{{ $prov->ID_Proveedor }}">
@@ -317,18 +318,17 @@
                                     @endforeach
                                 </select>
 
-                                <label class="mt-3">Fecha Entrada (Solo hoy)</label>
+                                <label>Fecha Entrada</label>
                                 <input type="date" 
                                        name="Fecha_Entrada" 
-                                       class="form-control" 
+                                       class="form-control mb-3" 
                                        value="{{ date('Y-m-d') }}"
                                        min="{{ date('Y-m-d') }}" 
                                        max="{{ date('Y-m-d') }}"
                                        readonly
                                        required>
-                                <small class="text-muted">La fecha está fijada al día de hoy</small>
 
-                                <label class="mt-3">Cantidad</label>
+                                <label>Cantidad</label>
                                 <input type="number" name="Cantidad" class="form-control" min="1" required>
 
                             </div>
