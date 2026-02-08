@@ -25,7 +25,7 @@ class Detalle_Compras extends Model
         return $this->belongsTo(Proveedor::class, 'ID_Proveedor', 'ID_Proveedor');
     }
 
-    public function compras()
+    public function compra()
     {
         return $this->belongsTo(Compras::class, 'ID_Entrada', 'ID_Entrada');
     }

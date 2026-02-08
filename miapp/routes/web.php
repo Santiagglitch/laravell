@@ -85,19 +85,18 @@ Route::put('/detalledevolucion', [DetalleDevolucionController::class, 'put'])->n
 Route::delete('/detalledevolucion', [DetalleDevolucionController::class, 'delete'])->name('detalledevolucion.destroy');
 
 
-// Compras
+// Compras (mantén estas como están)
 Route::get('/compras', [ComprasController::class, 'get'])->name('compras.index');
 Route::post('/compras', [ComprasController::class, 'post'])->name('compras.store');
 Route::put('/compras/{ID_Entrada}', [ComprasController::class, 'put'])->name('compras.update');
 Route::delete('/compras/{ID_Entrada}', [ComprasController::class, 'delete'])->name('compras.destroy');
+Route::get('/compras/{ID_Entrada}/detalles', [ComprasController::class, 'getDetalles'])->name('compras.detalles'); // ← SOLO AGREGA ESTA LÍNEA
 
-
-// Detalle Compras
+// Detalle Compras (mantén estas como están)
 Route::get('/detallecompras', [DetalleComprasController::class, 'get'])->name('detallecompras.index');
 Route::post('/detallecompras', [DetalleComprasController::class, 'post'])->name('detallecompras.store');
 Route::put('/detallecompras', [DetalleComprasController::class, 'put'])->name('detallecompras.update');
 Route::delete('/detallecompras', [DetalleComprasController::class, 'delete'])->name('detallecompras.destroy');
-
 
 //Login
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.form');
