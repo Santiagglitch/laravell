@@ -41,7 +41,7 @@ class EmpleadoController
         $fotoUrl = null;
 
         if ($request->hasFile('Fotos')) {
-            $springBase = rtrim(config('services.spring.base_url', 'http://192.168.1.190:8080'), '/');
+            $springBase = rtrim(config('services.spring.base_url', 'http://192.168.128.3:8080'), '/');
             $foto = $request->file('Fotos');
 
             $resp = Http::asMultipart()
@@ -110,7 +110,7 @@ class EmpleadoController
         if (!is_null($request->ID_Rol))    $empleado->ID_Rol    = (int) $request->ID_Rol;
 
         if ($request->hasFile('Fotos')) {
-            $springBase = rtrim(config('services.spring.base_url', 'http://10.197.10.210:8080'), '/');
+            $springBase = rtrim(config('services.spring.base_url', 'http://192.168.128.3:8080'), '/');
             $foto = $request->file('Fotos');
 
             $resp = Http::asMultipart()

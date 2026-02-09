@@ -57,7 +57,7 @@ class AuthController
 
         if (!empty($empleado->Fotos)) {
             $springBase = rtrim(
-                config('services.spring.base_url', 'http://192.168.80.13:8080'),
+                config('services.spring.base_url', 'http://192.168.128.3:8080'),
                 '/'
             );
 

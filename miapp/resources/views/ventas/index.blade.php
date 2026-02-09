@@ -91,6 +91,7 @@
                 <h1>Registro de Ventas</h1>
             </div>
 
+            {{-- Mensaje de éxito --}}
             @if(session('mensaje'))
                 <div id="alertaMensaje" class="alert alert-success text-center mt-3">
                     {{ session('mensaje') }}
@@ -104,6 +105,23 @@
                             setTimeout(() => alerta.remove(), 500);
                         }
                     }, 2000);
+                </script>
+            @endif
+
+            {{-- Mensaje de error --}}
+            @if(session('error'))
+                <div id="alertaError" class="alert alert-danger text-center mt-3">
+                    <i class="fa fa-exclamation-circle"></i> {{ session('error') }}
+                </div>
+                <script>
+                    setTimeout(() => {
+                        let alerta = document.getElementById('alertaError');
+                        if (alerta) {
+                            alerta.style.transition = "opacity 0.5s";
+                            alerta.style.opacity = 0;
+                            setTimeout(() => alerta.remove(), 500);
+                        }
+                    }, 3000);
                 </script>
             @endif
 
@@ -148,6 +166,7 @@
                             </td>
                         </tr>
 
+                        {{-- Modal Editar --}}
                         <div class="modal fade" id="editarModal{{ $venta->ID_Venta }}">
                             <div class="modal-dialog">
                                 <form method="POST" action="{{ route('ventas.update') }}">
@@ -175,6 +194,7 @@
                             </div>
                         </div>
 
+                        {{-- Modal Eliminar --}}
                         <div class="modal fade" id="eliminarModal{{ $venta->ID_Venta }}">
                             <div class="modal-dialog">
                                 <form method="POST" action="{{ route('ventas.destroy') }}">
@@ -206,26 +226,112 @@
                 </table>
             </div>
 
-            <div class="modal fade" id="crearModal">
-                <div class="modal-dialog">
-                    <form method="POST" action="{{ route('ventas.store') }}">
+            {{-- ============================================ --}}
+            {{-- MODAL CREAR VENTA CON AUTOCOMPLETE --}}
+            {{-- ============================================ --}}
+            <div class="modal fade" id="crearModal" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                    
+                    <form method="POST" action="{{ route('ventas.store') }}" id="formVenta">
                         @csrf
+                        <input type="hidden" name="cliente_nuevo" id="clienteNuevo" value="0">
                         <div class="modal-content">
+                            
                             <div class="modal-header bg-success text-white">
-                                <h5 class="modal-title">Añadir Venta</h5>
-                                <button class="btn-close" data-bs-dismiss="modal"></button>
+                                <h5 class="modal-title">
+                                    <i class="fa fa-plus-circle"></i> Registrar Nueva Venta
+                                </h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                             </div>
+                            
                             <div class="modal-body">
-                                <label>ID Venta</label>
-                                <input name="ID_Venta" class="form-control" required>
-                                <label class="mt-3">Documento Cliente</label>
-                                <input name="Documento_Cliente" class="form-control" required>
-                                <label class="mt-3">Documento Empleado</label>
-                                <input name="Documento_Empleado" class="form-control" required>
+
+                                {{-- Búsqueda de Cliente --}}
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="fa fa-user"></i> Documento del Cliente
+                                    </label>
+                                    <div class="position-relative">
+                                        <input 
+                                            type="text" 
+                                            id="buscarCliente" 
+                                            name="Documento_Cliente"
+                                            class="form-control" 
+                                            placeholder="Ej: 1013262104"
+                                            autocomplete="off"
+                                            required>
+                                        
+                                        {{-- Spinner de carga --}}
+                                        <div id="spinnerBusqueda" 
+                                             class="spinner-border spinner-border-sm text-primary position-absolute" 
+                                             style="right: 10px; top: 10px; display: none;">
+                                        </div>
+                                    </div>
+                                    <small class="text-muted">
+                                        <i class="fa fa-info-circle"></i> 
+                                        Ingrese el documento y espere 1 segundo o presione Enter
+                                    </small>
+                                </div>
+
+                                {{-- Mensaje de resultado de búsqueda --}}
+                                <div id="mensajeCliente" class="alert d-none mb-3"></div>
+
+                                {{-- Campos para Cliente Nuevo (ocultos por defecto) --}}
+                                <div id="camposNuevoCliente" style="display: none;">
+                                    
+                                    <div class="card border-warning mb-3">
+                                        <div class="card-header bg-warning bg-opacity-25">
+                                            <strong><i class="fa fa-user-plus"></i> Datos del Nuevo Cliente</strong>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Nombre</label>
+                                                    <input type="text" name="Nombre_Cliente" id="nombreCliente" class="form-control">
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Apellido</label>
+                                                    <input type="text" name="Apellido_Cliente" id="apellidoCliente" class="form-control">
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label">Estado</label>
+                                                <select name="Estado_Cliente" id="estadoCliente" class="form-select">
+                                                    <option value="activo" selected>Activo</option>
+                                                    <option value="inactivo">Inactivo</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr>
+
+                                {{-- Documento Empleado --}}
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="fa fa-user-tie"></i> Documento Empleado
+                                    </label>
+                                    <input type="text" 
+                                           name="Documento_Empleado" 
+                                           class="form-control" 
+                                           value="{{ session('documento') }}" 
+                                           required>
+                                    <small class="text-muted">Empleado que realiza la venta</small>
+                                </div>
+
                             </div>
+
                             <div class="modal-footer">
-                                <button class="btn btn-success" type="submit">Guardar</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    <i class="fa fa-times"></i> Cancelar
+                                </button>
+                                <button type="submit" class="btn btn-success" id="btnGuardar">
+                                    <i class="fa fa-save"></i> Guardar Venta
+                                </button>
                             </div>
+
                         </div>
                     </form>
                 </div>
@@ -236,5 +342,120 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+
+{{-- ============================================ --}}
+{{-- JAVASCRIPT PARA AUTOCOMPLETE --}}
+{{-- ============================================ --}}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const inputDocumento = document.getElementById('buscarCliente');
+    const spinnerBusqueda = document.getElementById('spinnerBusqueda');
+    const mensajeCliente = document.getElementById('mensajeCliente');
+    const camposNuevoCliente = document.getElementById('camposNuevoCliente');
+    const inputClienteNuevo = document.getElementById('clienteNuevo');
+    const nombreCliente = document.getElementById('nombreCliente');
+    const apellidoCliente = document.getElementById('apellidoCliente');
+    const formVenta = document.getElementById('formVenta');
+    
+    let timeoutBusqueda;
+    let clienteValidado = false;
+
+    // Buscar cliente cuando escribe o presiona Enter
+    inputDocumento.addEventListener('keyup', function(e) {
+        clearTimeout(timeoutBusqueda);
+        
+        const documento = this.value.trim();
+        
+        // Resetear validación
+        clienteValidado = false;
+        
+        // Si el documento es muy corto, no buscar
+        if (documento.length < 5) {
+            ocultarMensajes();
+            return;
+        }
+
+        // Si presiona Enter, buscar inmediatamente
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            buscarCliente(documento);
+            return;
+        }
+
+        // Esperar 1 segundo después de dejar de escribir
+        timeoutBusqueda = setTimeout(() => {
+            buscarCliente(documento);
+        }, 1000);
+    });
+
+    function buscarCliente(documento) {
+        spinnerBusqueda.style.display = 'block';
+        mensajeCliente.classList.add('d-none');
+        clienteValidado = false;
+        }
+
+        function mostrarClienteEncontrado(cliente) {
+        mensajeCliente.className = 'alert alert-success';
+        mensajeCliente.innerHTML = `
+            <i class="fa fa-check-circle"></i> 
+            <strong>Cliente encontrado:</strong> 
+            ${cliente.Nombre_Cliente} ${cliente.Apellido_Cliente}
+            ${cliente.ID_Estado == '1' ? '<span class="badge bg-success">Activo</span>' : '<span class="badge bg-secondary">Inactivo</span>'}
+        `;
+        mensajeCliente.classList.remove('d-none');
+        
+        // Ocultar campos de nuevo cliente
+        camposNuevoCliente.style.display = 'none';
+        inputClienteNuevo.value = '0';
+        
+        // Quitar required de los campos del cliente
+        nombreCliente.removeAttribute('required');
+        apellidoCliente.removeAttribute('required');
+        
+        // ✅ MARCAR COMO VALIDADO
+        clienteValidado = true;
+    }
+
+    function mostrarFormularioNuevoCliente() {
+        mensajeCliente.className = 'alert alert-warning';
+        mensajeCliente.innerHTML = `
+            <i class="fa fa-exclamation-triangle"></i> 
+            <strong>Cliente no encontrado.</strong> 
+            Complete los datos para registrar un nuevo cliente:
+        `;
+        mensajeCliente.classList.remove('d-none');
+        
+        // Mostrar campos de nuevo cliente
+        camposNuevoCliente.style.display = 'block';
+        inputClienteNuevo.value = '1';
+        
+        // Agregar required a los campos del cliente
+        nombreCliente.setAttribute('required', 'required');
+        apellidoCliente.setAttribute('required', 'required');
+        
+        // ✅ MARCAR COMO VALIDADO (para permitir envío con datos completos)
+        clienteValidado = true;
+    }
+
+    function ocultarMensajes() {
+        mensajeCliente.classList.add('d-none');
+        camposNuevoCliente.style.display = 'none';
+        inputClienteNuevo.value = '0';
+        nombreCliente.removeAttribute('required');
+        apellidoCliente.removeAttribute('required');
+        clienteValidado = false;
+    }
+
+    // Limpiar formulario al cerrar el modal
+    const modalCrear = document.getElementById('crearModal');
+    modalCrear.addEventListener('hidden.bs.modal', function() {
+        formVenta.reset();
+        ocultarMensajes();
+        spinnerBusqueda.style.display = 'none';
+        clienteValidado = false;
+    });
+});
+</script>
+
 </body>
 </html>

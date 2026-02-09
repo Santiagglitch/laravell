@@ -64,8 +64,10 @@ Route::get('/empleado/productos', [ProductoController::class, 'indexEmpleado'])
 
 // Ventas
 Route::get('/ventas', [VentaController::class, 'get'])->name('ventas.index');
+// Ruta para buscar cliente vía AJAX
+Route::get('/api/buscar-cliente/{documento}', [VentaController::class, 'buscarClienteAjax']);
 Route::post('/ventas', [VentaController::class, 'post'])->name('ventas.store');
-Route::put('/ventas', [VentaController::class, 'put'])->name('ventas.update');
+Route::put('/ventas/update', [VentaController::class, 'put'])->name('ventas.update');
 Route::delete('/ventas', [VentaController::class, 'delete'])->name('ventas.destroy');
 
 

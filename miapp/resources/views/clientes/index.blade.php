@@ -108,23 +108,39 @@
                 <h1>Registro de Clientes</h1>
             </div>
 
-               
+            {{-- Mensaje de éxito --}}
             @if(session('mensaje'))
-    <div id="alertaMensaje" class="alert alert-success text-center mt-3">
-        {{ session('mensaje') }}
-    </div>
+                <div id="alertaMensaje" class="alert alert-success text-center mt-3">
+                    {{ session('mensaje') }}
+                </div>
+                <script>
+                    setTimeout(() => {
+                        let alerta = document.getElementById('alertaMensaje');
+                        if (alerta) {
+                            alerta.style.transition = "opacity 0.5s";
+                            alerta.style.opacity = 0;
+                            setTimeout(() => alerta.remove(), 500);
+                        }
+                    }, 2000); 
+                </script>
+            @endif
 
-    <script>
-        setTimeout(() => {
-            let alerta = document.getElementById('alertaMensaje');
-            if (alerta) {
-                alerta.style.transition = "opacity 0.5s";
-                alerta.style.opacity = 0;
-                setTimeout(() => alerta.remove(), 500);
-            }
-        }, 2000); 
-    </script>
-@endif
+            {{-- Mensaje de error --}}
+            @if(session('error'))
+                <div id="alertaError" class="alert alert-danger text-center mt-3">
+                    <i class="fa fa-exclamation-circle"></i> {{ session('error') }}
+                </div>
+                <script>
+                    setTimeout(() => {
+                        let alerta = document.getElementById('alertaError');
+                        if (alerta) {
+                            alerta.style.transition = "opacity 0.5s";
+                            alerta.style.opacity = 0;
+                            setTimeout(() => alerta.remove(), 500);
+                        }
+                    }, 3000);
+                </script>
+            @endif
 
         
             <div class="text-end mt-4">
@@ -141,9 +157,6 @@
                             <th>Documento</th>
                             <th>Nombre</th>
                             <th>Apellido</th>
-                            <th>Teléfono</th>
-                            <th>Fecha Nacimiento</th>
-                            <th>Género</th>
                             <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
@@ -155,10 +168,13 @@
                             <td>{{ $cli->Documento_Cliente }}</td>
                             <td>{{ $cli->Nombre_Cliente }}</td>
                             <td>{{ $cli->Apellido_Cliente }}</td>
-                            <td>{{ $cli->Telefono }}</td>
-                            <td>{{ $cli->Fecha_Nacimiento }}</td>
-                            <td>{{ $cli->Genero }}</td>
-                            <td>{{ $cli->ID_Estado }}</td>
+                            <td>
+                                @if($cli->ID_Estado == 1)
+                                    <span class="badge bg-success">Activo</span>
+                                @else
+                                    <span class="badge bg-secondary">Inactivo</span>
+                                @endif
+                            </td>
 
                             <td>
                                
@@ -179,7 +195,7 @@
 
                    
                         <div class="modal fade" id="editarModal{{ $cli->Documento_Cliente }}">
-                            <div class="modal-dialog modal-lg">
+                            <div class="modal-dialog">
                                 <form method="POST" action="{{ route('clientes.update') }}">
                                     @csrf
                                     @method('PUT')
@@ -192,42 +208,23 @@
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                         </div>
 
-                                        <div class="modal-body row g-3">
+                                        <div class="modal-body">
 
-                                            <div class="col-md-6">
+                                            <div class="mb-3">
                                                 <label>Nombre</label>
                                                 <input class="form-control" name="Nombre_Cliente" value="{{ $cli->Nombre_Cliente }}" required>
                                             </div>
 
-                                            <div class="col-md-6">
+                                            <div class="mb-3">
                                                 <label>Apellido</label>
                                                 <input class="form-control" name="Apellido_Cliente" value="{{ $cli->Apellido_Cliente }}" required>
                                             </div>
 
-                                            <div class="col-md-6">
-                                                <label>Teléfono</label>
-                                                <input class="form-control" name="Telefono" value="{{ $cli->Telefono }}" required>
-                                            </div>
-
-                                            <div class="col-md-6">
-                                                <label>Fecha Nacimiento</label>
-                                                <input type="date" class="form-control" name="Fecha_Nacimiento" value="{{ $cli->Fecha_Nacimiento }}" required>
-                                            </div>
-
-                                            <div class="col-md-6">
-                                                <label>Género</label>
-                                                <select class="form-control" name="Genero" required>
-                                                    <option value="F" {{ $cli->Genero == 'F' ? 'selected' : '' }}>Femenino</option>
-                                                    <option value="M" {{ $cli->Genero == 'M' ? 'selected' : '' }}>Masculino</option>
-                                                </select>
-                                            </div>
-
-                                            <div class="col-md-6">
+                                            <div class="mb-3">
                                                 <label>Estado</label>
-                                                <select name="ID_Estado" class="form-control">
-                                                    <option value="EST001" {{ $cli->ID_Estado=='EST001'?'selected':'' }}>Activo</option>
-                                                    <option value="EST002" {{ $cli->ID_Estado=='EST002'?'selected':'' }}>Inactivo</option>
-                                                    <option value="EST003" {{ $cli->ID_Estado=='EST003'?'selected':'' }}>Suspendido</option>
+                                                <select name="ID_Estado" class="form-control" required>
+                                                    <option value="1" {{ $cli->ID_Estado == 1 ? 'selected' : '' }}>Activo</option>
+                                                    <option value="2" {{ $cli->ID_Estado == 2 ? 'selected' : '' }}>Inactivo</option>
                                                 </select>
                                             </div>
 
@@ -269,14 +266,14 @@
                         </div>
 
                     @empty
-                        <tr><td colspan="8" class="text-center text-muted">No hay clientes registrados.</td></tr>
+                        <tr><td colspan="5" class="text-center text-muted">No hay clientes registrados.</td></tr>
                     @endforelse
                     </tbody>
                 </table>
             </div>
 
             <div class="modal fade" id="crearModal">
-                <div class="modal-dialog modal-lg">
+                <div class="modal-dialog">
                     <form method="POST" action="{{ route('clientes.store') }}">
                         @csrf
 
@@ -287,49 +284,29 @@
                                 <button class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
 
-                            <div class="modal-body row g-3">
+                            <div class="modal-body">
 
-                                <div class="col-md-6">
+                                <div class="mb-3">
                                     <label>Documento</label>
                                     <input name="Documento_Cliente" class="form-control" required>
                                 </div>
 
-                                <div class="col-md-6">
+                                <div class="mb-3">
                                     <label>Nombre</label>
                                     <input name="Nombre_Cliente" class="form-control" required>
                                 </div>
 
-                                <div class="col-md-6">
+                                <div class="mb-3">
                                     <label>Apellido</label>
                                     <input name="Apellido_Cliente" class="form-control" required>
                                 </div>
 
-                                <div class="col-md-6">
-                                    <label>Teléfono</label>
-                                    <input name="Telefono" class="form-control" required>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label>Fecha Nacimiento</label>
-                                    <input type="date" name="Fecha_Nacimiento" class="form-control" required>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label>Género</label>
-                                    <select name="Genero" class="form-control" required>
-                                        <option value="">--Seleccione--</option>
-                                        <option value="F">Femenino</option>
-                                        <option value="M">Masculino</option>
-                                    </select>
-                                </div>
-
-                                <div class="col-md-6">
+                                <div class="mb-3">
                                     <label>Estado</label>
-                                    <select name="ID_Estado" class="form-control">
+                                    <select name="ID_Estado" class="form-control" required>
                                         <option value="">--Seleccione--</option>
-                                        <option value="EST001">Activo</option>
-                                        <option value="EST002">Inactivo</option>
-                                        <option value="EST003">Suspendido</option>
+                                        <option value="1">Activo</option>
+                                        <option value="2">Inactivo</option>
                                     </select>
                                 </div>
 
@@ -354,4 +331,3 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-

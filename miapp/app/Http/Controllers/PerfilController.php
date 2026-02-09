@@ -22,7 +22,7 @@ class PerfilController
         
         $fotoUrl = null;
         if ($empleado && $empleado->Fotos) {
-            $springBase = rtrim(config('services.spring.base_url', 'http://192.168.80.13:8080'), '/');
+            $springBase = rtrim(config('services.spring.base_url', 'http://192.168.128.3:8080'), '/');
             $foto = trim($empleado->Fotos);
 
             $fotoUrl = str_starts_with($foto, 'http')

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cliente;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class ClienteController
 {
@@ -15,21 +16,28 @@ class ClienteController
 
     public function post(Request $request)
     {
-        $validated = $request->validate([
-            'Documento_Cliente' => 'required|string|max:20|unique:clientes,Documento_Cliente',
-            'Nombre_Cliente'    => 'required|string|max:20',
-            'Apellido_Cliente'  => 'nullable|string|max:20',
-            'Telefono'          => 'nullable|string|max:15',
-            'Fecha_Nacimiento'  => 'nullable|date',
-            'Genero'            => 'required|in:F,M',
-            'ID_Estado'         => 'required|in:EST001,EST002,EST003',
-        ]);
+        try {
+            $validated = $request->validate([
+                'Documento_Cliente' => 'required|string|max:20|unique:clientes,Documento_Cliente',
+                'Nombre_Cliente'    => 'required|string|max:20',
+                'Apellido_Cliente'  => 'required|string|max:20',
+                'ID_Estado'         => 'required|integer|in:1,2',
+            ]);
 
-        Cliente::create($validated);
+            Cliente::create($validated);
 
-        return redirect()
-            ->route('clientes.index')
-            ->with('mensaje', 'Cliente registrado correctamente.');
+            return redirect()
+                ->route('clientes.index')
+                ->with('mensaje', 'Cliente registrado correctamente.');
+                
+        } catch (ValidationException $e) {
+            if (isset($e->errors()['Documento_Cliente'])) {
+                return redirect()
+                    ->route('clientes.index')
+                    ->with('error', 'El cliente con este documento ya está registrado.');
+            }
+            throw $e;
+        }
     }
 
     public function put(Request $request)
@@ -38,10 +46,7 @@ class ClienteController
             'Documento_Cliente' => 'required|string|max:20|exists:clientes,Documento_Cliente',
             'Nombre_Cliente'    => 'nullable|string|max:20',
             'Apellido_Cliente'  => 'nullable|string|max:20',
-            'Telefono'          => 'nullable|string|max:15',
-            'Fecha_Nacimiento'  => 'nullable|date',
-            'Genero'            => 'nullable|in:F,M',
-            'ID_Estado'         => 'nullable|in:EST001,EST002,EST003',
+            'ID_Estado'         => 'nullable|integer|in:1,2',
         ]);
 
         $cliente = Cliente::findOrFail($validated['Documento_Cliente']);

@@ -7,16 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class Venta extends Model
 {
     protected $table = 'ventas';
-
+    
     protected $primaryKey = 'ID_Venta';
-
-    public $incrementing = false;
-    protected $keyType = 'string';
-
+    
+    public $incrementing = true;
+    protected $keyType = 'int';
+    
     public $timestamps = false;
-
+    
     protected $fillable = [
-        'ID_Venta',
         'Documento_Cliente',
         'Documento_Empleado'
     ];
