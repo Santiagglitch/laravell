@@ -24,7 +24,7 @@
                 <a href="{{ route('admin.inicio') }}" class="elemento-menu">
                     <i class="fa-solid fa-tachometer-alt"></i><span>Dashboard</span>
                 </a>
-                <a href="{{ route('compras.index') }}" class="elemento-menu activo">
+                <a href="{{ route('compras.index') }}" class="elemento-menu">
                     <i class="ri-shopping-cart-2-line"></i><span>Compras</span>
                 </a>
                 <a href="{{ route('devolucion.index') }}" class="elemento-menu">
@@ -41,13 +41,13 @@
                     <span>Productos</span>
                 </a>
 
-                <a href="{{ route('proveedor.index') }}" class="elemento-menu activo">
+                <a href="{{ route('proveedor.index') }}" class="elemento-menu">
                     <i class="ri-truck-line"></i>
                     <span>Proveedores</span>
                 </a>
 
                 <div class="dropdown">
-                    <a class="elemento-menu d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+                    <a class="elemento-menu d-flex align-items-center text-white text-decoration-none dropdown-toggle activo"
                        href="#" id="rolesMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="ri-user-line"></i><span>Usuarios</span>
                     </a>
@@ -110,6 +110,16 @@
                 </script>
             @endif
 
+            @if($errors->any())
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <div class="text-end mb-3">
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#crearModal">
                     <i class="fa fa-plus"></i> Añadir Empleado
@@ -170,6 +180,7 @@
                             </td>
                         </tr>
 
+                        <!-- MODAL EDITAR -->
                         <div class="modal fade" id="editarModal{{ $emp->Documento_Empleado }}">
                             <div class="modal-dialog modal-lg">
                                 <form method="POST" action="{{ route('empleados.update') }}" enctype="multipart/form-data" autocomplete="off">
@@ -183,22 +194,43 @@
                                         </div>
                                         <div class="modal-body row g-3">
                                             
-                                            <div class="col-md-6"><label>Nombre</label><input class="form-control" name="Nombre_Usuario" value="{{ $emp->Nombre_Usuario }}" required></div>
-                                            <div class="col-md-6"><label>Apellido</label><input class="form-control" name="Apellido_Usuario" value="{{ $emp->Apellido_Usuario }}" required></div>
-                                            <div class="col-md-6"><label>Edad</label><input class="form-control" name="Edad" value="{{ $emp->Edad }}" required></div>
-                                            <div class="col-md-6"><label>Correo</label><input type="email" class="form-control" name="Correo_Electronico" value="{{ $emp->Correo_Electronico }}" required></div>
-                                            <div class="col-md-6"><label>Teléfono</label><input class="form-control" name="Telefono" value="{{ $emp->Telefono }}" required></div>
                                             <div class="col-md-6">
-                                               
-    <label>Tipo de documento</label> 
-    <select name="Documento_Empleado" class="form-control" required>
-        <option value="CC" {{ $emp->{'Cédula de ciudadanía'} == 'CC' ? 'selected' : '' }}>Cédula de ciudadanía</option>
-        <option value="TI" {{ $emp->{'Tarjeta de identidad'} == 'TI' ? 'selected' : '' }}>Tarjeta de identidad</option>
-        <option value="CE" {{ $emp->{'Cédula de extranjería'} == 'CE' ? 'selected' : '' }}>Cédula de extranjería</option>
-        <option value="PA" {{ $emp->Pasaporte == 'PA' ? 'selected' : '' }}>Pasaporte</option>
-        <option value="NIT" {{ $emp->NIT == 'NIT' ? 'selected' : '' }}>NIT</option>
-    </select>
-</div>                                       <div class="col-md-6">
+                                                <label>Nombre</label>
+                                                <input class="form-control" name="Nombre_Usuario" value="{{ $emp->Nombre_Usuario }}" required>
+                                            </div>
+                                            
+                                            <div class="col-md-6">
+                                                <label>Apellido</label>
+                                                <input class="form-control" name="Apellido_Usuario" value="{{ $emp->Apellido_Usuario }}" required>
+                                            </div>
+                                            
+                                            <div class="col-md-6">
+                                                <label>Edad</label>
+                                                <input class="form-control" name="Edad" value="{{ $emp->Edad }}" required>
+                                            </div>
+                                            
+                                            <div class="col-md-6">
+                                                <label>Correo</label>
+                                                <input type="email" class="form-control" name="Correo_Electronico" value="{{ $emp->Correo_Electronico }}" required>
+                                            </div>
+                                            
+                                            <div class="col-md-6">
+                                                <label>Teléfono</label>
+                                                <input class="form-control" name="Telefono" value="{{ $emp->Telefono }}" required>
+                                            </div>
+                                            
+                                            <div class="col-md-6">
+                                                <label>Tipo de documento</label> 
+                                                <select name="Tipo_Documento" class="form-control" required>
+                                                    <option value="CC" {{ $emp->Tipo_Documento == 'CC' ? 'selected' : '' }}>Cédula de ciudadanía</option>
+                                                    <option value="TI" {{ $emp->Tipo_Documento == 'TI' ? 'selected' : '' }}>Tarjeta de identidad</option>
+                                                    <option value="CE" {{ $emp->Tipo_Documento == 'CE' ? 'selected' : '' }}>Cédula de extranjería</option>
+                                                    <option value="PA" {{ $emp->Tipo_Documento == 'PA' ? 'selected' : '' }}>Pasaporte</option>
+                                                    <option value="NIT" {{ $emp->Tipo_Documento == 'NIT' ? 'selected' : '' }}>NIT</option>
+                                                </select>
+                                            </div>
+                                            
+                                            <div class="col-md-6">
                                                 <label>Género</label>
                                                 <select name="Genero" class="form-control" required>
                                                     <option value="F" {{ $emp->Genero=='F'?'selected':'' }}>Femenino</option>
@@ -224,11 +256,18 @@
 
                                             <div class="col-md-6 position-relative">
                                                 <label>Nueva Contraseña</label>
-                                                <input type="password" name="Contrasena" id="editarContrasena{{ $emp->Documento_Empleado }}" class="form-control">
+                                                <input type="password" name="Contrasena" id="editarContrasena{{ $emp->Documento_Empleado }}" 
+                                                       class="form-control" placeholder="Dejar en blanco para mantener la actual" 
+                                                       autocomplete="new-password" value="" minlength="4">
                                                 <i class="fa fa-eye position-absolute" style="top:38px; right:10px; cursor:pointer;"
                                                    onclick="togglePassword('editarContrasena{{ $emp->Documento_Empleado }}', this)"></i>
+                                                <small class="text-muted">Mínimo 4 caracteres (dejar vacío para no cambiar)</small>
                                             </div>
-                                            <div class="col-md-6"><label>Foto</label><input type="file" name="Fotos" class="form-control"></div>
+                                            
+                                            <div class="col-md-6">
+                                                <label>Foto</label>
+                                                <input type="file" name="Fotos" class="form-control">
+                                            </div>
                                         </div>
                                         <div class="modal-footer">
                                             <button class="btn btn-warning" type="submit">Actualizar</button>
@@ -238,6 +277,7 @@
                             </div>
                         </div>
 
+                        <!-- MODAL ELIMINAR -->
                         <div class="modal fade" id="eliminarModal{{ $emp->Documento_Empleado }}">
                             <div class="modal-dialog">
                                 <form method="POST" action="{{ route('empleados.destroy') }}">
@@ -265,6 +305,7 @@
                 </table>
             </div>
 
+            <!-- MODAL CREAR -->
             <div class="modal fade" id="crearModal">
                 <div class="modal-dialog modal-lg">
                     <form method="POST" action="{{ route('empleados.store') }}" enctype="multipart/form-data" autocomplete="off">
@@ -275,13 +316,48 @@
                                 <button class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
                             <div class="modal-body row g-3">
-                                <div class="col-md-6"><label>Documento</label><input name="Documento_Empleado" class="form-control" required></div>
+                                <div class="col-md-6">
+                                    <label>Documento</label>
+                                    <input name="Documento_Empleado" class="form-control" required>
+                                </div>
                                
-                                <div class="col-md-6"><label>Nombre</label><input name="Nombre_Usuario" class="form-control" required></div>
-                                <div class="col-md-6"><label>Apellido</label><input name="Apellido_Usuario" class="form-control" required></div>
-                                <div class="col-md-6"><label>Edad</label><input type="number" name="Edad" class="form-control" required></div>
-                                <div class="col-md-6"><label>Correo</label><input type="email" name="Correo_Electronico" class="form-control" required></div>
-                                <div class="col-md-6"><label>Teléfono</label><input name="Telefono" class="form-control" required></div>
+                                <div class="col-md-6">
+                                    <label>Tipo de documento</label>
+                                    <select name="Tipo_Documento" class="form-control" required>
+                                        <option value="" selected disabled>--Seleccione--</option>
+                                        <option value="CC">Cédula de ciudadanía</option>
+                                        <option value="TI">Tarjeta de identidad</option>
+                                        <option value="CE">Cédula de extranjería</option>
+                                        <option value="PA">Pasaporte</option>
+                                        <option value="NIT">NIT</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label>Nombre</label>
+                                    <input name="Nombre_Usuario" class="form-control" required>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label>Apellido</label>
+                                    <input name="Apellido_Usuario" class="form-control" required>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label>Edad</label>
+                                    <input type="number" name="Edad" class="form-control" required>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label>Correo</label>
+                                    <input type="email" name="Correo_Electronico" class="form-control" required>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label>Teléfono</label>
+                                    <input name="Telefono" class="form-control" required>
+                                </div>
+                                
                                 <div class="col-md-6">
                                     <label>Género</label>
                                     <select name="Genero" class="form-control" required>
@@ -289,21 +365,8 @@
                                         <option value="F">Femenino</option>
                                         <option value="M">Masculino</option>
                                     </select>
-                                     </div>
-                               <div class="col-md-6">
-                                     <label>Tipo de documento</label>
-    <select name="Documento_Empleado" class="form-control" required>
-        
-        <option value="CC" {{ $emp->Documento_Empleado == 'CC' ? 'selected' : '' }}>Cédula de ciudadanía</option>
-        <option value="TI" {{ $emp->Documento_Empleado == 'TI' ? 'selected' : '' }}>Tarjeta de identidad</option>
-        <option value="CE" {{ $emp->Documento_Empleado == 'CE' ? 'selected' : '' }}>Cédula de extranjería</option>
-        <option value="PA" {{ $emp->Documento_Empleado == 'PA' ? 'selected' : '' }}>Pasaporte</option>
-        <option value="NIT" {{ $emp->Documento_Empleado == 'NIT' ? 'selected' : '' }}>NIT</option>
-    </select>
-</div>
-   
+                                </div>
 
-                                <!-- ✅ CAMBIO: obligar a escoger (evita que quede siempre en 1) -->
                                 <div class="col-md-6">
                                     <label>Estado</label>
                                     <select name="ID_Estado" class="form-control" required>
@@ -313,7 +376,6 @@
                                     </select>
                                 </div>
 
-                                <!-- ✅ CAMBIO: obligar a escoger (evita que quede siempre en 1 = Admin) -->
                                 <div class="col-md-6">
                                     <label>Rol</label>
                                     <select name="ID_Rol" class="form-control" required>
@@ -323,11 +385,18 @@
                                     </select>
                                 </div>
 
-                                <div class="col-md-6"><label>Foto</label><input type="file" name="Fotos" class="form-control"></div>
+                                <div class="col-md-6">
+                                    <label>Foto</label>
+                                    <input type="file" name="Fotos" class="form-control">
+                                </div>
+                                
                                 <div class="col-md-6 position-relative">
                                     <label>Contraseña</label>
-                                    <input type="password" name="Contrasena" id="contrasenaInput" class="form-control" required>
+                                    <input type="password" name="Contrasena" id="contrasenaInput" 
+                                           class="form-control" required minlength="4" 
+                                           placeholder="Mínimo 4 caracteres">
                                     <i class="fa fa-eye position-absolute" id="toggleContrasena" style="top:38px; right:10px; cursor:pointer;"></i>
+                                    <small class="text-muted">Debe tener al menos 4 caracteres</small>
                                 </div>
                             </div>
                             <div class="modal-footer">
@@ -347,15 +416,19 @@
     const toggleContrasena = document.getElementById('toggleContrasena');
     const contrasenaInput = document.getElementById('contrasenaInput');
 
-    toggleContrasena.addEventListener('click', () => {
-        contrasenaInput.type = contrasenaInput.type === 'password' ? 'text' : 'password';
-        toggleContrasena.classList.toggle('fa-eye-slash');
-    });
+    if (toggleContrasena && contrasenaInput) {
+        toggleContrasena.addEventListener('click', () => {
+            contrasenaInput.type = contrasenaInput.type === 'password' ? 'text' : 'password';
+            toggleContrasena.classList.toggle('fa-eye-slash');
+        });
+    }
 
     function togglePassword(idInput, icon) {
         const input = document.getElementById(idInput);
-        input.type = input.type === 'password' ? 'text' : 'password';
-        icon.classList.toggle('fa-eye-slash');
+        if (input) {
+            input.type = input.type === 'password' ? 'text' : 'password';
+            icon.classList.toggle('fa-eye-slash');
+        }
     }
 </script>
 </body>

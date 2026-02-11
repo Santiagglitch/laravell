@@ -20,4 +20,12 @@ class Devolucion extends Model
         'Fecha_Devolucion',
         'Motivo'
     ];
+
+    /**
+     * Relación con DetalleDevolucion
+     */
+    public function detalles()
+    {
+        return $this->hasMany(DetalleDevolucion::class, 'ID_Devolucion', 'ID_Devolucion');
+    }
 }

@@ -10,6 +10,7 @@ use App\Models\Estado;
 use App\Models\Rol;
 
 class EmpleadoController
+
 {
     public function get()
     {
@@ -41,7 +42,7 @@ class EmpleadoController
         $fotoUrl = null;
 
         if ($request->hasFile('Fotos')) {
-            $springBase = rtrim(config('services.spring.base_url', 'http://192.168.128.3:8080'), '/');
+            $springBase = rtrim(config('services.spring.base_url', 'http://192.168.10.14:8080'), '/');
             $foto = $request->file('Fotos');
 
             $resp = Http::asMultipart()
@@ -53,6 +54,7 @@ class EmpleadoController
             }
 
             $fotoUrl = trim($resp->body());
+            
         }
 
 
@@ -110,7 +112,7 @@ class EmpleadoController
         if (!is_null($request->ID_Rol))    $empleado->ID_Rol    = (int) $request->ID_Rol;
 
         if ($request->hasFile('Fotos')) {
-            $springBase = rtrim(config('services.spring.base_url', 'http://192.168.128.3:8080'), '/');
+            $springBase = rtrim(config('services.spring.base_url', 'http://192.168.10.14:8080'), '/');
             $foto = $request->file('Fotos');
 
             $resp = Http::asMultipart()
@@ -149,4 +151,5 @@ class EmpleadoController
 
         return redirect()->route('empleados.index')->with('mensaje', 'Empleado eliminado correctamente');
     }
+    
 }

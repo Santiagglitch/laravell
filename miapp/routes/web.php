@@ -77,14 +77,17 @@ Route::get('/detalleventas', [DetalleVentaController::class, 'get'])->name('deta
 Route::post('/detalleventas', [DetalleVentaController::class, 'post'])->name('detalleventas.store');
 Route::put('/detalleventas', [DetalleVentaController::class, 'put'])->name('detalleventas.update');
 Route::delete('/detalleventas', [DetalleVentaController::class, 'delete'])->name('detalleventas.destroy');
+// Info de venta para modal editar ADMIN
+Route::get('/venta-info/{idVenta}', [DetalleDevolucionController::class, 'ventaInfo'])
+    ->name('detalledevolucion.ventaInfoAdmin');
 
-
-// Devolucion
+// Devolucio
 Route::get('/devolucion', [DevolucionController::class, 'get'])->name('devolucion.index');
+Route::get('/devolucion/{id}/detalles', [DevolucionController::class, 'obtenerDetalles'])
+    ->name('devolucion.detalles');
 Route::post('/devolucion', [DevolucionController::class, 'post'])->name('devolucion.store');
 Route::put('/devolucion', [DevolucionController::class, 'put'])->name('devolucion.update');
 Route::delete('/devolucion', [DevolucionController::class, 'delete'])->name('devolucion.destroy');
-
 
 
 // Detalle Devolucion
@@ -192,20 +195,33 @@ Route::prefix('empleado')->group(function () {
 
     Route::delete('/devolucion/destroy', [DevolucionController::class, 'destroyEmpleado'])
     ->name('devolucion.destroyEm');
+// Dentro del grupo prefix('empleado'), junto a las demás rutas de devolucion:
+Route::get('/devolucion/{id}/detalles', [DevolucionController::class, 'obtenerDetalles'])
+    ->name('devolucion.detallesEm');
+
 
 
     // DETALLE DEVOLUCIONES 
     Route::get('/detalledevolucion', [DetalleDevolucionController::class, 'indexEmpleado'])
     ->name('detalledevolucion.indexEm');
-
+Route::put('/detalledevolucion/update/{ID_Devolucion}', [DetalleDevolucionController::class, 'updateEmpleado'])
+    ->name('detalledevolucion.updateEm');
     Route::post('/detalledevolucion/store', [DetalleDevolucionController::class, 'storeEmpleado'])
     ->name('detalledevolucion.storeEm');
+    // Obtener info de una venta para el modal editar
+Route::get('/venta-info/{idVenta}', [DetalleDevolucionController::class, 'ventaInfo'])
+    ->name('detalledevolucion.ventaInfo');
+Route::get('/venta-info/{idVenta}', [DetalleDevolucionController::class, 'ventaInfo'])
+        ->name('detalledevolucion.ventaInfo');
 
-    Route::put('/detalledevolucion/update', [DetalleDevolucionController::class, 'updateEmpleado'])
-    ->name('detalledevolucion.updateEm');
+ // ← cierre del grupo prefix('empleado')
+   Route::prefix('empleado')->group(function () {
 
-    Route::delete('/detalledevolucion/destroy', [DetalleDevolucionController::class, 'destroyEmpleado'])
-    ->name('detalledevolucion.destroyEm');
+    Route::delete('/detalledevolucion/delete/{ID_Devolucion}',
+        [DetalleDevolucionController::class, 'destroyEmpleado']
+    )->name('detalledevolucion.destroyEm');
+
+});
 
 });
 
@@ -222,7 +238,6 @@ Route::get('/perfil', [PerfilController::class, 'mostrar'])->name('perfil');
 Route::put('/perfil/actualizar-datos', [PerfilController::class, 'actualizarDatos'])->name('perfil.actualizarDatos');
 Route::put('/perfil/actualizar-foto', [PerfilController::class, 'actualizarFoto'])->name('perfil.actualizarFoto');
 Route::post('/perfil/actualizar-contrasena', [PerfilController::class, 'actualizarContrasena'])->name('perfil.actualizarContrasena');
-
 
 
 
