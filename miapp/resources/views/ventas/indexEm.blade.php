@@ -244,7 +244,7 @@
                                             id="buscarCliente" 
                                             name="Documento_Cliente"
                                             class="form-control" 
-                                            placeholder="Ej: 1013262104"
+                                            placeholder="Ej: 1234567890"
                                             autocomplete="off"
                                             required>
                                         

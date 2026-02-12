@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class DetalleVenta extends Model
 {
-    protected $table = 'detalle_ventas';
+    protected $table = 'Detalle_Ventas';
 
     protected $primaryKey = null;
     public $incrementing = false;
@@ -14,19 +14,19 @@ class DetalleVenta extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'Cantidad',
-        'Fecha_Salida',
+        'ID_Venta',
         'ID_Producto',
-        'ID_Venta'
+        'Cantidad',
+        'Fecha_Salida'
     ];
-
-    public function producto()
-    {
-        return $this->belongsTo(Producto::class, 'ID_Producto', 'ID_Producto');
-    }
 
     public function venta()
     {
         return $this->belongsTo(Venta::class, 'ID_Venta', 'ID_Venta');
+    }
+
+    public function producto()
+    {
+        return $this->belongsTo(Producto::class, 'ID_Producto', 'ID_Producto');
     }
 }

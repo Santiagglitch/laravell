@@ -2,18 +2,19 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" href="{{ asset('Imagenes/Logo.webp') }}" type="image/webp">
     <title>Ventas</title>
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/menu.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/ventas.css') }}">
 </head>
+
 <body>
 
-<div class="d-flex" style="min-height:100vh">
+<div class="d-flex" style="min-height:100vh" id="mainContent">
 
     <div class="barra-lateral d-flex flex-column flex-shrink-0 p-3 bg-primary text-white">
         <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
@@ -25,13 +26,13 @@
                 <a href="{{ route('admin.inicio') }}" class="elemento-menu">
                     <i class="fa-solid fa-tachometer-alt"></i><span>Dashboard</span>
                 </a>
-                <a href="{{ route('compras.index') }}" class="elemento-menu activo">
+                <a href="{{ route('compras.index') }}" class="elemento-menu">
                     <i class="ri-shopping-cart-2-line"></i><span>Compras</span>
                 </a>
                 <a href="{{ route('devolucion.index') }}" class="elemento-menu">
                     <i class="ri-arrow-go-back-line"></i><span>Devoluciones</span>
                 </a>
-                <a href="{{ route('ventas.index') }}" class="elemento-menu">
+                <a href="{{ route('ventas.index') }}" class="elemento-menu activo">
                     <i class="ri-price-tag-3-line"></i><span>Ventas</span>
                 </a>
             </div>
@@ -40,12 +41,12 @@
                 <a href="{{ route('productos.index') }}" class="elemento-menu">
                     <i class="ri-box-3-line"></i><span>Productos</span>
                 </a>
-                <a href="{{ route('proveedor.index') }}" class="elemento-menu activo">
+                <a href="{{ route('proveedor.index') }}" class="elemento-menu">
                     <i class="ri-truck-line"></i><span>Proveedores</span>
                 </a>
                 <div class="dropdown">
                     <a class="elemento-menu d-flex align-items-center text-white text-decoration-none dropdown-toggle"
-                       href="#" data-bs-toggle="dropdown">
+                       data-bs-toggle="dropdown">
                         <i class="ri-user-line"></i><span>Usuarios</span>
                     </a>
                     <ul class="dropdown-menu">
@@ -58,10 +59,10 @@
     </div>
 
     <div class="contenido-principal flex-grow-1">
+
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
                 <a class="navbar-brand">Sistema gestión de inventarios</a>
-
                 <div class="dropdown ms-auto">
                     <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle"
                        data-bs-toggle="dropdown">
@@ -69,7 +70,6 @@
                              width="32" height="32" class="rounded-circle me-2">
                         <strong>{{ session('nombre') ?? 'Perfil' }}</strong>
                     </a>
-
                     <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
                         <li><a class="dropdown-item" href="#">Mi perfil</a></li>
                         <li><a class="dropdown-item" href="#">Editar perfil</a></li>
@@ -77,7 +77,7 @@
                         <li>
                             <form action="{{ route('logout') }}" method="POST">
                                 @csrf
-                                <button class="dropdown-item">Cerrar sesión</button>
+                                <button type="submit" class="dropdown-item">Cerrar sesión</button>
                             </form>
                         </li>
                     </ul>
@@ -86,12 +86,12 @@
         </nav>
 
         <div class="container py-4">
+
             <div class="d-flex justify-content-center align-items-center gap-3">
                 <img src="{{ asset('Imagenes/Logo.webp') }}" style="height:48px;">
                 <h1>Registro de Ventas</h1>
             </div>
 
-            {{-- Mensaje de éxito --}}
             @if(session('mensaje'))
                 <div id="alertaMensaje" class="alert alert-success text-center mt-3">
                     {{ session('mensaje') }}
@@ -108,10 +108,9 @@
                 </script>
             @endif
 
-            {{-- Mensaje de error --}}
             @if(session('error'))
                 <div id="alertaError" class="alert alert-danger text-center mt-3">
-                    <i class="fa fa-exclamation-circle"></i> {{ session('error') }}
+                    {{ session('error') }}
                 </div>
                 <script>
                     setTimeout(() => {
@@ -125,14 +124,11 @@
                 </script>
             @endif
 
-            <div class="d-flex justify-content-end mt-4 gap-2">
+            {{-- ✅ Solo botón Añadir Venta, sin botón Detalle Ventas --}}
+            <div class="d-flex justify-content-end mt-4">
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#crearModal">
                     <i class="fa fa-plus"></i> Añadir Venta
                 </button>
-
-                <a href="{{ route('detalleventas.index') }}" class="btn btn-primary">
-                    <i class="fa fa-list"></i> Detalle Ventas
-                </a>
             </div>
 
             <div class="table-responsive mt-4">
@@ -152,10 +148,10 @@
                             <td>{{ $venta->Documento_Cliente }}</td>
                             <td>{{ $venta->Documento_Empleado }}</td>
                             <td>
-                                <button class="btn btn-warning btn-sm"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#editarModal{{ $venta->ID_Venta }}">
-                                    <i class="fa fa-edit"></i>
+                                {{-- ✅ Solo ojito, sin botón editar --}}
+                                <button class="btn btn-info btn-sm"
+                                        onclick="abrirDetalleModal({{ $venta->ID_Venta }})">
+                                    <i class="fa fa-eye"></i>
                                 </button>
 
                                 <button class="btn btn-danger btn-sm"
@@ -166,35 +162,7 @@
                             </td>
                         </tr>
 
-                        {{-- Modal Editar --}}
-                        <div class="modal fade" id="editarModal{{ $venta->ID_Venta }}">
-                            <div class="modal-dialog">
-                                <form method="POST" action="{{ route('ventas.update') }}">
-                                    @csrf
-                                    @method('PUT')
-                                    <input type="hidden" name="ID_Venta" value="{{ $venta->ID_Venta }}">
-                                    <div class="modal-content">
-                                        <div class="modal-header bg-warning">
-                                            <h5 class="modal-title">Editar Venta</h5>
-                                            <button class="btn-close" data-bs-dismiss="modal"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <label>Documento Cliente</label>
-                                            <input name="Documento_Cliente" class="form-control"
-                                                   value="{{ $venta->Documento_Cliente }}">
-                                            <label class="mt-3">Documento Empleado</label>
-                                            <input name="Documento_Empleado" class="form-control"
-                                                   value="{{ $venta->Documento_Empleado }}">
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button class="btn btn-warning" type="submit">Actualizar</button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-
-                        {{-- Modal Eliminar --}}
+                        {{-- ✅ Modal Eliminar con aviso de detalles --}}
                         <div class="modal fade" id="eliminarModal{{ $venta->ID_Venta }}">
                             <div class="modal-dialog">
                                 <form method="POST" action="{{ route('ventas.destroy') }}">
@@ -204,13 +172,23 @@
                                     <div class="modal-content">
                                         <div class="modal-header bg-danger text-white">
                                             <h5 class="modal-title">Eliminar Venta</h5>
-                                            <button class="btn-close" data-bs-dismiss="modal"></button>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                                         </div>
                                         <div class="modal-body">
                                             ¿Seguro que deseas eliminar esta venta?
+                                            <div class="alert alert-warning mt-3">
+                                                <strong>ID Venta:</strong> {{ $venta->ID_Venta }}<br>
+                                                <strong>Cliente:</strong> {{ $venta->Documento_Cliente }}<br>
+                                                <strong>Empleado:</strong> {{ $venta->Documento_Empleado }}
+                                            </div>
+                                            <div class="alert alert-danger mt-2">
+                                                <i class="fa fa-exclamation-triangle"></i>
+                                                <strong>Atención:</strong> Si esta venta tiene detalles asociados, debes eliminarlos primero.
+                                            </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button class="btn btn-danger">Eliminar</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            <button type="submit" class="btn btn-danger">Eliminar</button>
                                         </div>
                                     </div>
                                 </form>
@@ -226,24 +204,19 @@
                 </table>
             </div>
 
-            {{-- ============================================ --}}
-            {{-- MODAL CREAR VENTA CON AUTOCOMPLETE --}}
-            {{-- ============================================ --}}
+            {{-- MODAL CREAR VENTA --}}
             <div class="modal fade" id="crearModal" tabindex="-1">
                 <div class="modal-dialog modal-lg">
-                    
                     <form method="POST" action="{{ route('ventas.store') }}" id="formVenta">
                         @csrf
                         <input type="hidden" name="cliente_nuevo" id="clienteNuevo" value="0">
                         <div class="modal-content">
-                            
                             <div class="modal-header bg-success text-white">
                                 <h5 class="modal-title">
                                     <i class="fa fa-plus-circle"></i> Registrar Nueva Venta
                                 </h5>
                                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                             </div>
-                            
                             <div class="modal-body">
 
                                 {{-- Búsqueda de Cliente --}}
@@ -252,33 +225,29 @@
                                         <i class="fa fa-user"></i> Documento del Cliente
                                     </label>
                                     <div class="position-relative">
-                                        <input 
-                                            type="text" 
-                                            id="buscarCliente" 
+                                        <input
+                                            type="text"
+                                            id="buscarCliente"
                                             name="Documento_Cliente"
-                                            class="form-control" 
-                                            placeholder="Ej: 1013262104"
+                                            class="form-control"
+                                            placeholder="Ej: 1234567890"
                                             autocomplete="off"
                                             required>
-                                        
-                                        {{-- Spinner de carga --}}
-                                        <div id="spinnerBusqueda" 
-                                             class="spinner-border spinner-border-sm text-primary position-absolute" 
+                                        <div id="spinnerBusqueda"
+                                             class="spinner-border spinner-border-sm text-primary position-absolute"
                                              style="right: 10px; top: 10px; display: none;">
                                         </div>
                                     </div>
                                     <small class="text-muted">
-                                        <i class="fa fa-info-circle"></i> 
+                                        <i class="fa fa-info-circle"></i>
                                         Ingrese el documento y espere 1 segundo o presione Enter
                                     </small>
                                 </div>
 
-                                {{-- Mensaje de resultado de búsqueda --}}
                                 <div id="mensajeCliente" class="alert d-none mb-3"></div>
 
-                                {{-- Campos para Cliente Nuevo (ocultos por defecto) --}}
+                                {{-- Campos Cliente Nuevo --}}
                                 <div id="camposNuevoCliente" style="display: none;">
-                                    
                                     <div class="card border-warning mb-3">
                                         <div class="card-header bg-warning bg-opacity-25">
                                             <strong><i class="fa fa-user-plus"></i> Datos del Nuevo Cliente</strong>
@@ -294,7 +263,6 @@
                                                     <input type="text" name="Apellido_Cliente" id="apellidoCliente" class="form-control">
                                                 </div>
                                             </div>
-
                                             <div class="mb-3">
                                                 <label class="form-label">Estado</label>
                                                 <select name="Estado_Cliente" id="estadoCliente" class="form-select">
@@ -308,21 +276,24 @@
 
                                 <hr>
 
-                                {{-- Documento Empleado --}}
+                                {{-- ✅ Dropdown Empleado desde BD --}}
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">
-                                        <i class="fa fa-user-tie"></i> Documento Empleado
+                                        <i class="fa fa-user-tie"></i> Empleado que realiza la venta
                                     </label>
-                                    <input type="text" 
-                                           name="Documento_Empleado" 
-                                           class="form-control" 
-                                           value="{{ session('documento') }}" 
-                                           required>
-                                    <small class="text-muted">Empleado que realiza la venta</small>
+                                    <select name="Documento_Empleado" class="form-select" required>
+                                        <option value="">-- Seleccione un empleado --</option>
+                                        @foreach($empleados as $emp)
+                                            <option value="{{ $emp->Documento_Empleado }}"
+                                                {{ session('documento') == $emp->Documento_Empleado ? 'selected' : '' }}>
+                                                {{ $emp->Nombre_Usuario }} {{ $emp->Apellido_Usuario }}
+                                                ({{ $emp->Documento_Empleado }})
+                                            </option>
+                                        @endforeach
+                                    </select>
                                 </div>
 
                             </div>
-
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                     <i class="fa fa-times"></i> Cancelar
@@ -331,7 +302,6 @@
                                     <i class="fa fa-save"></i> Guardar Venta
                                 </button>
                             </div>
-
                         </div>
                     </form>
                 </div>
@@ -341,118 +311,244 @@
     </div>
 </div>
 
+{{-- Modal emergente para detalles --}}
+<div class="modal-detalle-backdrop" id="detalleBackdrop" onclick="cerrarDetalleModal()"></div>
+<div class="modal-detalle-content" id="detalleModal" style="display: none;"></div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 
-{{-- ============================================ --}}
-{{-- JAVASCRIPT PARA AUTOCOMPLETE --}}
-{{-- ============================================ --}}
 <script>
+const urlDetalleVentas = "{{ route('detalleventas.index') }}";
+
+function abrirDetalleModal(idVenta) {
+    document.getElementById('mainContent').classList.add('devoluciones-background');
+    document.getElementById('detalleBackdrop').style.display = 'block';
+
+    fetch(`/ventas/${idVenta}/detalles`)
+        .then(response => response.json())
+        .then(data => mostrarDetalles(data))
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al cargar los detalles');
+            cerrarDetalleModal();
+        });
+}
+
+function mostrarDetalles(data) {
+    const venta = data.venta;
+
+    let detallesHTML = '';
+    if (venta.detalles && venta.detalles.length > 0) {
+        venta.detalles.forEach(detalle => {
+            detallesHTML += `
+                <tr>
+                    <td class="py-3">
+                        <i class="fa fa-box text-primary me-2"></i>
+                        <strong>${detalle.Nombre_Producto}</strong>
+                    </td>
+                    <td class="py-3">
+                        <span class="badge bg-primary">${detalle.Cantidad}</span> unidades
+                    </td>
+                    <td class="py-3">${detalle.Fecha_Salida}</td>
+                    <td class="py-3 text-center">
+                        <a href="${urlDetalleVentas}" class="btn btn-sm btn-warning">
+                            <i class="fa fa-edit"></i> Editar
+                        </a>
+                    </td>
+                </tr>
+            `;
+        });
+    } else {
+        detallesHTML = '<tr><td colspan="4" class="text-center text-muted py-5"><i class="fa fa-inbox fa-3x mb-3 d-block"></i><p>No hay detalles registrados para esta venta</p></td></tr>';
+    }
+
+    const modalHTML = `
+        <div class="modal-header bg-primary text-white py-3">
+            <h5 class="modal-title">
+                <i class="fa fa-info-circle me-2"></i> Detalle de Venta -
+                <span class="badge bg-light text-primary ms-2">ID: ${venta.ID_Venta}</span>
+            </h5>
+            <button type="button" class="btn-close btn-close-white" onclick="cerrarDetalleModal()"></button>
+        </div>
+        <div class="modal-body p-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-start">
+                                <div class="bg-primary bg-opacity-10 p-3 rounded me-3">
+                                    <i class="fa fa-user fa-lg text-primary"></i>
+                                </div>
+                                <div>
+                                    <h6 class="text-muted mb-1 small">Documento Cliente</h6>
+                                    <p class="mb-0 fw-bold fs-5">${venta.Documento_Cliente}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-start">
+                                <div class="bg-info bg-opacity-10 p-3 rounded me-3">
+                                    <i class="fa fa-user-tie fa-lg text-info"></i>
+                                </div>
+                                <div>
+                                    <h6 class="text-muted mb-1 small">Documento Empleado</h6>
+                                    <p class="mb-0 fw-bold">${venta.Documento_Empleado}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4">
+            <h6 class="mb-3 fw-bold"><i class="fa fa-list me-2"></i> Productos en esta Venta:</h6>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th><i class="fa fa-box me-2"></i> Producto</th>
+                            <th><i class="fa fa-sort-numeric-up me-2"></i> Cantidad</th>
+                            <th><i class="fa fa-calendar me-2"></i> Fecha Salida</th>
+                            <th class="text-center"><i class="fa fa-cog me-2"></i> Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${detallesHTML}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="modal-footer bg-light py-3">
+            <button type="button" class="btn btn-secondary px-4" onclick="cerrarDetalleModal()">
+                <i class="fa fa-times me-2"></i> Cerrar
+            </button>
+            <a href="${urlDetalleVentas}" class="btn btn-primary px-4">
+                <i class="fa fa-external-link-alt me-2"></i> Ir a Detalle de Ventas
+            </a>
+        </div>
+    `;
+
+    document.getElementById('detalleModal').innerHTML = modalHTML;
+    document.getElementById('detalleModal').style.display = 'block';
+}
+
+function cerrarDetalleModal() {
+    document.getElementById('mainContent').classList.remove('devoluciones-background');
+    document.getElementById('detalleBackdrop').style.display = 'none';
+    document.getElementById('detalleModal').style.display = 'none';
+}
+
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') cerrarDetalleModal();
+});
+
 document.addEventListener('DOMContentLoaded', function() {
-    const inputDocumento = document.getElementById('buscarCliente');
+    const inputDocumento  = document.getElementById('buscarCliente');
     const spinnerBusqueda = document.getElementById('spinnerBusqueda');
-    const mensajeCliente = document.getElementById('mensajeCliente');
-    const camposNuevoCliente = document.getElementById('camposNuevoCliente');
-    const inputClienteNuevo = document.getElementById('clienteNuevo');
-    const nombreCliente = document.getElementById('nombreCliente');
+    const mensajeCliente  = document.getElementById('mensajeCliente');
+    const camposNuevo     = document.getElementById('camposNuevoCliente');
+    const inputNuevo      = document.getElementById('clienteNuevo');
+    const nombreCliente   = document.getElementById('nombreCliente');
     const apellidoCliente = document.getElementById('apellidoCliente');
-    const formVenta = document.getElementById('formVenta');
-    
+    const formVenta       = document.getElementById('formVenta');
+    const btnGuardar      = document.getElementById('btnGuardar');
+
     let timeoutBusqueda;
     let clienteValidado = false;
 
-    // Buscar cliente cuando escribe o presiona Enter
+    btnGuardar.disabled = true;
+
     inputDocumento.addEventListener('keyup', function(e) {
         clearTimeout(timeoutBusqueda);
-        
         const documento = this.value.trim();
-        
-        // Resetear validación
         clienteValidado = false;
-        
-        // Si el documento es muy corto, no buscar
-        if (documento.length < 5) {
-            ocultarMensajes();
-            return;
-        }
+        btnGuardar.disabled = true;
 
-        // Si presiona Enter, buscar inmediatamente
-        if (e.key === 'Enter') {
+        if (documento.length < 5) { ocultarMensajes(); return; }
+        if (e.key === 'Enter') { e.preventDefault(); buscarCliente(documento); return; }
+
+        timeoutBusqueda = setTimeout(() => buscarCliente(documento), 1000);
+    });
+
+    formVenta.addEventListener('submit', function(e) {
+        if (!clienteValidado) {
             e.preventDefault();
-            buscarCliente(documento);
-            return;
+            return false;
         }
-
-        // Esperar 1 segundo después de dejar de escribir
-        timeoutBusqueda = setTimeout(() => {
-            buscarCliente(documento);
-        }, 1000);
     });
 
     function buscarCliente(documento) {
         spinnerBusqueda.style.display = 'block';
         mensajeCliente.classList.add('d-none');
         clienteValidado = false;
-        }
+        btnGuardar.disabled = true;
 
-        function mostrarClienteEncontrado(cliente) {
-        mensajeCliente.className = 'alert alert-success';
-        mensajeCliente.innerHTML = `
-            <i class="fa fa-check-circle"></i> 
-            <strong>Cliente encontrado:</strong> 
-            ${cliente.Nombre_Cliente} ${cliente.Apellido_Cliente}
-            ${cliente.ID_Estado == '1' ? '<span class="badge bg-success">Activo</span>' : '<span class="badge bg-secondary">Inactivo</span>'}
-        `;
-        mensajeCliente.classList.remove('d-none');
-        
-        // Ocultar campos de nuevo cliente
-        camposNuevoCliente.style.display = 'none';
-        inputClienteNuevo.value = '0';
-        
-        // Quitar required de los campos del cliente
-        nombreCliente.removeAttribute('required');
-        apellidoCliente.removeAttribute('required');
-        
-        // ✅ MARCAR COMO VALIDADO
-        clienteValidado = true;
+        fetch(`/api/buscar-cliente/${documento}`)
+            .then(r => r.json())
+            .then(data => {
+                spinnerBusqueda.style.display = 'none';
+                if (data.encontrado && data.cliente) {
+                    mostrarClienteEncontrado(data.cliente);
+                } else {
+                    mostrarFormularioNuevo();
+                }
+            })
+            .catch(() => {
+                spinnerBusqueda.style.display = 'none';
+                mostrarFormularioNuevo();
+            });
     }
 
-    function mostrarFormularioNuevoCliente() {
+    function mostrarClienteEncontrado(cliente) {
+        mensajeCliente.className = 'alert alert-success';
+        mensajeCliente.innerHTML = `
+            <i class="fa fa-check-circle"></i>
+            <strong>Cliente encontrado:</strong>
+            ${cliente.Nombre_Cliente} ${cliente.Apellido_Cliente}
+            ${cliente.ID_Estado == '1'
+                ? '<span class="badge bg-success">Activo</span>'
+                : '<span class="badge bg-secondary">Inactivo</span>'}
+        `;
+        mensajeCliente.classList.remove('d-none');
+        camposNuevo.style.display = 'none';
+        inputNuevo.value = '0';
+        nombreCliente.removeAttribute('required');
+        apellidoCliente.removeAttribute('required');
+        clienteValidado = true;
+        btnGuardar.disabled = false;
+    }
+
+    function mostrarFormularioNuevo() {
         mensajeCliente.className = 'alert alert-warning';
         mensajeCliente.innerHTML = `
-            <i class="fa fa-exclamation-triangle"></i> 
-            <strong>Cliente no encontrado.</strong> 
+            <i class="fa fa-exclamation-triangle"></i>
+            <strong>Cliente no encontrado.</strong>
             Complete los datos para registrar un nuevo cliente:
         `;
         mensajeCliente.classList.remove('d-none');
-        
-        // Mostrar campos de nuevo cliente
-        camposNuevoCliente.style.display = 'block';
-        inputClienteNuevo.value = '1';
-        
-        // Agregar required a los campos del cliente
+        camposNuevo.style.display = 'block';
+        inputNuevo.value = '1';
         nombreCliente.setAttribute('required', 'required');
         apellidoCliente.setAttribute('required', 'required');
-        
-        // ✅ MARCAR COMO VALIDADO (para permitir envío con datos completos)
         clienteValidado = true;
+        btnGuardar.disabled = false;
     }
 
     function ocultarMensajes() {
         mensajeCliente.classList.add('d-none');
-        camposNuevoCliente.style.display = 'none';
-        inputClienteNuevo.value = '0';
+        camposNuevo.style.display = 'none';
+        inputNuevo.value = '0';
         nombreCliente.removeAttribute('required');
         apellidoCliente.removeAttribute('required');
         clienteValidado = false;
+        btnGuardar.disabled = true;
     }
 
-    // Limpiar formulario al cerrar el modal
-    const modalCrear = document.getElementById('crearModal');
-    modalCrear.addEventListener('hidden.bs.modal', function() {
+    document.getElementById('crearModal').addEventListener('hidden.bs.modal', function() {
         formVenta.reset();
         ocultarMensajes();
         spinnerBusqueda.style.display = 'none';
         clienteValidado = false;
+        btnGuardar.disabled = true;
     });
 });
 </script>

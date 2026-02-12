@@ -64,11 +64,11 @@ Route::get('/empleado/productos', [ProductoController::class, 'indexEmpleado'])
 
 // Ventas
 Route::get('/ventas', [VentaController::class, 'get'])->name('ventas.index');
-// Ruta para buscar cliente vía AJAX
 Route::get('/api/buscar-cliente/{documento}', [VentaController::class, 'buscarClienteAjax']);
 Route::post('/ventas', [VentaController::class, 'post'])->name('ventas.store');
 Route::put('/ventas/update', [VentaController::class, 'put'])->name('ventas.update');
 Route::delete('/ventas', [VentaController::class, 'delete'])->name('ventas.destroy');
+Route::get('/ventas/{id}/detalles', [VentaController::class, 'obtenerDetalles']);
 
 
 
@@ -77,9 +77,9 @@ Route::get('/detalleventas', [DetalleVentaController::class, 'get'])->name('deta
 Route::post('/detalleventas', [DetalleVentaController::class, 'post'])->name('detalleventas.store');
 Route::put('/detalleventas', [DetalleVentaController::class, 'put'])->name('detalleventas.update');
 Route::delete('/detalleventas', [DetalleVentaController::class, 'delete'])->name('detalleventas.destroy');
+Route::get('/ventas/por-producto/{nombre}', [DetalleVentaController::class, 'ventaPorProducto']);
 // Info de venta para modal editar ADMIN
-Route::get('/venta-info/{idVenta}', [DetalleDevolucionController::class, 'ventaInfo'])
-    ->name('detalledevolucion.ventaInfoAdmin');
+Route::get('/venta-info/{idVenta}', [DetalleDevolucionController::class, 'ventaInfo'])->name('detalledevolucion.ventaInfoAdmin');
 
 // Devolucio
 Route::get('/devolucion', [DevolucionController::class, 'get'])->name('devolucion.index');
