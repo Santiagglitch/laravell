@@ -14,6 +14,7 @@ use App\Http\Controllers\ComprasController;
 use App\Http\Controllers\DetalleComprasController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\MigracionController;
 
 Route::get('/', function () {
     return view('inicio');
@@ -21,6 +22,33 @@ Route::get('/', function () {
 
 // Buscar venta por documento (AJAX)
 Route::get('/ventas/por-documento/{documento}', [DetalleDevolucionController::class, 'ventaPorDocumento']);
+
+Route::post('/migracion/buscar-venta', [MigracionController::class, 'buscarVenta']);
+
+// MigracionController.php
+
+
+//historial de migracion 
+Route::get('/migracion/historial', [MigracionController::class, 'historial'])->name('migracion.historial');
+
+// ... tus otras rutas ...
+// Rutas de migración incremental
+
+
+Route::prefix('migracion')->group(function () {
+    Route::post('/importar', [MigracionController::class, 'importarLote'])->name('migracion.importar');
+    Route::post('/lote', [MigracionController::class, 'migrarLote'])->name('migracion.lote');
+    Route::post('/iniciar', [MigracionController::class, 'iniciarMigracion'])->name('migracion.iniciar');
+    Route::get('/estado', [MigracionController::class, 'obtenerEstado'])->name('migracion.estado');
+});
+
+Route::prefix('migracion')->group(function () {
+    Route::post('/importar', [MigracionController::class, 'importarLote'])->name('migracion.importar');
+});
+
+Route::post('/migracion/importar', [MigracionController::class, 'importar'])->name('migracion.importar');
+Route::post('/migracion/iniciar', [MigracionController::class, 'iniciar'])->name('migracion.iniciar');
+Route::post('/migracion/lote', [MigracionController::class, 'lote'])->name('migracion.lote');
 
 // Detalle Devolucion - ADMIN
 Route::get('/detalledevolucion', [DetalleDevolucionController::class, 'get'])->name('detalledevolucion.index');
@@ -242,6 +270,3 @@ Route::get('/perfil', [PerfilController::class, 'mostrar'])->name('perfil');
 Route::put('/perfil/actualizar-datos', [PerfilController::class, 'actualizarDatos'])->name('perfil.actualizarDatos');
 Route::put('/perfil/actualizar-foto', [PerfilController::class, 'actualizarFoto'])->name('perfil.actualizarFoto');
 Route::post('/perfil/actualizar-contrasena', [PerfilController::class, 'actualizarContrasena'])->name('perfil.actualizarContrasena');
-
-
-

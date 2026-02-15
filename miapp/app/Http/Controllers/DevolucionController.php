@@ -165,4 +165,5 @@ class DevolucionController
             ->route('devolucion.indexEm')
             ->with('mensaje', 'Devolución eliminada correctamente.');
     }
+    
 }

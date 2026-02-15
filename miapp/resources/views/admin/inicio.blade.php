@@ -49,13 +49,14 @@
 
                 <a href="{{ route('proveedor.index') }}" class="elemento-menu">
                     <i class="ri-truck-line"></i><span>Proveedores</span>
-                </a>
+              
 
                 <div class="dropdown">
                     <a class="elemento-menu d-flex align-items-center text-white text-decoration-none dropdown-toggle"
                        href="#" data-bs-toggle="dropdown">
                         <i class="ri-user-line"></i><span>Usuarios</span>
                     </a>
+                
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="{{ route('clientes.index') }}">Cliente</a></li>
                         <li><a class="dropdown-item" href="{{ route('empleados.index') }}">Empleado</a></li>
