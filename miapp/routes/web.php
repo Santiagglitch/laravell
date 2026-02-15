@@ -13,6 +13,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ComprasController;
 use App\Http\Controllers\DetalleComprasController;
 use App\Http\Controllers\PerfilController;
+use App\Http\Controllers\PasswordResetController;
 
 Route::get('/', function () {
     return view('inicio');
@@ -113,10 +114,13 @@ Route::delete('/detallecompras', [DetalleComprasController::class, 'delete'])->n
 //Login
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.form');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
-
-
-
+//Logout
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+// Password Reset
+Route::get('/forgot-password', [PasswordResetController::class, 'showForgotForm'])->name('password.forgot');
+Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLink'])->name('password.email');
+Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
+Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])->name('password.update');
 
 
 Route::get('/admin', function () {

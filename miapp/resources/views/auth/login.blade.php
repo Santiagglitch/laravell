@@ -94,8 +94,7 @@
 
 
                     <div class="mb-3 text-end">
-                        {{-- Ajusta cuando tengas la vista en Laravel --}}
-                        <a href="#" class="link-recuperar">¿Olvidaste tu contraseña?</a>
+                        <a href="{{ route('password.forgot') }}" class="link-recuperar">¿Olvidaste tu contraseña?</a>
                     </div>
 
                     <div class="d-grid">
