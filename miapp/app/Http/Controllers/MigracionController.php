@@ -6,11 +6,12 @@ use Illuminate\Http\Request;
 use App\Models\Devolucion;
 use App\Models\Compras;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MigracionController extends Controller
 {
     // ===============================
-    // IMPORTACIÓN UNIFICADA (para clientes, proveedores, devoluciones, compras)
+    // IMPORTACIÓN UNIFICADA (clientes, proveedores, devoluciones, compras)
     // ===============================
     public function importar(Request $request)
     {
@@ -24,7 +25,6 @@ class MigracionController extends Controller
             ]);
         }
 
-        // Determinar qué módulo se está importando
         switch ($modulo) {
             case 'devoluciones':
                 return $this->importarDevoluciones($datos);
@@ -42,9 +42,6 @@ class MigracionController extends Controller
         }
     }
 
-    // ===============================
-    // IMPORTAR DEVOLUCIONES
-    // ===============================
     private function importarDevoluciones($datos)
     {
         $importados = 0;
@@ -119,9 +116,6 @@ class MigracionController extends Controller
         }
     }
 
-    // ===============================
-    // IMPORTAR COMPRAS
-    // ===============================
     private function importarCompras($datos)
     {
         $importados = 0;
@@ -216,9 +210,6 @@ class MigracionController extends Controller
         }
     }
 
-    // ===============================
-    // IMPORTAR PROVEEDORES
-    // ===============================
     private function importarProveedores($datos)
     {
         $importados = 0;
@@ -231,7 +222,7 @@ class MigracionController extends Controller
                 $nombre   = $fila['Nombre_Proveedor']   ?? null;
                 $correo   = $fila['Correo_Electronico'] ?? null;
                 $telefono = $fila['Telefono']            ?? null;
-                $estado   = $fila['ID_Estado']           ?? 1;
+                $estado   = $this->resolverEstado($fila['ID_Estado'] ?? $fila['Estado'] ?? 1);
 
                 if (empty($nombre)) {
                     $errores[] = "Fila " . ($index + 2) . ": Falta el nombre del proveedor";
@@ -286,9 +277,6 @@ class MigracionController extends Controller
         }
     }
 
-    // ===============================
-    // IMPORTAR CLIENTES ✅ CORREGIDO
-    // ===============================
     private function importarClientes($datos)
     {
         $importados = 0;
@@ -301,10 +289,7 @@ class MigracionController extends Controller
                 $documento = $fila['Documento_Cliente'] ?? null;
                 $nombre    = $fila['Nombre_Cliente']    ?? null;
                 $apellido  = $fila['Apellido_Cliente']  ?? null;
-                
-                // ✅ CORRECCIÓN: Convertir estado de texto a número
-                $estadoRaw = $fila['ID_Estado'] ?? 1;
-                $estado = $this->convertirEstadoCliente($estadoRaw);
+                $estado    = $this->convertirEstadoCliente($fila['ID_Estado'] ?? $fila['Estado'] ?? 1);
 
                 if (empty($documento)) {
                     $errores[] = "Fila " . ($index + 2) . ": Falta el documento del cliente";
@@ -320,7 +305,7 @@ class MigracionController extends Controller
                     'Documento_Cliente' => $documento,
                     'Nombre_Cliente'    => $nombre,
                     'Apellido_Cliente'  => $apellido,
-                    'ID_Estado'         => $estado, // ✅ Ahora siempre es número
+                    'ID_Estado'         => $estado,
                 ]);
 
                 $importados++;
@@ -350,60 +335,93 @@ class MigracionController extends Controller
     }
 
     // ===============================
-    // IMPORTAR PRODUCTOS (método específico)
+    // ✅ IMPORTAR PRODUCTOS - ÚNICO MÉTODO EDITADO
     // ===============================
     public function importarProductos(Request $request)
     {
-        $modulo = $request->input('modulo');
-        $datos  = $request->input('datos', []);
-
-        if ($modulo !== 'productos' || empty($datos)) {
-            return response()->json([
-                'success' => false,
-                'mensaje' => 'No se recibió información válida'
-            ]);
-        }
-
-        $importados = 0;
-        $errores    = [];
-
-        DB::beginTransaction();
-
         try {
+            Log::info('=== INICIO importarProductos ===');
+            
+            $modulo = $request->input('modulo');
+            $datos  = $request->input('datos', []);
+
+            if ($modulo !== 'productos') {
+                return response()->json([
+                    'success' => false,
+                    'mensaje' => 'Módulo incorrecto'
+                ], 400);
+            }
+
+            if (empty($datos)) {
+                return response()->json([
+                    'success' => false,
+                    'mensaje' => 'No se recibieron datos'
+                ], 400);
+            }
+
+            $importados = 0;
+            $errores = [];
+
+            DB::beginTransaction();
+
             foreach ($datos as $index => $fila) {
-                $idCategoria = $this->obtenerIdCategoria($fila['Categoria'] ?? null);
-                $idEstado = $this->obtenerIdEstado($fila['Estado'] ?? null);
-                $idGama = $this->obtenerIdGama($fila['Gama'] ?? null);
+                try {
+                    $filaNum = $index + 2;
+                    
+                    $categoria = $fila['Categoria'] ?? null;
+                    $estado = $fila['Estado'] ?? null;
+                    $gama = $fila['Gama'] ?? null;
 
-                if (!$idCategoria || !$idEstado || !$idGama) {
-                    $errores[] = "Fila " . ($index + 2) . ": Faltan datos de categoría, estado o gama";
-                    continue;
+                    $idCategoria = $this->resolverCategoria($categoria);
+                    $idEstado = $this->resolverEstadoProducto($estado);
+                    $idGama = $this->resolverGama($gama);
+
+                    if (!$idCategoria) {
+                        $errores[] = "Fila {$filaNum}: Categoría '{$categoria}' no encontrada";
+                        continue;
+                    }
+
+                    if (!$idEstado) {
+                        $errores[] = "Fila {$filaNum}: Estado '{$estado}' no encontrado";
+                        continue;
+                    }
+
+                    if (!$idGama) {
+                        $errores[] = "Fila {$filaNum}: Gama '{$gama}' no encontrada";
+                        continue;
+                    }
+
+                    $nombreProducto = $fila['Nombre_Producto'] ?? 'Sin nombre';
+                    
+                    if (DB::table('productos')->where('Nombre_Producto', $nombreProducto)->exists()) {
+                        $errores[] = "Fila {$filaNum}: Producto '{$nombreProducto}' ya existe";
+                        continue;
+                    }
+
+                    DB::table('productos')->insert([
+                        'Nombre_Producto' => $nombreProducto,
+                        'Descripcion'     => $fila['Descripcion'] ?? 'Sin descripción',
+                        'Precio_Venta'    => floatval($fila['Precio_Venta'] ?? 0),
+                        'Stock_Minimo'    => intval($fila['Stock_Minimo'] ?? 0),
+                        'ID_Categoria'    => $idCategoria,
+                        'ID_Estado'       => $idEstado,
+                        'ID_Gama'         => $idGama,
+                        'Fotos'           => $fila['Fotos'] ?? '',
+                    ]);
+
+                    $importados++;
+
+                } catch (\Exception $e) {
+                    Log::error("Error en fila {$filaNum}: " . $e->getMessage());
+                    $errores[] = "Fila {$filaNum}: " . $e->getMessage();
                 }
-
-                DB::table('productos')->insert([
-                    'Nombre_Producto' => $fila['Nombre_Producto'] ?? 'Sin nombre',
-                    'Descripcion'     => $fila['Descripcion'] ?? 'Sin descripción',
-                    'Precio_Venta'    => $fila['Precio_Venta'] ?? 0,
-                    'Stock_Minimo'    => $fila['Stock_Minimo'] ?? 0,
-                    'ID_Categoria'    => $idCategoria,
-                    'ID_Estado'       => $idEstado,
-                    'ID_Gama'         => $idGama,
-                    'Fotos'           => $fila['Fotos'] ?? '',
-                ]);
-
-                $importados++;
             }
 
             DB::commit();
 
-            $productosRecientes = DB::table('productos')
-                ->orderBy('ID_Producto', 'desc')
-                ->take($importados)
-                ->get();
-
-            $mensaje = "Se importaron {$importados} productos correctamente.";
+            $mensaje = "Se importaron {$importados} productos.";
             if (!empty($errores)) {
-                $mensaje .= " Errores: " . implode(", ", $errores);
+                $mensaje .= " " . count($errores) . " filas omitidas.";
             }
 
             return response()->json([
@@ -411,21 +429,19 @@ class MigracionController extends Controller
                 'importados' => $importados,
                 'errores'    => $errores,
                 'mensaje'    => $mensaje,
-                'productos'  => $productosRecientes
-            ]);
+            ], 200);
 
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error('Error en importarProductos: ' . $e->getMessage());
+            
             return response()->json([
                 'success' => false,
-                'mensaje' => 'Error al importar: ' . $e->getMessage()
-            ]);
+                'mensaje' => 'Error: ' . $e->getMessage(),
+            ], 500);
         }
     }
 
-    // ===============================
-    // IMPORTAR EMPLEADOS (método específico)
-    // ===============================
     public function importarEmpleados(Request $request)
     {
         $modulo = $request->input('modulo');
@@ -452,13 +468,13 @@ class MigracionController extends Controller
                 $edad       = $fila['Edad']               ?? null;
                 $correo     = $fila['Correo_Electronico'] ?? null;
                 $telefono   = $fila['Telefono']           ?? null;
-                $generoRaw  = $fila['Genero']             ?? null;
+                $generoRaw  = $fila['Genero']             ?? 'M';
                 $fotos      = $fila['Fotos']              ?? '';
                 $contrasena = $fila['Contrasena']         ?? null;
 
                 $idEstado = $this->resolverEstado($fila['Estado'] ?? $fila['ID_Estado'] ?? 1);
-                $idRol    = $this->resolverRol($fila['Rol'] ?? $fila['ID_Rol'] ?? 2);
-                $genero   = $this->resolverGenero($generoRaw);
+                $idRol = $this->resolverRol($fila['Rol'] ?? $fila['ID_Rol'] ?? 2);
+                $genero = $this->resolverGenero($generoRaw);
 
                 if (empty($documento)) {
                     $errores[] = "Fila " . ($index + 2) . ": Falta el documento del empleado";
@@ -529,9 +545,6 @@ class MigracionController extends Controller
         }
     }
 
-    // ===============================
-    // INICIAR EXPORTACIÓN
-    // ===============================
     public function iniciar(Request $request)
     {
         $modulo   = $request->input('modulo');
@@ -573,39 +586,32 @@ class MigracionController extends Controller
         ]);
     }
 
-    // ===============================
-    // INICIAR EXPORTACIÓN DE PRODUCTOS
-    // ===============================
+    // ✅ MÉTODOS DE PRODUCTOS EDITADOS
     public function iniciarProductos(Request $request)
     {
-        $modulo   = $request->input('modulo');
-        $loteSize = $request->input('loteSize', 20);
+        try {
+            $ids = DB::table('productos')->pluck('ID_Producto')->toArray();
 
-        if ($modulo !== 'productos') {
+            session([
+                'export_productos_ids'  => $ids,
+                'lote_productos_actual' => 0,
+                'lote_productos_size'   => 20
+            ]);
+
+            return response()->json([
+                'success'         => true,
+                'total_registros' => count($ids),
+                'lote_size'       => 20
+            ], 200);
+
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'mensaje' => 'Módulo incorrecto'
-            ]);
+                'mensaje' => 'Error: ' . $e->getMessage()
+            ], 500);
         }
-
-        $ids = DB::table('productos')->pluck('ID_Producto')->toArray();
-
-        session([
-            'export_productos_ids'  => $ids,
-            'lote_productos_actual' => 0,
-            'lote_productos_size'   => $loteSize
-        ]);
-
-        return response()->json([
-            'success'         => true,
-            'total_registros' => count($ids),
-            'lote_size'       => $loteSize
-        ]);
     }
 
-    // ===============================
-    // INICIAR EXPORTACIÓN DE EMPLEADOS
-    // ===============================
     public function iniciarEmpleados(Request $request)
     {
         $modulo   = $request->input('modulo');
@@ -633,9 +639,6 @@ class MigracionController extends Controller
         ]);
     }
 
-    // ===============================
-    // LOTE DE EXPORTACIÓN
-    // ===============================
     public function lote(Request $request)
     {
         $modulo     = session('export_modulo');
@@ -692,66 +695,69 @@ class MigracionController extends Controller
         ]);
     }
 
-    // ===============================
-    // LOTE DE EXPORTACIÓN DE PRODUCTOS
-    // ===============================
+    // ✅ MÉTODO DE PRODUCTOS EDITADO
     public function loteProductos(Request $request)
     {
-        $ids        = session('export_productos_ids', []);
-        $loteActual = session('lote_productos_actual', 0);
-        $loteSize   = session('lote_productos_size', 20);
-        $totalIds   = count($ids);
+        try {
+            $ids        = session('export_productos_ids', []);
+            $loteActual = session('lote_productos_actual', 0);
+            $loteSize   = session('lote_productos_size', 20);
+            $totalIds   = count($ids);
 
-        if ($totalIds === 0) {
+            if ($totalIds === 0) {
+                return response()->json([
+                    'success' => false,
+                    'mensaje' => 'No hay datos'
+                ], 400);
+            }
+
+            $inicio  = $loteActual * $loteSize;
+            $idsLote = array_slice($ids, $inicio, $loteSize);
+
+            $productos = DB::table('productos')
+                ->whereIn('ID_Producto', $idsLote)
+                ->get();
+
+            $datos = $productos->map(function ($pro) {
+                $categoria = DB::table('categorias')->where('ID_Categoria', $pro->ID_Categoria)->value('Nombre_Categoria');
+                $estado = DB::table('estados')->where('ID_Estado', $pro->ID_Estado)->value('Nombre_Estado');
+                $gama = DB::table('gamas')->where('ID_Gama', $pro->ID_Gama)->value('Nombre_Gama');
+
+                return [
+                    'Nombre_Producto' => $pro->Nombre_Producto,
+                    'Descripcion'     => $pro->Descripcion,
+                    'Precio_Venta'    => $pro->Precio_Venta,
+                    'Stock_Minimo'    => $pro->Stock_Minimo,
+                    'Categoria'       => $categoria ?? 'N/A',
+                    'Estado'          => $estado ?? 'N/A',
+                    'Gama'            => $gama ?? 'N/A',
+                    'Fotos'           => $pro->Fotos ?? '',
+                ];
+            });
+
+            $registrosMigrados = $inicio + count($productos);
+            $completado        = $registrosMigrados >= $totalIds;
+
+            session(['lote_productos_actual' => $loteActual + 1]);
+
+            return response()->json([
+                'success'            => true,
+                'datos'              => $datos,
+                'progreso'           => intval(($registrosMigrados / $totalIds) * 100),
+                'registros_migrados' => $registrosMigrados,
+                'total_registros'    => $totalIds,
+                'lote_actual'        => $loteActual + 1,
+                'completado'         => $completado
+            ], 200);
+
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'mensaje' => 'No hay IDs en sesión. Inicie la exportación primero.'
-            ]);
+                'mensaje' => 'Error: ' . $e->getMessage()
+            ], 500);
         }
-
-        $inicio  = $loteActual * $loteSize;
-        $idsLote = array_slice($ids, $inicio, $loteSize);
-
-        $productos = DB::table('productos')
-            ->whereIn('ID_Producto', $idsLote)
-            ->get();
-
-        $datos = $productos->map(function ($pro) {
-            $categoria = DB::table('categorias')->where('ID_Categoria', $pro->ID_Categoria)->value('Nombre_Categoria');
-            $estado = DB::table('estados')->where('ID_Estado', $pro->ID_Estado)->value('Nombre_Estado');
-            $gama = DB::table('gamas')->where('ID_Gama', $pro->ID_Gama)->value('Nombre_Gama');
-
-            return [
-                'Nombre_Producto' => $pro->Nombre_Producto,
-                'Descripcion'     => $pro->Descripcion,
-                'Precio_Venta'    => $pro->Precio_Venta,
-                'Stock_Minimo'    => $pro->Stock_Minimo,
-                'Categoria'       => $categoria ?? 'N/A',
-                'Estado'          => $estado ?? 'N/A',
-                'Gama'            => $gama ?? 'N/A',
-                'Fotos'           => $pro->Fotos ?? '',
-            ];
-        });
-
-        $registrosMigrados = $inicio + count($productos);
-        $completado        = $registrosMigrados >= $totalIds;
-
-        session(['lote_productos_actual' => $loteActual + 1]);
-
-        return response()->json([
-            'success'            => true,
-            'datos'              => $datos,
-            'progreso'           => intval(($registrosMigrados / $totalIds) * 100),
-            'registros_migrados' => $registrosMigrados,
-            'total_registros'    => $totalIds,
-            'lote_actual'        => $loteActual + 1,
-            'completado'         => $completado
-        ]);
     }
 
-    // ===============================
-    // LOTE DE EXPORTACIÓN DE EMPLEADOS
-    // ===============================
     public function loteEmpleados(Request $request)
     {
         $ids        = session('export_empleados_ids', []);
@@ -808,9 +814,6 @@ class MigracionController extends Controller
         ]);
     }
 
-    // ===============================
-    // EXPORTAR DEVOLUCIONES
-    // ===============================
     private function exportarDevoluciones($idsLote)
     {
         $devoluciones     = Devolucion::whereIn('ID_Devolucion', $idsLote)->get();
@@ -847,9 +850,6 @@ class MigracionController extends Controller
         });
     }
 
-    // ===============================
-    // EXPORTAR COMPRAS
-    // ===============================
     private function exportarCompras($idsLote)
     {
         $compras = Compras::whereIn('ID_Entrada', $idsLote)->get();
@@ -886,9 +886,6 @@ class MigracionController extends Controller
         });
     }
 
-    // ===============================
-    // EXPORTAR PROVEEDORES
-    // ===============================
     private function exportarProveedores($idsLote)
     {
         $proveedores = DB::table('Proveedores')
@@ -906,9 +903,6 @@ class MigracionController extends Controller
         });
     }
 
-    // ===============================
-    // EXPORTAR CLIENTES
-    // ===============================
     private function exportarClientes($idsLote)
     {
         $clientes = DB::table('clientes')
@@ -925,9 +919,6 @@ class MigracionController extends Controller
         });
     }
 
-    // ===============================
-    // BUSCAR VENTA POR DOCUMENTO CLIENTE
-    // ===============================
     public function buscarVenta(Request $request)
     {
         $doc = $request->input('Documento_Cliente');
@@ -955,9 +946,6 @@ class MigracionController extends Controller
         ]);
     }
 
-    // ===============================
-    // BUSCAR PRODUCTO POR NOMBRE
-    // ===============================
     public function buscarProducto(Request $request)
     {
         $nombre = $request->input('Nombre_Producto');
@@ -980,9 +968,6 @@ class MigracionController extends Controller
         ]);
     }
 
-    // ===============================
-    // BUSCAR PROVEEDOR POR NOMBRE
-    // ===============================
     public function buscarProveedor(Request $request)
     {
         $nombre = $request->input('Nombre_Proveedor');
@@ -1005,9 +990,6 @@ class MigracionController extends Controller
         ]);
     }
 
-    // ===============================
-    // HISTORIAL DE IMPORTACIONES
-    // ===============================
     public function historial()
     {
         $migraciones = DB::table('migraciones')
@@ -1019,12 +1001,101 @@ class MigracionController extends Controller
     }
 
     // ===============================
-    // HELPERS PRIVADOS
+    // ✅ HELPERS PARA PRODUCTOS (EDITADOS)
+    // ===============================
+    
+    private function resolverCategoria($valor): ?int
+    {
+        if (empty($valor)) return null;
+        
+        if (is_numeric($valor)) {
+            $existe = DB::table('categorias')->where('ID_Categoria', (int) $valor)->exists();
+            return $existe ? (int) $valor : null;
+        }
+
+        $nombre = trim((string) $valor);
+        
+        $id = DB::table('categorias')
+            ->where('Nombre_Categoria', $nombre)
+            ->value('ID_Categoria');
+        
+        if ($id) return $id;
+
+        $id = DB::table('categorias')
+            ->whereRaw('LOWER(Nombre_Categoria) = ?', [strtolower($nombre)])
+            ->value('ID_Categoria');
+        
+        if ($id) return $id;
+
+        return DB::table('categorias')
+            ->where('Nombre_Categoria', 'LIKE', "%{$nombre}%")
+            ->value('ID_Categoria');
+    }
+
+    private function resolverEstadoProducto($valor): ?int
+    {
+        if (empty($valor)) return null;
+        
+        if (is_numeric($valor)) {
+            $existe = DB::table('estados')->where('ID_Estado', (int) $valor)->exists();
+            return $existe ? (int) $valor : null;
+        }
+
+        $nombre = mb_strtolower(trim((string) $valor));
+        
+        $mapa = [
+            'activo'     => 1,
+            'inactivo'   => 2,
+            'en proceso' => 3,
+        ];
+
+        if (isset($mapa[$nombre])) {
+            return $mapa[$nombre];
+        }
+
+        $id = DB::table('estados')
+            ->whereRaw('LOWER(Nombre_Estado) = ?', [$nombre])
+            ->value('ID_Estado');
+        
+        if ($id) return $id;
+
+        return DB::table('estados')
+            ->where('Nombre_Estado', 'LIKE', "%{$nombre}%")
+            ->value('ID_Estado');
+    }
+
+    private function resolverGama($valor): ?int
+    {
+        if (empty($valor)) return null;
+        
+        if (is_numeric($valor)) {
+            $existe = DB::table('gamas')->where('ID_Gama', (int) $valor)->exists();
+            return $existe ? (int) $valor : null;
+        }
+
+        $nombre = trim((string) $valor);
+        
+        $id = DB::table('gamas')
+            ->where('Nombre_Gama', $nombre)
+            ->value('ID_Gama');
+        
+        if ($id) return $id;
+
+        $id = DB::table('gamas')
+            ->whereRaw('LOWER(Nombre_Gama) = ?', [strtolower($nombre)])
+            ->value('ID_Gama');
+        
+        if ($id) return $id;
+
+        return DB::table('gamas')
+            ->where('Nombre_Gama', 'LIKE', "%{$nombre}%")
+            ->value('ID_Gama');
+    }
+
+    // ===============================
+    // OTROS HELPERS (SIN CAMBIOS)
     // ===============================
 
-    /**
-     * ✅ Convierte estado de cliente (texto o número) → ID numérico
-     */
     private function convertirEstadoCliente($valor): int
     {
         if (is_numeric($valor)) {
@@ -1041,9 +1112,6 @@ class MigracionController extends Controller
         return $mapa[$valorLower] ?? 1;
     }
 
-    /**
-     * Convierte estado general (texto o número) → ID numérico
-     */
     private function resolverEstado($valor): int
     {
         if (is_numeric($valor)) {
@@ -1061,9 +1129,6 @@ class MigracionController extends Controller
         return $mapa[$valorLower] ?? 1;
     }
 
-    /**
-     * Convierte rol (texto o número) → ID numérico
-     */
     private function resolverRol($valor): int
     {
         if (is_numeric($valor)) {
@@ -1080,11 +1145,10 @@ class MigracionController extends Controller
         return $mapa[$valorLower] ?? 2;
     }
 
-    /**
-     * Convierte género (texto) → M o F
-     */
     private function resolverGenero($valor): string
     {
+        if (empty($valor)) return 'M';
+        
         $valorUpper = strtoupper(trim((string) $valor));
         
         if (in_array($valorUpper, ['M', 'F'])) {
@@ -1093,33 +1157,9 @@ class MigracionController extends Controller
 
         $valorLower = mb_strtolower(trim((string) $valor));
         
-        if (str_starts_with($valorLower, 'm')) return 'M';
-        if (str_starts_with($valorLower, 'f')) return 'F';
+        if (str_starts_with($valorLower, 'm') || str_starts_with($valorLower, 'mas')) return 'M';
+        if (str_starts_with($valorLower, 'f') || str_starts_with($valorLower, 'fem')) return 'F';
 
         return 'M';
-    }
-
-    private function obtenerIdCategoria($nombre)
-    {
-        if (empty($nombre)) return null;
-        return DB::table('categorias')
-            ->where('Nombre_Categoria', 'LIKE', '%' . $nombre . '%')
-            ->value('ID_Categoria');
-    }
-
-    private function obtenerIdEstado($nombre)
-    {
-        if (empty($nombre)) return null;
-        return DB::table('estados')
-            ->where('Nombre_Estado', 'LIKE', '%' . $nombre . '%')
-            ->value('ID_Estado');
-    }
-
-    private function obtenerIdGama($nombre)
-    {
-        if (empty($nombre)) return null;
-        return DB::table('gamas')
-            ->where('Nombre_Gama', 'LIKE', '%' . $nombre . '%')
-            ->value('ID_Gama');
     }
 }

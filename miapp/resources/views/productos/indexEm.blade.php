@@ -54,57 +54,23 @@
         </div>
     </div>
 
-    <div class="contenido-principal flex-grow-1">
-        <nav class="navbar navbar-expand-lg bg-body-tertiary">
-            <div class="container-fluid">
-                <a class="navbar-brand">Sistema gestión de inventarios</a>
-
-                <div class="dropdown ms-auto">
-                    <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle"
-                       data-bs-toggle="dropdown">
-                        <img src="{{ asset('fotos_empleados/686fe89fe865f_Foto Kevin.jpeg') }}"
-                             width="32" height="32" class="rounded-circle me-2">
-                        <strong>{{ session('nombre') ?? 'Perfil' }}</strong>
-                    </a>
-
-                    <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-                        <li><a class="dropdown-item" href="{{ route('perfil') }}">Mi perfil</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="dropdown-item">Cerrar sesión</button>
-                        </form>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-
+   
         <div class="container py-4">
+
             <div class="d-flex justify-content-center align-items-center gap-3">
                 <img src="{{ asset('Imagenes/Logo.webp') }}" style="height:48px;">
                 <h1>Gestión de Productos</h1>
             </div>
 
             @if(session('mensaje'))
-                <div id="alertaMensaje" class="alert alert-success text-center mt-3">
-                    {{ session('mensaje') }}
-                </div>
-
-                <script>
-                    setTimeout(() => {
-                        let alerta = document.getElementById('alertaMensaje');
-                        if (alerta) {
-                            alerta.style.transition = "opacity 0.5s";
-                            alerta.style.opacity = 0;
-                            setTimeout(() => alerta.remove(), 500);
-                        }
-                    }, 2000);
-                </script>
+                <div id="alertaMensaje" class="alert alert-success text-center mt-3">{{ session('mensaje') }}</div>
+                <script>setTimeout(()=>{let a=document.getElementById('alertaMensaje');if(a){a.style.transition="opacity 0.5s";a.style.opacity=0;setTimeout(()=>a.remove(),500);}},2000);</script>
+            @endif
+            @if(session('error'))
+                <div id="alertaError" class="alert alert-danger text-center mt-3">{{ session('error') }}</div>
+                <script>setTimeout(()=>{let a=document.getElementById('alertaError');if(a){a.style.transition="opacity 0.5s";a.style.opacity=0;setTimeout(()=>a.remove(),500);}},2000);</script>
             @endif
 
-            {{-- ✅ CAMBIO: Agregados los botones de Importar y Exportar --}}
             <div class="d-flex justify-content-end mt-4 gap-2">
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#crearModal">
                     <i class="fa fa-plus"></i> Añadir Producto
@@ -119,11 +85,10 @@
                 </button>
             </div>
 
-            {{-- ✅ AGREGADO: Barra de progreso --}}
             <div id="progreso" class="mt-2"></div>
 
             <div class="table-responsive mt-4">
-                <table class="table table-bordered table-hover table-striped align-middle text-center">
+                <table class="table table-bordered table-striped table-hover text-center">
                     <thead class="table-dark">
                         <tr>
                             <th>ID</th>
@@ -149,12 +114,10 @@
                             <td>{{ $pro['Categoria'] ?? $pro['ID_Categoria'] }}</td>
                             <td>{{ $pro['Estado'] ?? $pro['ID_Estado'] }}</td>
                             <td>{{ $pro['Gama'] ?? $pro['ID_Gama'] }}</td>
-
                             <td>
                                 @if(!empty($pro['Fotos']))
                                     @php
                                         $foto = $pro['Fotos'];
-
                                         if (\Illuminate\Support\Str::startsWith($foto, ['http://', 'https://'])) {
                                             $fotoUrl = $foto;
                                         } else {
@@ -165,19 +128,16 @@
                                             $fotoUrl = 'http://localhost:8080/' . $fotoLimpia;
                                         }
                                     @endphp
-
                                     <img src="{{ $fotoUrl }}" width="50" height="50" class="rounded" style="object-fit:cover;">
                                 @else
-                                    <i class="fa-solid fa-image text-secondary" style="font-size:30px;"></i>
+                                    <i class="fa-solid fa-image text-secondary" style="font-size: 30px;"></i>
                                 @endif
                             </td>
-
                             <td>
                                 <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
                                         data-bs-target="#editarModal{{ $pro['ID_Producto'] }}">
                                     <i class="fa fa-edit"></i>
                                 </button>
-
                                 <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
                                         data-bs-target="#eliminarModal{{ $pro['ID_Producto'] }}">
                                     <i class="fa fa-trash"></i>
@@ -185,16 +145,16 @@
                             </td>
                         </tr>
 
+                        <!-- Modal Editar -->
                         <div class="modal fade" id="editarModal{{ $pro['ID_Producto'] }}">
                             <div class="modal-dialog modal-lg">
                                 <form method="POST" action="{{ route('productos.updateEm') }}" enctype="multipart/form-data">
-                                    @csrf
-                                    @method('PUT')
+                                    @csrf @method('PUT')
                                     <input type="hidden" name="ID_Producto" value="{{ $pro['ID_Producto'] }}">
                                     <div class="modal-content">
                                         <div class="modal-header bg-warning">
-                                            <h5 class="modal-title">Editar Producto</h5>
-                                            <button class="btn-close" data-bs-dismiss="modal"></button>
+                                            <h5 class="modal-title">Editar Producto #{{ $pro['ID_Producto'] }}</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                         </div>
                                         <div class="modal-body row g-3">
                                             <div class="col-md-6">
@@ -217,48 +177,83 @@
                                                        value="{{ $pro['Stock_Minimo'] }}" required>
                                             </div>
                                             <div class="col-md-6">
-                                                <label>Nueva Foto</label>
+                                                <label>Categoría</label>
+                                                <select name="ID_Categoria" class="form-control" required>
+                                                    @foreach($categorias as $id => $nombre)
+                                                        <option value="{{ $id }}" {{ (int)$pro['ID_Categoria']===(int)$id ? 'selected' : '' }}>
+                                                            {{ $nombre }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label>Estado</label>
+                                                <select name="ID_Estado" class="form-control" required>
+                                                    @foreach($estados as $id => $nombre)
+                                                        <option value="{{ $id }}" {{ (int)$pro['ID_Estado']===(int)$id ? 'selected' : '' }}>
+                                                            {{ $nombre }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label>Gama</label>
+                                                <select name="ID_Gama" class="form-control" required>
+                                                    @foreach($gamas as $id => $nombre)
+                                                        <option value="{{ $id }}" {{ (int)$pro['ID_Gama']===(int)$id ? 'selected' : '' }}>
+                                                            {{ $nombre }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label>Nueva Foto (opcional)</label>
                                                 <input type="file" name="Fotos" class="form-control">
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button class="btn btn-warning" type="submit">Actualizar</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            <button type="submit" class="btn btn-warning">Actualizar</button>
                                         </div>
                                     </div>
                                 </form>
                             </div>
                         </div>
 
+                        <!-- Modal Eliminar -->
                         <div class="modal fade" id="eliminarModal{{ $pro['ID_Producto'] }}">
                             <div class="modal-dialog">
                                 <form method="POST" action="{{ route('productos.destroyEm') }}">
-                                    @csrf
-                                    @method('DELETE')
+                                    @csrf @method('DELETE')
                                     <input type="hidden" name="ID_Producto" value="{{ $pro['ID_Producto'] }}">
                                     <div class="modal-content">
                                         <div class="modal-header bg-danger text-white">
                                             <h5 class="modal-title">Eliminar Producto</h5>
-                                            <button class="btn-close" data-bs-dismiss="modal"></button>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                                         </div>
                                         <div class="modal-body">
                                             ¿Seguro que deseas eliminar este producto?
+                                            <div class="alert alert-warning mt-3">
+                                                <strong>Nombre:</strong> {{ $pro['Nombre_Producto'] }}<br>
+                                                <strong>Precio:</strong> {{ $pro['Precio_Venta'] }}
+                                            </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button class="btn btn-danger" type="submit">Eliminar</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            <button type="submit" class="btn btn-danger">Eliminar</button>
                                         </div>
                                     </div>
                                 </form>
                             </div>
                         </div>
                     @empty
-                        <tr>
-                            <td colspan="10" class="text-muted">No hay productos registrados.</td>
-                        </tr>
+                        <tr><td colspan="10" class="text-muted">No hay productos registrados.</td></tr>
                     @endforelse
                     </tbody>
                 </table>
             </div>
 
+            <!-- Modal Crear -->
             <div class="modal fade" id="crearModal">
                 <div class="modal-dialog modal-lg">
                     <form method="POST" action="{{ route('productos.storeEm') }}" enctype="multipart/form-data">
@@ -266,13 +261,9 @@
                         <div class="modal-content">
                             <div class="modal-header bg-success text-white">
                                 <h5 class="modal-title">Añadir Producto</h5>
-                                <button class="btn-close" data-bs-dismiss="modal"></button>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                             </div>
                             <div class="modal-body row g-3">
-                                <div class="col-md-6">
-                                    <label>ID Producto</label>
-                                    <input name="ID_Producto" class="form-control" required>
-                                </div>
                                 <div class="col-md-6">
                                     <label>Nombre</label>
                                     <input name="Nombre_Producto" class="form-control" required>
@@ -290,12 +281,40 @@
                                     <input name="Stock_Minimo" class="form-control" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label>Foto</label>
+                                    <label>Categoría</label>
+                                    <select name="ID_Categoria" class="form-control" required>
+                                        <option value="">--Seleccione--</option>
+                                        @foreach($categorias as $id => $nombre)
+                                            <option value="{{ $id }}">{{ $nombre }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Estado</label>
+                                    <select name="ID_Estado" class="form-control" required>
+                                        <option value="">--Seleccione--</option>
+                                        @foreach($estados as $id => $nombre)
+                                            <option value="{{ $id }}">{{ $nombre }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Gama</label>
+                                    <select name="ID_Gama" class="form-control" required>
+                                        <option value="">--Seleccione--</option>
+                                        @foreach($gamas as $id => $nombre)
+                                            <option value="{{ $id }}">{{ $nombre }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Foto (opcional)</label>
                                     <input type="file" name="Fotos" class="form-control">
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button class="btn btn-success" type="submit">Guardar</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-success">Guardar</button>
                             </div>
                         </div>
                     </form>
@@ -308,7 +327,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 
-{{-- ✅ AGREGADO: JavaScript para Importar y Exportar --}}
 <script>
 // ============================================
 // HELPERS
@@ -340,10 +358,12 @@ async function importarDesdeExcel(event) {
     progresoDiv.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Leyendo archivo Excel...';
 
     try {
-        const data     = await archivo.arrayBuffer();
+        const data = await archivo.arrayBuffer();
         const workbook = XLSX.read(data);
-        const hoja     = workbook.Sheets[workbook.SheetNames[0]];
+        const hoja = workbook.Sheets[workbook.SheetNames[0]];
         const productos = XLSX.utils.sheet_to_json(hoja).map(normalizarClaves);
+
+        console.log('📊 Productos leídos del Excel:', productos);
 
         if (productos.length === 0) {
             progresoDiv.className = 'alert alert-warning';
@@ -351,6 +371,7 @@ async function importarDesdeExcel(event) {
             return;
         }
 
+        // Transformar datos
         const datosValidados = productos.map(prod => ({
             Nombre_Producto: buscarClave(prod, 'nombre_producto', 'nombre producto', 'nombre') ?? 'Sin nombre',
             Descripcion:     buscarClave(prod, 'descripcion') ?? 'Sin descripción',
@@ -359,14 +380,18 @@ async function importarDesdeExcel(event) {
             Categoria:       buscarClave(prod, 'categoria') ?? null,
             Estado:          buscarClave(prod, 'estado') ?? null,
             Gama:            buscarClave(prod, 'gama') ?? null,
-            Fotos:           buscarClave(prod, 'fotos', 'foto') ?? null,
+            Fotos:           buscarClave(prod, 'fotos', 'foto') ?? '',
         }));
 
+        console.log('✅ Datos validados para enviar:', datosValidados);
+
+        // Importar en lotes
         const tamañoLote = 10;
-        let importados   = 0;
+        let importados = 0;
+        let todosLosErrores = [];
 
         for (let i = 0; i < datosValidados.length; i += tamañoLote) {
-            const lote    = datosValidados.slice(i, i + tamañoLote);
+            const lote = datosValidados.slice(i, i + tamañoLote);
             const progreso = Math.round(((i + lote.length) / datosValidados.length) * 100);
 
             progresoDiv.innerHTML = `
@@ -382,37 +407,88 @@ async function importarDesdeExcel(event) {
                     Registros: ${i + lote.length} / ${datosValidados.length}
                 </small>`;
 
+            console.log('📤 Enviando lote:', lote);
+
             const response = await fetch('/migracion/productos/importar', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Accept': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                 },
                 body: JSON.stringify({ modulo: 'productos', datos: lote })
             });
 
-            const texto = await response.text();
-            let resultado;
-            try { resultado = JSON.parse(texto); }
-            catch(e) { throw new Error('El servidor devolvió HTML. Verifica la ruta /migracion/productos/importar.'); }
+            console.log('📥 Response status:', response.status);
 
-            if (!resultado.success) throw new Error(resultado.mensaje);
+            const contentType = response.headers.get('content-type') || '';
+            const texto = await response.text();
+
+            console.log('📄 Response text:', texto);
+
+            if (contentType.includes('text/html') || texto.trim().startsWith('<!DOCTYPE') || texto.trim().startsWith('<html')) {
+                console.error('❌ El servidor devolvió HTML:');
+                console.error(texto);
+                throw new Error('El servidor devolvió HTML. Verifica la ruta /migracion/productos/importar');
+            }
+
+            let resultado;
+            try {
+                resultado = JSON.parse(texto);
+                console.log('✅ JSON parseado:', resultado);
+            } catch (e) {
+                console.error('❌ Error al parsear JSON:', e);
+                throw new Error('El servidor no devolvió JSON válido.');
+            }
+
+            if (!resultado.success) {
+                throw new Error(resultado.mensaje || 'Error desconocido');
+            }
+
             importados += resultado.importados || 0;
+            
+            // Acumular errores
+            if (resultado.errores && resultado.errores.length > 0) {
+                todosLosErrores = todosLosErrores.concat(resultado.errores);
+            }
+
             await new Promise(r => setTimeout(r, 300));
         }
 
         progresoDiv.className = 'alert alert-success';
-        progresoDiv.innerHTML = `
+        let mensajeFinal = `
             <i class="fa fa-check-circle"></i>
             <strong>¡Importación completada!</strong>
             <br><small>Se importaron ${importados} productos correctamente</small>
         `;
-        setTimeout(() => location.reload(), 3000);
+
+        // Mostrar errores si los hay
+        if (todosLosErrores.length > 0) {
+            mensajeFinal += `
+                <div class="mt-3">
+                    <strong>⚠️ Advertencias (${todosLosErrores.length}):</strong>
+                    <ul class="text-start mt-2">
+                        ${todosLosErrores.slice(0, 10).map(e => `<li>${e}</li>`).join('')}
+                        ${todosLosErrores.length > 10 ? `<li><em>...y ${todosLosErrores.length - 10} más</em></li>` : ''}
+                    </ul>
+                </div>
+            `;
+        }
+
+        progresoDiv.innerHTML = mensajeFinal;
+
+        if (importados > 0) {
+            setTimeout(() => location.reload(), 3000);
+        }
 
     } catch (error) {
-        console.error('Error:', error);
+        console.error('❌ Error completo:', error);
         progresoDiv.className = 'alert alert-danger';
-        progresoDiv.innerHTML = `<i class="fa fa-exclamation-triangle"></i> Error: ${error.message}`;
+        progresoDiv.innerHTML = `
+            <i class="fa fa-exclamation-triangle"></i> 
+            <strong>Error:</strong> ${error.message}
+            <br><small class="mt-2 d-block">Abre la consola del navegador (F12) para más detalles</small>
+        `;
     }
 
     event.target.value = '';
@@ -434,9 +510,14 @@ async function iniciarExportacion() {
 
         const initResp = await fetch('/migracion/productos/iniciar', {
             method: 'POST',
-            headers: { 'Content-Type':'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+            headers: { 
+                'Content-Type':'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content 
+            },
             body: JSON.stringify({ modulo: 'productos' })
         });
+        
         const initData = await initResp.json();
         if (!initData.success) throw new Error(initData.mensaje);
 
@@ -446,9 +527,14 @@ async function iniciarExportacion() {
         while (!completado && intentos < 100) {
             const loteResp = await fetch('/migracion/productos/lote', {
                 method: 'POST',
-                headers: { 'Content-Type':'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+                headers: { 
+                    'Content-Type':'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content 
+                },
                 body: JSON.stringify({ modulo: 'productos' })
             });
+            
             const loteData = await loteResp.json();
             if (!loteData.success) throw new Error(loteData.mensaje);
             if (loteData.datos?.length > 0) todosLosDatos = todosLosDatos.concat(loteData.datos);
@@ -463,7 +549,7 @@ async function iniciarExportacion() {
                          style="width: ${loteData.progreso}%"></div>
                 </div>
                 <small class="text-muted mt-2 d-block">
-                    Registros: ${loteData.registros_migrados} / ${loteData.total_registros} (Lote ${loteData.lote_actual})
+                    Registros: ${loteData.registros_migrados} / ${loteData.total_registros}
                 </small>`;
 
             completado = loteData.completado;
@@ -482,10 +568,10 @@ async function iniciarExportacion() {
         progresoDiv.innerHTML += '<br><i class="fa fa-spinner fa-spin"></i> Generando Excel...';
 
         const hoja = todosLosDatos.map(prod => ({
-            'Nombre Producto': prod.Nombre_Producto,
+            'Nombre_Producto': prod.Nombre_Producto,
             'Descripcion':     prod.Descripcion,
-            'Precio Venta':    prod.Precio_Venta,
-            'Stock Minimo':    prod.Stock_Minimo,
+            'Precio_Venta':    prod.Precio_Venta,
+            'Stock_Minimo':    prod.Stock_Minimo,
             'Categoria':       prod.Categoria,
             'Estado':          prod.Estado,
             'Gama':            prod.Gama,
@@ -493,8 +579,8 @@ async function iniciarExportacion() {
         }));
 
         const wb = XLSX.utils.book_new();
-        const ws1 = XLSX.utils.json_to_sheet(hoja);
-        XLSX.utils.book_append_sheet(wb, ws1, 'Productos');
+        const ws = XLSX.utils.json_to_sheet(hoja);
+        XLSX.utils.book_append_sheet(wb, ws, 'Productos');
 
         XLSX.writeFile(wb, `Productos_${new Date().toISOString().split('T')[0]}.xlsx`);
 
@@ -503,9 +589,10 @@ async function iniciarExportacion() {
             <i class="fa fa-check-circle"></i> <strong>¡Exportación completada!</strong>
             <br><small>${todosLosDatos.length} productos exportados</small>
         `;
-        setTimeout(() => { progresoDiv.innerHTML=''; progresoDiv.className=''; }, 8000);
+        setTimeout(() => { progresoDiv.innerHTML=''; progresoDiv.className=''; }, 5000);
 
     } catch (error) {
+        console.error('Error en exportación:', error);
         progresoDiv.className = 'alert alert-danger';
         progresoDiv.innerHTML = `<i class="fa fa-exclamation-triangle"></i> Error: ${error.message}`;
     } finally {
@@ -517,3 +604,4 @@ async function iniciarExportacion() {
 
 </body>
 </html>
+

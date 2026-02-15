@@ -377,8 +377,6 @@ function buscarClave(o, ...ps) {
 
 // ============================================
 // IMPORTACIÓN DESDE EXCEL
-// Formato esperado del Excel:
-// Nombre_Producto | Descripcion | Precio_Venta | Stock_Minimo | Categoria | Estado | Gama | Fotos
 // ============================================
 async function importarDesdeExcel(event) {
     const archivo = event.target.files[0];
@@ -389,12 +387,12 @@ async function importarDesdeExcel(event) {
     progresoDiv.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Leyendo archivo Excel...';
 
     try {
-        const data     = await archivo.arrayBuffer();
+        const data = await archivo.arrayBuffer();
         const workbook = XLSX.read(data);
-        const hoja     = workbook.Sheets[workbook.SheetNames[0]];
+        const hoja = workbook.Sheets[workbook.SheetNames[0]];
         const productos = XLSX.utils.sheet_to_json(hoja).map(normalizarClaves);
 
-        console.log('Productos raw:', productos);
+        console.log('📊 Productos leídos del Excel:', productos);
 
         if (productos.length === 0) {
             progresoDiv.className = 'alert alert-warning';
@@ -411,17 +409,18 @@ async function importarDesdeExcel(event) {
             Categoria:       buscarClave(prod, 'categoria') ?? null,
             Estado:          buscarClave(prod, 'estado') ?? null,
             Gama:            buscarClave(prod, 'gama') ?? null,
-            Fotos:           buscarClave(prod, 'fotos', 'foto') ?? null,
+            Fotos:           buscarClave(prod, 'fotos', 'foto') ?? '',
         }));
 
-        console.log('✅ Datos validados para enviar:', JSON.stringify(datosValidados, null, 2));
+        console.log('✅ Datos validados para enviar:', datosValidados);
 
         // Importar en lotes
         const tamañoLote = 10;
-        let importados   = 0;
+        let importados = 0;
+        let todosLosErrores = [];
 
         for (let i = 0; i < datosValidados.length; i += tamañoLote) {
-            const lote    = datosValidados.slice(i, i + tamañoLote);
+            const lote = datosValidados.slice(i, i + tamañoLote);
             const progreso = Math.round(((i + lote.length) / datosValidados.length) * 100);
 
             progresoDiv.innerHTML = `
@@ -437,37 +436,88 @@ async function importarDesdeExcel(event) {
                     Registros: ${i + lote.length} / ${datosValidados.length}
                 </small>`;
 
+            console.log('📤 Enviando lote:', lote);
+
             const response = await fetch('/migracion/productos/importar', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Accept': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                 },
                 body: JSON.stringify({ modulo: 'productos', datos: lote })
             });
 
-            const texto = await response.text();
-            let resultado;
-            try { resultado = JSON.parse(texto); }
-            catch(e) { throw new Error('El servidor devolvió HTML. Verifica la ruta /migracion/productos/importar.'); }
+            console.log('📥 Response status:', response.status);
 
-            if (!resultado.success) throw new Error(resultado.mensaje);
+            const contentType = response.headers.get('content-type') || '';
+            const texto = await response.text();
+
+            console.log('📄 Response text:', texto);
+
+            if (contentType.includes('text/html') || texto.trim().startsWith('<!DOCTYPE') || texto.trim().startsWith('<html')) {
+                console.error('❌ El servidor devolvió HTML:');
+                console.error(texto);
+                throw new Error('El servidor devolvió HTML. Verifica la ruta /migracion/productos/importar');
+            }
+
+            let resultado;
+            try {
+                resultado = JSON.parse(texto);
+                console.log('✅ JSON parseado:', resultado);
+            } catch (e) {
+                console.error('❌ Error al parsear JSON:', e);
+                throw new Error('El servidor no devolvió JSON válido.');
+            }
+
+            if (!resultado.success) {
+                throw new Error(resultado.mensaje || 'Error desconocido');
+            }
+
             importados += resultado.importados || 0;
+            
+            // Acumular errores
+            if (resultado.errores && resultado.errores.length > 0) {
+                todosLosErrores = todosLosErrores.concat(resultado.errores);
+            }
+
             await new Promise(r => setTimeout(r, 300));
         }
 
         progresoDiv.className = 'alert alert-success';
-        progresoDiv.innerHTML = `
+        let mensajeFinal = `
             <i class="fa fa-check-circle"></i>
             <strong>¡Importación completada!</strong>
             <br><small>Se importaron ${importados} productos correctamente</small>
         `;
-        setTimeout(() => location.reload(), 3000);
+
+        // Mostrar errores si los hay
+        if (todosLosErrores.length > 0) {
+            mensajeFinal += `
+                <div class="mt-3">
+                    <strong>⚠️ Advertencias (${todosLosErrores.length}):</strong>
+                    <ul class="text-start mt-2">
+                        ${todosLosErrores.slice(0, 10).map(e => `<li>${e}</li>`).join('')}
+                        ${todosLosErrores.length > 10 ? `<li><em>...y ${todosLosErrores.length - 10} más</em></li>` : ''}
+                    </ul>
+                </div>
+            `;
+        }
+
+        progresoDiv.innerHTML = mensajeFinal;
+
+        if (importados > 0) {
+            setTimeout(() => location.reload(), 3000);
+        }
 
     } catch (error) {
-        console.error('Error:', error);
+        console.error('❌ Error completo:', error);
         progresoDiv.className = 'alert alert-danger';
-        progresoDiv.innerHTML = `<i class="fa fa-exclamation-triangle"></i> Error: ${error.message}`;
+        progresoDiv.innerHTML = `
+            <i class="fa fa-exclamation-triangle"></i> 
+            <strong>Error:</strong> ${error.message}
+            <br><small class="mt-2 d-block">Abre la consola del navegador (F12) para más detalles</small>
+        `;
     }
 
     event.target.value = '';
@@ -489,9 +539,14 @@ async function iniciarExportacion() {
 
         const initResp = await fetch('/migracion/productos/iniciar', {
             method: 'POST',
-            headers: { 'Content-Type':'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+            headers: { 
+                'Content-Type':'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content 
+            },
             body: JSON.stringify({ modulo: 'productos' })
         });
+        
         const initData = await initResp.json();
         if (!initData.success) throw new Error(initData.mensaje);
 
@@ -501,9 +556,14 @@ async function iniciarExportacion() {
         while (!completado && intentos < 100) {
             const loteResp = await fetch('/migracion/productos/lote', {
                 method: 'POST',
-                headers: { 'Content-Type':'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+                headers: { 
+                    'Content-Type':'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content 
+                },
                 body: JSON.stringify({ modulo: 'productos' })
             });
+            
             const loteData = await loteResp.json();
             if (!loteData.success) throw new Error(loteData.mensaje);
             if (loteData.datos?.length > 0) todosLosDatos = todosLosDatos.concat(loteData.datos);
@@ -518,7 +578,7 @@ async function iniciarExportacion() {
                          style="width: ${loteData.progreso}%"></div>
                 </div>
                 <small class="text-muted mt-2 d-block">
-                    Registros: ${loteData.registros_migrados} / ${loteData.total_registros} (Lote ${loteData.lote_actual})
+                    Registros: ${loteData.registros_migrados} / ${loteData.total_registros}
                 </small>`;
 
             completado = loteData.completado;
@@ -536,12 +596,11 @@ async function iniciarExportacion() {
 
         progresoDiv.innerHTML += '<br><i class="fa fa-spinner fa-spin"></i> Generando Excel...';
 
-        // Crear hoja con los datos
         const hoja = todosLosDatos.map(prod => ({
-            'Nombre Producto': prod.Nombre_Producto,
+            'Nombre_Producto': prod.Nombre_Producto,
             'Descripcion':     prod.Descripcion,
-            'Precio Venta':    prod.Precio_Venta,
-            'Stock Minimo':    prod.Stock_Minimo,
+            'Precio_Venta':    prod.Precio_Venta,
+            'Stock_Minimo':    prod.Stock_Minimo,
             'Categoria':       prod.Categoria,
             'Estado':          prod.Estado,
             'Gama':            prod.Gama,
@@ -549,57 +608,20 @@ async function iniciarExportacion() {
         }));
 
         const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.json_to_sheet(hoja);
+        XLSX.utils.book_append_sheet(wb, ws, 'Productos');
 
-        function estilos(ws, colorH, colorF) {
-            const rng = XLSX.utils.decode_range(ws['!ref']);
-            const cols = [];
-            for (let C = rng.s.c; C <= rng.e.c; C++) {
-                let w = 10;
-                for (let R = rng.s.r; R <= rng.e.r; R++) {
-                    const c = ws[XLSX.utils.encode_cell({r:R,c:C})];
-                    if (c?.v) w = Math.max(w, c.v.toString().length);
-                }
-                cols.push({wch: w+2});
-            }
-            ws['!cols'] = cols;
-            for (let C = rng.s.c; C <= rng.e.c; C++) {
-                const a = XLSX.utils.encode_cell({r:0,c:C});
-                if (!ws[a]) continue;
-                ws[a].s = { font:{name:'Calibri',sz:12,bold:true,color:{rgb:'FFFFFF'}}, fill:{fgColor:{rgb:colorH}}, alignment:{horizontal:'center',vertical:'center'}, border:{top:{style:'thin',color:{rgb:'000000'}},bottom:{style:'thin',color:{rgb:'000000'}},left:{style:'thin',color:{rgb:'000000'}},right:{style:'thin',color:{rgb:'000000'}}} };
-            }
-            for (let R = rng.s.r+1; R <= rng.e.r; R++) {
-                for (let C = rng.s.c; C <= rng.e.c; C++) {
-                    const a = XLSX.utils.encode_cell({r:R,c:C});
-                    if (!ws[a]) continue;
-                    ws[a].s = { font:{name:'Calibri',sz:11}, fill:{fgColor:{rgb: R%2===0?'FFFFFF':colorF}}, alignment:{horizontal:'left',vertical:'center'}, border:{top:{style:'thin',color:{rgb:'D3D3D3'}},bottom:{style:'thin',color:{rgb:'D3D3D3'}},left:{style:'thin',color:{rgb:'D3D3D3'}},right:{style:'thin',color:{rgb:'D3D3D3'}}} };
-                }
-            }
-        }
-
-        const ws1 = XLSX.utils.json_to_sheet(hoja);
-        estilos(ws1, '4472C4', 'F2F2F2');
-        XLSX.utils.book_append_sheet(wb, ws1, 'Productos');
-
-        const info = XLSX.utils.aoa_to_sheet([
-            ['REPORTE DE PRODUCTOS'],[''],
-            ['Fecha de Generación:', new Date().toLocaleString('es-ES')],
-            ['Total Productos:', todosLosDatos.length],
-            ['Generado por:', 'TECNICELL RM']
-        ]);
-        info['A1'].s = { font:{name:'Calibri',sz:16,bold:true,color:{rgb:'4472C4'}}, alignment:{horizontal:'center'} };
-        info['!cols'] = [{wch:25},{wch:30}];
-        XLSX.utils.book_append_sheet(wb, info, 'Información');
-
-        XLSX.writeFile(wb, `Productos_${new Date().toISOString().split('T')[0]}.xlsx`, {bookType:'xlsx', cellStyles:true});
+        XLSX.writeFile(wb, `Productos_${new Date().toISOString().split('T')[0]}.xlsx`);
 
         progresoDiv.className = 'alert alert-success';
         progresoDiv.innerHTML = `
             <i class="fa fa-check-circle"></i> <strong>¡Exportación completada!</strong>
             <br><small>${todosLosDatos.length} productos exportados</small>
         `;
-        setTimeout(() => { progresoDiv.innerHTML=''; progresoDiv.className=''; }, 8000);
+        setTimeout(() => { progresoDiv.innerHTML=''; progresoDiv.className=''; }, 5000);
 
     } catch (error) {
+        console.error('Error en exportación:', error);
         progresoDiv.className = 'alert alert-danger';
         progresoDiv.innerHTML = `<i class="fa fa-exclamation-triangle"></i> Error: ${error.message}`;
     } finally {
