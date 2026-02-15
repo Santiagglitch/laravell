@@ -18,65 +18,27 @@ use App\Http\Controllers\MigracionController;
 
 Route::get('/', function () {
     return view('inicio');
-})->name('inicio');
-// ===============================================
-Route::post('/migracion/proveedores/importar', [MigracionController::class, 'importarProveedores2'])->name('migracion.proveedores.importar');
-Route::post('/migracion/proveedores/iniciar',  [MigracionController::class, 'iniciarProveedores'])->name('migracion.proveedores.iniciar');
-Route::post('/migracion/proveedores/lote',     [MigracionController::class, 'loteProveedores'])->name('migracion.proveedores.lote');
-
-
-//Compras migracion 
-Route::post('/migracion/buscar-producto', [MigracionController::class, 'buscarProducto']);
-Route::post('/migracion/buscar-proveedor', [MigracionController::class, 'buscarProveedor']);
-
-// Búsqueda de producto y proveedor para importación de compras
-Route::post('/migracion/buscar-producto', [MigracionController::class, 'buscarProducto']);
-Route::post('/migracion/buscar-proveedor', [MigracionController::class, 'buscarProveedor']);
-
-// Buscar venta por documento (AJAX)
-Route::get('/ventas/por-documento/{documento}', [DetalleDevolucionController::class, 'ventaPorDocumento']);
-
-Route::post('/migracion/buscar-venta', [MigracionController::class, 'buscarVenta']);
-
-
-// Importar y exportar empleados (migración incremental)
-Route::post('/migracion/empleados/importar', [MigracionController::class, 'importarEmpleados'])->name('migracion.empleados.importar');
-Route::post('/migracion/empleados/iniciar',  [MigracionController::class, 'iniciarEmpleados'])->name('migracion.empleados.iniciar');
-Route::post('/migracion/empleados/lote',     [MigracionController::class, 'loteEmpleados'])->name('migracion.empleados.lote');
-
-
-//historial de migracion 
-Route::get('/migracion/historial', [MigracionController::class, 'historial'])->name('migracion.historial');
-
-// ... tus otras rutas ...
-// Rutas de migración incremental
-// ===============================================
-// RUTAS PARA MIGRACIÓN DE PRODUCTOS
-// Agregar estas rutas a tu archivo web.php
+})->name('inicio');// ===============================================
+// RUTAS DE MIGRACIÓN UNIFICADAS
 // ===============================================
 
-// Importar y exportar productos (migración incremental)
-Route::post('/migracion/productos/importar', [MigracionController::class, 'importarProductos'])->name('migracion.productos.importar');
-Route::post('/migracion/productos/iniciar', [MigracionController::class, 'iniciarProductos'])->name('migracion.productos.iniciar');
-Route::post('/migracion/productos/lote', [MigracionController::class, 'loteProductos'])->name('migracion.productos.lote');
-Route::post('/migracion/productos/importar', [MigracionController::class, 'importarProductos']);
-Route::post('/migracion/productos/iniciar', [MigracionController::class, 'iniciarProductos']);
-Route::post('/migracion/productos/lote', [MigracionController::class, 'loteProductos']);
-Route::prefix('migracion')->group(function () {
-    Route::post('/importar', [MigracionController::class, 'importarLote'])->name('migracion.importar');
-    Route::post('/lote', [MigracionController::class, 'migrarLote'])->name('migracion.lote');
-    Route::post('/iniciar', [MigracionController::class, 'iniciarMigracion'])->name('migracion.iniciar');
-    Route::get('/estado', [MigracionController::class, 'obtenerEstado'])->name('migracion.estado');
-});
-
-Route::prefix('migracion')->group(function () {
-    Route::post('/importar', [MigracionController::class, 'importarLote'])->name('migracion.importar');
-});
-
+// Rutas principales (usar estas para TODOS los módulos)
 Route::post('/migracion/importar', [MigracionController::class, 'importar'])->name('migracion.importar');
 Route::post('/migracion/iniciar', [MigracionController::class, 'iniciar'])->name('migracion.iniciar');
 Route::post('/migracion/lote', [MigracionController::class, 'lote'])->name('migracion.lote');
 
+// Rutas de búsqueda auxiliares
+Route::post('/migracion/buscar-producto', [MigracionController::class, 'buscarProducto']);
+Route::post('/migracion/buscar-proveedor', [MigracionController::class, 'buscarProveedor']);
+Route::post('/migracion/buscar-venta', [MigracionController::class, 'buscarVenta']);
+
+// Historial de migraciones
+Route::get('/migracion/historial', [MigracionController::class, 'historial'])->name('migracion.historial');
+
+// Búsqueda de venta por documento (AJAX)
+Route::get('/ventas/por-documento/{documento}', [DetalleDevolucionController::class, 'ventaPorDocumento']);
+
+// ===
 // Detalle Devolucion - ADMIN
 Route::get('/detalledevolucion', [DetalleDevolucionController::class, 'get'])->name('detalledevolucion.index');
 Route::post('/detalledevolucion', [DetalleDevolucionController::class, 'post'])->name('detalledevolucion.store');
