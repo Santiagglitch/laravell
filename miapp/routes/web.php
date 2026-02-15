@@ -295,8 +295,5 @@ Route::get('/pie-pag', function () {
     return view('Pie_pag.index');
 })->name('pie.pag');
 
-
 Route::get('/perfil', [PerfilController::class, 'mostrar'])->name('perfil');
-Route::put('/perfil/actualizar-datos', [PerfilController::class, 'actualizarDatos'])->name('perfil.actualizarDatos');
-Route::put('/perfil/actualizar-foto', [PerfilController::class, 'actualizarFoto'])->name('perfil.actualizarFoto');
-Route::post('/perfil/actualizar-contrasena', [PerfilController::class, 'actualizarContrasena'])->name('perfil.actualizarContrasena');
+Route::post('/perfil/actualizar', [PerfilController::class, 'actualizar'])->name('perfil.actualizar');

@@ -75,14 +75,14 @@
                         <strong>{{ session('nombre') ?? 'Perfil' }}</strong>
                     </a>
 
-                    <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
+                    <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
                         <li><a class="dropdown-item" href="{{ route('perfil') }}">Mi perfil</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
-                            <form action="{{ route('logout') }}" method="POST" class="m-0">
-                                @csrf
-                                <button type="submit" class="dropdown-item">Cerrar sesión</button>
-                            </form>
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="dropdown-item">Cerrar sesión</button>
+                        </form>
                         </li>
                     </ul>
                 </div>
