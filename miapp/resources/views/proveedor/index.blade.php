@@ -8,13 +8,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/menu.css') }}">
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body>
 
-<div class="d-flex" style="min-height: 100vh;">
+<div class="d-flex" style="min-height:100vh">
 
     <div class="barra-lateral d-flex flex-column flex-shrink-0 p-3 bg-primary text-white">
         <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
@@ -63,12 +62,11 @@
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
                 <a class="navbar-brand">Sistema gestión de inventarios</a>
-
                 <div class="dropdown ms-auto">
                     <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle"
                        data-bs-toggle="dropdown">
                         <img src="{{ asset('fotos_empleados/686fe89fe865f_Foto Kevin.jpeg') }}"
-                             alt="Perfil" width="32" height="32" class="rounded-circle me-2">
+                             width="32" height="32" class="rounded-circle me-2">
                         <strong>{{ session('nombre') ?? 'Perfil' }}</strong>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-dark">
@@ -76,8 +74,7 @@
                         <li><a class="dropdown-item" href="#">Editar perfil</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
-                            <form action="{{ route('logout') }}" method="POST">
-                                @csrf
+                            <form action="{{ route('logout') }}" method="POST">@csrf
                                 <button type="submit" class="dropdown-item">Cerrar sesión</button>
                             </form>
                         </li>
@@ -94,65 +91,28 @@
             </div>
 
             @if(session('mensaje'))
-                <div id="alertaMensaje" class="alert alert-success text-center mt-3">
-                    {{ session('mensaje') }}
-                </div>
-                <script>
-                    setTimeout(() => {
-                        let alerta = document.getElementById('alertaMensaje');
-                        if (alerta) {
-                            alerta.style.transition = "opacity 0.5s";
-                            alerta.style.opacity = 0;
-                            setTimeout(() => alerta.remove(), 500);
-                        }
-                    }, 2000);
-                </script>
+                <div id="alertaMensaje" class="alert alert-success text-center mt-3">{{ session('mensaje') }}</div>
+                <script>setTimeout(()=>{let a=document.getElementById('alertaMensaje');if(a){a.style.transition="opacity 0.5s";a.style.opacity=0;setTimeout(()=>a.remove(),500);}},2000);</script>
             @endif
-
             @if(session('error'))
-                <div id="alertaError" class="alert alert-danger text-center mt-3">
-                    {{ session('error') }}
-                </div>
-                <script>
-                    setTimeout(() => {
-                        let alerta = document.getElementById('alertaError');
-                        if (alerta) {
-                            alerta.style.transition = "opacity 0.5s";
-                            alerta.style.opacity = 0;
-                            setTimeout(() => alerta.remove(), 500);
-                        }
-                    }, 5000);
-                </script>
+                <div id="alertaError" class="alert alert-danger text-center mt-3">{{ session('error') }}</div>
+                <script>setTimeout(()=>{let a=document.getElementById('alertaError');if(a){a.style.transition="opacity 0.5s";a.style.opacity=0;setTimeout(()=>a.remove(),500);}},5000);</script>
             @endif
-
             @if($errors->any())
-                <div id="alertaErrores" class="alert alert-danger mt-3">
-                    <ul class="mb-0">
-                        @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
+                <div class="alert alert-danger mt-3">
+                    <ul class="mb-0">@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul>
                 </div>
-                <script>
-                    setTimeout(() => {
-                        let alerta = document.getElementById('alertaErrores');
-                        if (alerta) {
-                            alerta.style.transition = "opacity 0.5s";
-                            alerta.style.opacity = 0;
-                            setTimeout(() => alerta.remove(), 500);
-                        }
-                    }, 4000);
-                </script>
             @endif
 
+            {{-- Botones igual que productos --}}
             <div class="d-flex justify-content-end mt-4 gap-2">
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#crearModal">
                     <i class="fa fa-plus"></i> Añadir Proveedor
                 </button>
-                <button class="btn btn-warning" onclick="document.getElementById('archivoExcel').click()">
+                <button class="btn btn-warning" onclick="document.getElementById('archivoExcelProveedores').click()">
                     <i class="fa fa-upload"></i> Importar desde Excel
                 </button>
-                <input type="file" id="archivoExcel" accept=".xlsx,.xls" style="display:none;"
+                <input type="file" id="archivoExcelProveedores" accept=".xlsx,.xls" style="display:none;"
                        onchange="importarDesdeExcel(event)">
                 <button class="btn btn-primary" onclick="iniciarExportacion()">
                     <i class="fa fa-download"></i> Exportar a Excel
@@ -168,7 +128,7 @@
                             <th>ID</th>
                             <th>Nombre</th>
                             <th>Correo</th>
-                            <th>Telefono</th>
+                            <th>Teléfono</th>
                             <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
@@ -201,12 +161,11 @@
                             </td>
                         </tr>
 
-                        <!-- MODAL EDITAR -->
+                        {{-- Modal Editar --}}
                         <div class="modal fade" id="editar{{ $prov->ID_Proveedor }}">
                             <div class="modal-dialog">
                                 <form method="POST" action="{{ route('proveedor.update') }}">
-                                    @csrf
-                                    @method('PUT')
+                                    @csrf @method('PUT')
                                     <input type="hidden" name="ID_Proveedor" value="{{ $prov->ID_Proveedor }}">
                                     <div class="modal-content">
                                         <div class="modal-header bg-warning">
@@ -217,15 +176,12 @@
                                             <label>Nombre</label>
                                             <input class="form-control mb-3" name="Nombre_Proveedor"
                                                    value="{{ $prov->Nombre_Proveedor }}" required>
-
                                             <label>Correo</label>
                                             <input type="email" class="form-control mb-3" name="Correo_Electronico"
                                                    value="{{ $prov->Correo_Electronico }}" required>
-
-                                            <label>Telefono</label>
+                                            <label>Teléfono</label>
                                             <input class="form-control mb-3" name="Telefono"
                                                    value="{{ $prov->Telefono }}" required>
-
                                             <label>Estado</label>
                                             <select name="ID_Estado" class="form-control" required>
                                                 <option value="1" {{ $prov->ID_Estado==1?'selected':'' }}>Activo</option>
@@ -242,12 +198,11 @@
                             </div>
                         </div>
 
-                        <!-- MODAL ELIMINAR -->
+                        {{-- Modal Eliminar --}}
                         <div class="modal fade" id="eliminar{{ $prov->ID_Proveedor }}">
                             <div class="modal-dialog">
                                 <form method="POST" action="{{ route('proveedor.destroy') }}">
-                                    @csrf
-                                    @method('DELETE')
+                                    @csrf @method('DELETE')
                                     <input type="hidden" name="ID_Proveedor" value="{{ $prov->ID_Proveedor }}">
                                     <div class="modal-content">
                                         <div class="modal-header bg-danger text-white">
@@ -270,18 +225,15 @@
                                 </form>
                             </div>
                         </div>
+
                     @empty
-                        <tr>
-                            <td colspan="6" class="text-center text-muted">
-                                No hay proveedores registrados.
-                            </td>
-                        </tr>
+                        <tr><td colspan="6" class="text-center text-muted">No hay proveedores registrados.</td></tr>
                     @endforelse
                     </tbody>
                 </table>
             </div>
 
-            <!-- MODAL CREAR -->
+            {{-- Modal Crear --}}
             <div class="modal fade" id="crearModal">
                 <div class="modal-dialog">
                     <form method="POST" action="{{ route('proveedor.store') }}">
@@ -293,17 +245,11 @@
                             </div>
                             <div class="modal-body">
                                 <label>Nombre</label>
-                                <input class="form-control mb-3" name="Nombre_Proveedor" 
-                                       placeholder="Ingrese el nombre del proveedor" required>
-
+                                <input class="form-control mb-3" name="Nombre_Proveedor" placeholder="Nombre del proveedor" required>
                                 <label>Correo</label>
-                                <input type="email" class="form-control mb-3" name="Correo_Electronico" 
-                                       placeholder="ejemplo@correo.com" required>
-
-                                <label>Telefono</label>
-                                <input class="form-control mb-3" name="Telefono" 
-                                       placeholder="Ingrese el teléfono" required>
-
+                                <input type="email" class="form-control mb-3" name="Correo_Electronico" placeholder="ejemplo@correo.com" required>
+                                <label>Teléfono</label>
+                                <input class="form-control mb-3" name="Telefono" placeholder="Teléfono" required>
                                 <label>Estado</label>
                                 <select class="form-control" name="ID_Estado" required>
                                     <option value="">--Seleccione--</option>
@@ -331,24 +277,24 @@
 // ============================================
 // HELPERS
 // ============================================
-function normalizarClaves(obj) {
-    const r = {};
-    Object.keys(obj).forEach(key => {
-        r[key.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim()] = obj[key];
-    });
-    return r;
+function limpiar(s) {
+    return String(s ?? '')
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[\s_]+/g, '').toLowerCase().trim();
 }
-
-function buscarClave(o, ...ps) {
-    for (const p of ps) {
-        const n = p.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
-        if (o[n] !== undefined) return o[n];
+function leerCampo(fila, ...nombres) {
+    const limpio = {};
+    for (const [k, v] of Object.entries(fila)) limpio[limpiar(k)] = v;
+    for (const nombre of nombres) {
+        const val = limpio[limpiar(nombre)];
+        if (val !== undefined && val !== null && val !== '') return val;
     }
     return null;
 }
 
 // ============================================
 // IMPORTACIÓN DESDE EXCEL
+// Columnas aceptadas: Nombre_Proveedor | Correo_Electronico | Telefono | Estado/ID_Estado
 // ============================================
 async function importarDesdeExcel(event) {
     const archivo = event.target.files[0];
@@ -359,29 +305,40 @@ async function importarDesdeExcel(event) {
     progresoDiv.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Leyendo archivo Excel...';
 
     try {
-        const data = await archivo.arrayBuffer();
+        const data     = await archivo.arrayBuffer();
         const workbook = XLSX.read(data);
-        const hoja = workbook.Sheets[workbook.SheetNames[0]];
-        const proveedores = XLSX.utils.sheet_to_json(hoja).map(normalizarClaves);
+        const hoja     = workbook.Sheets[workbook.SheetNames[0]];
+        const filas    = XLSX.utils.sheet_to_json(hoja);
 
-        if (proveedores.length === 0) {
+        if (filas.length === 0) {
             progresoDiv.className = 'alert alert-warning';
             progresoDiv.innerHTML = '<i class="fa fa-exclamation-triangle"></i> El archivo está vacío';
             return;
         }
 
-        const datosValidados = proveedores.map(prov => ({
-            Nombre_Proveedor: buscarClave(prov, 'Nombre Proveedor', 'Nombre_Proveedor', 'nombre') || '',
-            Correo_Electronico: buscarClave(prov, 'Correo Electronico', 'Correo_Electronico', 'correo', 'email') || '',
-            Telefono: buscarClave(prov, 'Telefono', 'telefono', 'phone') || '',
-            ID_Estado: buscarClave(prov, 'Estado', 'ID_Estado', 'estado') || 1
+        const datosValidados = filas.map(fila => ({
+            Nombre_Proveedor:   leerCampo(fila, 'Nombre_Proveedor',   'Nombre Proveedor',   'Nombre')   ?? null,
+            Correo_Electronico: leerCampo(fila, 'Correo_Electronico', 'Correo Electronico', 'Correo', 'Email') ?? null,
+            Telefono:           leerCampo(fila, 'Telefono',           'Teléfono')                        ?? null,
+            ID_Estado:          leerCampo(fila, 'ID_Estado',          'Estado')                          ?? 1,
         }));
 
+        const sinNombre = datosValidados.filter(d => !d.Nombre_Proveedor);
+        if (sinNombre.length === datosValidados.length) {
+            progresoDiv.className = 'alert alert-danger';
+            progresoDiv.innerHTML = `<i class="fa fa-exclamation-triangle"></i>
+                <strong>No se detectó la columna "Nombre_Proveedor".</strong><br>
+                <small>Columnas encontradas: <code>${Object.keys(filas[0]).join(', ')}</code></small>`;
+            event.target.value = '';
+            return;
+        }
+
         const tamañoLote = 10;
-        let importados = 0;
+        let importados   = 0;
+        let todosLosErrores = [];
 
         for (let i = 0; i < datosValidados.length; i += tamañoLote) {
-            const lote = datosValidados.slice(i, i + tamañoLote);
+            const lote    = datosValidados.slice(i, i + tamañoLote);
             const progreso = Math.round(((i + lote.length) / datosValidados.length) * 100);
 
             progresoDiv.innerHTML = `
@@ -393,9 +350,11 @@ async function importarDesdeExcel(event) {
                     <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning"
                          style="width: ${progreso}%"></div>
                 </div>
-                <small class="text-muted mt-2 d-block">Registros: ${i + lote.length} / ${datosValidados.length}</small>`;
+                <small class="text-muted mt-2 d-block">
+                    Registros: ${i + lote.length} / ${datosValidados.length}
+                </small>`;
 
-            const response = await fetch('/migracion/importar', {
+            const response = await fetch('/migracion/proveedores/importar', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -404,28 +363,32 @@ async function importarDesdeExcel(event) {
                 body: JSON.stringify({ modulo: 'proveedores', datos: lote })
             });
 
-            const resultado = await response.json();
+            const texto = await response.text();
+            let resultado;
+            try { resultado = JSON.parse(texto); }
+            catch(e) { throw new Error('El servidor devolvió HTML. Verifica la ruta /migracion/proveedores/importar.'); }
+
             if (!resultado.success) throw new Error(resultado.mensaje);
             importados += resultado.importados || 0;
-            
-            // Mostrar errores si los hay
-            if (resultado.errores && resultado.errores.length > 0) {
-                console.warn('Errores durante importación:', resultado.errores);
-            }
-            
+            if (resultado.errores?.length > 0) todosLosErrores.push(...resultado.errores);
+
             await new Promise(r => setTimeout(r, 300));
         }
 
-        progresoDiv.className = 'alert alert-success';
-        progresoDiv.innerHTML = `
+        let htmlFinal = `
             <i class="fa fa-check-circle"></i>
             <strong>¡Importación completada!</strong>
-            <br><small>Se importaron ${importados} proveedores correctamente</small>
-        `;
-        setTimeout(() => location.reload(), 3000);
+            <br><small>Se importaron <strong>${importados}</strong> proveedores correctamente.</small>`;
+        if (todosLosErrores.length > 0) {
+            htmlFinal += `<hr class="my-2"><small><strong>Advertencias (${todosLosErrores.length}):</strong>
+                <ul class="mb-0 mt-1 text-start">${todosLosErrores.map(e => `<li>${e}</li>`).join('')}</ul></small>`;
+        }
+        progresoDiv.className = importados > 0 ? 'alert alert-success' : 'alert alert-warning';
+        progresoDiv.innerHTML = htmlFinal;
+
+        if (importados > 0) setTimeout(() => location.reload(), 3000);
 
     } catch (error) {
-        console.error('Error:', error);
         progresoDiv.className = 'alert alert-danger';
         progresoDiv.innerHTML = `<i class="fa fa-exclamation-triangle"></i> Error: ${error.message}`;
     }
@@ -447,7 +410,7 @@ async function iniciarExportacion() {
         progresoDiv.className = 'alert alert-info';
         progresoDiv.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Iniciando exportación...';
 
-        const initResp = await fetch('/migracion/iniciar', {
+        const initResp = await fetch('/migracion/proveedores/iniciar', {
             method: 'POST',
             headers: { 'Content-Type':'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
             body: JSON.stringify({ modulo: 'proveedores' })
@@ -459,7 +422,7 @@ async function iniciarExportacion() {
         let completado = false, intentos = 0;
 
         while (!completado && intentos < 100) {
-            const loteResp = await fetch('/migracion/lote', {
+            const loteResp = await fetch('/migracion/proveedores/lote', {
                 method: 'POST',
                 headers: { 'Content-Type':'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
                 body: JSON.stringify({ modulo: 'proveedores' })
@@ -477,7 +440,9 @@ async function iniciarExportacion() {
                     <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
                          style="width: ${loteData.progreso}%"></div>
                 </div>
-                <small class="text-muted mt-2 d-block">Registros: ${loteData.registros_migrados} / ${loteData.total_registros}</small>`;
+                <small class="text-muted mt-2 d-block">
+                    Registros: ${loteData.registros_migrados} / ${loteData.total_registros} (Lote ${loteData.lote_actual})
+                </small>`;
 
             completado = loteData.completado;
             intentos++;
@@ -494,38 +459,60 @@ async function iniciarExportacion() {
 
         progresoDiv.innerHTML += '<br><i class="fa fa-spinner fa-spin"></i> Generando Excel...';
 
-        const hoja1 = todosLosDatos.map(prov => ({
-            'Nombre Proveedor': prov.Nombre_Proveedor,
-            'Correo Electronico': prov.Correo_Electronico,
-            'Telefono': prov.Telefono,
-            'Estado': prov.Estado
+        // Hoja de datos — nombres técnicos para poder reimportar
+        const hoja = todosLosDatos.map(prov => ({
+            'Nombre_Proveedor':   prov.Nombre_Proveedor,
+            'Correo_Electronico': prov.Correo_Electronico,
+            'Telefono':           prov.Telefono,
+            'Estado':             prov.Estado,
         }));
 
-        const wb = XLSX.utils.book_new();
-        const ws1 = XLSX.utils.json_to_sheet(hoja1);
-        
-        // Estilos
-        const rng = XLSX.utils.decode_range(ws1['!ref']);
-        ws1['!cols'] = [{wch:25},{wch:30},{wch:15},{wch:15}];
-        
+        function estilos(ws, colorH, colorF) {
+            const rng  = XLSX.utils.decode_range(ws['!ref']);
+            const cols = [];
+            for (let C = rng.s.c; C <= rng.e.c; C++) {
+                let w = 10;
+                for (let R = rng.s.r; R <= rng.e.r; R++) {
+                    const c = ws[XLSX.utils.encode_cell({r:R,c:C})];
+                    if (c?.v) w = Math.max(w, c.v.toString().length);
+                }
+                cols.push({wch: w+2});
+            }
+            ws['!cols'] = cols;
+            for (let C = rng.s.c; C <= rng.e.c; C++) {
+                const a = XLSX.utils.encode_cell({r:0,c:C});
+                if (!ws[a]) continue;
+                ws[a].s = { font:{name:'Calibri',sz:12,bold:true,color:{rgb:'FFFFFF'}}, fill:{fgColor:{rgb:colorH}}, alignment:{horizontal:'center',vertical:'center'}, border:{top:{style:'thin',color:{rgb:'000000'}},bottom:{style:'thin',color:{rgb:'000000'}},left:{style:'thin',color:{rgb:'000000'}},right:{style:'thin',color:{rgb:'000000'}}} };
+            }
+            for (let R = rng.s.r+1; R <= rng.e.r; R++) {
+                for (let C = rng.s.c; C <= rng.e.c; C++) {
+                    const a = XLSX.utils.encode_cell({r:R,c:C});
+                    if (!ws[a]) continue;
+                    ws[a].s = { font:{name:'Calibri',sz:11}, fill:{fgColor:{rgb: R%2===0?'FFFFFF':colorF}}, alignment:{horizontal:'left',vertical:'center'}, border:{top:{style:'thin',color:{rgb:'D3D3D3'}},bottom:{style:'thin',color:{rgb:'D3D3D3'}},left:{style:'thin',color:{rgb:'D3D3D3'}},right:{style:'thin',color:{rgb:'D3D3D3'}}} };
+                }
+            }
+        }
+
+        const wb  = XLSX.utils.book_new();
+        const ws1 = XLSX.utils.json_to_sheet(hoja);
+        estilos(ws1, '4472C4', 'F2F2F2');
         XLSX.utils.book_append_sheet(wb, ws1, 'Proveedores');
 
         const info = XLSX.utils.aoa_to_sheet([
-            ['REPORTE DE PROVEEDORES - TECNICELL RM'],[''],
+            ['REPORTE DE PROVEEDORES'],[''],
             ['Fecha de Generación:', new Date().toLocaleString('es-ES')],
             ['Total Proveedores:', todosLosDatos.length],
-            ['Generado por:', '{{ session("nombre") ?? "TECNICELL RM" }}']
+            ['Generado por:', 'TECNICELL RM']
         ]);
-        info['!cols'] = [{wch:30},{wch:30}];
+        if (info['A1']) info['A1'].s = {font:{name:'Calibri',sz:16,bold:true,color:{rgb:'4472C4'}},alignment:{horizontal:'center'}};
+        info['!cols'] = [{wch:25},{wch:30}];
         XLSX.utils.book_append_sheet(wb, info, 'Información');
 
-        XLSX.writeFile(wb, `Proveedores_${new Date().toISOString().split('T')[0]}.xlsx`);
+        XLSX.writeFile(wb, `Proveedores_${new Date().toISOString().split('T')[0]}.xlsx`, {bookType:'xlsx', cellStyles:true});
 
         progresoDiv.className = 'alert alert-success';
-        progresoDiv.innerHTML = `
-            <i class="fa fa-check-circle"></i> <strong>¡Exportación completada!</strong>
-            <br><small>${todosLosDatos.length} proveedores exportados</small>
-        `;
+        progresoDiv.innerHTML = `<i class="fa fa-check-circle"></i> <strong>¡Exportación completada!</strong>
+            <br><small>${todosLosDatos.length} proveedores exportados</small>`;
         setTimeout(() => { progresoDiv.innerHTML=''; progresoDiv.className=''; }, 8000);
 
     } catch (error) {

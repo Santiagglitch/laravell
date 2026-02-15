@@ -19,6 +19,10 @@ use App\Http\Controllers\MigracionController;
 Route::get('/', function () {
     return view('inicio');
 })->name('inicio');
+// ===============================================
+Route::post('/migracion/proveedores/importar', [MigracionController::class, 'importarProveedores2'])->name('migracion.proveedores.importar');
+Route::post('/migracion/proveedores/iniciar',  [MigracionController::class, 'iniciarProveedores'])->name('migracion.proveedores.iniciar');
+Route::post('/migracion/proveedores/lote',     [MigracionController::class, 'loteProveedores'])->name('migracion.proveedores.lote');
 
 
 //Compras migracion 
@@ -34,7 +38,11 @@ Route::get('/ventas/por-documento/{documento}', [DetalleDevolucionController::cl
 
 Route::post('/migracion/buscar-venta', [MigracionController::class, 'buscarVenta']);
 
-// MigracionController.php
+
+// Importar y exportar empleados (migración incremental)
+Route::post('/migracion/empleados/importar', [MigracionController::class, 'importarEmpleados'])->name('migracion.empleados.importar');
+Route::post('/migracion/empleados/iniciar',  [MigracionController::class, 'iniciarEmpleados'])->name('migracion.empleados.iniciar');
+Route::post('/migracion/empleados/lote',     [MigracionController::class, 'loteEmpleados'])->name('migracion.empleados.lote');
 
 
 //historial de migracion 
@@ -42,8 +50,18 @@ Route::get('/migracion/historial', [MigracionController::class, 'historial'])->n
 
 // ... tus otras rutas ...
 // Rutas de migración incremental
+// ===============================================
+// RUTAS PARA MIGRACIÓN DE PRODUCTOS
+// Agregar estas rutas a tu archivo web.php
+// ===============================================
 
-
+// Importar y exportar productos (migración incremental)
+Route::post('/migracion/productos/importar', [MigracionController::class, 'importarProductos'])->name('migracion.productos.importar');
+Route::post('/migracion/productos/iniciar', [MigracionController::class, 'iniciarProductos'])->name('migracion.productos.iniciar');
+Route::post('/migracion/productos/lote', [MigracionController::class, 'loteProductos'])->name('migracion.productos.lote');
+Route::post('/migracion/productos/importar', [MigracionController::class, 'importarProductos']);
+Route::post('/migracion/productos/iniciar', [MigracionController::class, 'iniciarProductos']);
+Route::post('/migracion/productos/lote', [MigracionController::class, 'loteProductos']);
 Route::prefix('migracion')->group(function () {
     Route::post('/importar', [MigracionController::class, 'importarLote'])->name('migracion.importar');
     Route::post('/lote', [MigracionController::class, 'migrarLote'])->name('migracion.lote');

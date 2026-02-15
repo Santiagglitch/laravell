@@ -490,58 +490,44 @@ class MigracionController extends Controller
     private function importarProveedores($datos)
     {
         $importados = 0;
-        $errores = [];
-        
+        $errores    = [];
+
         DB::beginTransaction();
 
         try {
             foreach ($datos as $index => $fila) {
-                $nombre = $fila['Nombre_Proveedor'] ?? null;
-                $correo = $fila['Correo_Electronico'] ?? null;
-                $telefono = $fila['Telefono'] ?? null;
-                $estado = $fila['ID_Estado'] ?? 1;
+                $nombre   = $fila['Nombre_Proveedor']   ?? null;
+                $correo   = $fila['Correo_Electronico'] ?? null;
+                $telefono = $fila['Telefono']            ?? null;
+                $estado   = $fila['ID_Estado']           ?? 1;
 
                 if (empty($nombre)) {
                     $errores[] = "Fila " . ($index + 2) . ": Falta el nombre del proveedor";
                     continue;
                 }
 
-                // Verificar duplicados
-                $nombreExiste = DB::table('Proveedores')
-                    ->where('Nombre_Proveedor', $nombre)
-                    ->exists();
-                
-                if ($nombreExiste) {
+                if (DB::table('Proveedores')->where('Nombre_Proveedor', $nombre)->exists()) {
                     $errores[] = "Fila " . ($index + 2) . ": El proveedor '{$nombre}' ya existe";
                     continue;
                 }
 
-                $correoExiste = DB::table('Proveedores')
-                    ->where('Correo_Electronico', $correo)
-                    ->exists();
-                
-                if ($correoExiste) {
+                if (DB::table('Proveedores')->where('Correo_Electronico', $correo)->exists()) {
                     $errores[] = "Fila " . ($index + 2) . ": El correo '{$correo}' ya está registrado";
                     continue;
                 }
 
-                $telefonoExiste = DB::table('Proveedores')
-                    ->where('Telefono', $telefono)
-                    ->exists();
-                
-                if ($telefonoExiste) {
+                if (DB::table('Proveedores')->where('Telefono', $telefono)->exists()) {
                     $errores[] = "Fila " . ($index + 2) . ": El teléfono '{$telefono}' ya está registrado";
                     continue;
                 }
 
-                // Insertar si no hay duplicados
                 DB::table('Proveedores')->insert([
                     'Nombre_Proveedor'   => $nombre,
                     'Correo_Electronico' => $correo,
                     'Telefono'           => $telefono,
                     'ID_Estado'          => $estado,
                 ]);
-                
+
                 $importados++;
             }
 
@@ -594,40 +580,34 @@ class MigracionController extends Controller
     private function importarClientes($datos)
     {
         $importados = 0;
-        $errores = [];
-        
+        $errores    = [];
+
         DB::beginTransaction();
 
         try {
             foreach ($datos as $index => $fila) {
                 $documento = $fila['Documento_Cliente'] ?? null;
-                $nombre = $fila['Nombre_Cliente'] ?? null;
-                $apellido = $fila['Apellido_Cliente'] ?? null;
-                $estado = $fila['ID_Estado'] ?? 1;
+                $nombre    = $fila['Nombre_Cliente']    ?? null;
+                $apellido  = $fila['Apellido_Cliente']  ?? null;
+                $estado    = $fila['ID_Estado']         ?? 1;
 
                 if (empty($documento)) {
                     $errores[] = "Fila " . ($index + 2) . ": Falta el documento del cliente";
                     continue;
                 }
 
-                // Verificar duplicados
-                $documentoExiste = DB::table('clientes')
-                    ->where('Documento_Cliente', $documento)
-                    ->exists();
-                
-                if ($documentoExiste) {
+                if (DB::table('clientes')->where('Documento_Cliente', $documento)->exists()) {
                     $errores[] = "Fila " . ($index + 2) . ": El cliente con documento '{$documento}' ya existe";
                     continue;
                 }
 
-                // Insertar si no hay duplicados
                 DB::table('clientes')->insert([
                     'Documento_Cliente' => $documento,
                     'Nombre_Cliente'    => $nombre,
                     'Apellido_Cliente'  => $apellido,
                     'ID_Estado'         => $estado,
                 ]);
-                
+
                 $importados++;
             }
 
@@ -672,4 +652,459 @@ class MigracionController extends Controller
             ];
         });
     }
+
+
+     // ===============================
+    // IMPORTACIÓN DE PRODUCTOS
+    // ===============================
+    public function importarProductos(Request $request)
+    {
+        $modulo = $request->input('modulo');
+        $datos  = $request->input('datos', []);
+
+        if ($modulo !== 'productos' || empty($datos)) {
+            return response()->json([
+                'success' => false,
+                'mensaje' => 'No se recibió información válida'
+            ]);
+        }
+
+        $importados = 0;
+        DB::beginTransaction();
+
+        try {
+            foreach ($datos as $fila) {
+                // Validar y obtener IDs de las tablas relacionadas
+                $idCategoria = $this->obtenerIdCategoria($fila['Categoria'] ?? null);
+                $idEstado = $this->obtenerIdEstado($fila['Estado'] ?? null);
+                $idGama = $this->obtenerIdGama($fila['Gama'] ?? null);
+
+                if (!$idCategoria || !$idEstado || !$idGama) {
+                    continue; // Salta si faltan datos requeridos
+                }
+
+                DB::table('productos')->insert([
+                    'Nombre_Producto' => $fila['Nombre_Producto'] ?? 'Sin nombre',
+                    'Descripcion'     => $fila['Descripcion'] ?? 'Sin descripción',
+                    'Precio_Venta'    => $fila['Precio_Venta'] ?? 0,
+                    'Stock_Minimo'    => $fila['Stock_Minimo'] ?? 0,
+                    'ID_Categoria'    => $idCategoria,
+                    'ID_Estado'       => $idEstado,
+                    'ID_Gama'         => $idGama,
+                    'Fotos'           => $fila['Fotos'] ?? null,
+                ]);
+
+                $importados++;
+            }
+
+            DB::commit();
+
+            // Retornar productos importados
+            $productosRecientes = DB::table('productos')
+                ->orderBy('ID_Producto', 'desc')
+                ->take($importados)
+                ->get();
+
+            return response()->json([
+                'success'    => true,
+                'importados' => $importados,
+                'productos'  => $productosRecientes
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'mensaje' => 'Error al importar: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    // ===============================
+    // INICIAR EXPORTACIÓN DE PRODUCTOS
+    // ===============================
+    public function iniciarProductos(Request $request)
+    {
+        $modulo   = $request->input('modulo');
+        $loteSize = $request->input('loteSize', 20);
+
+        if ($modulo !== 'productos') {
+            return response()->json([
+                'success' => false,
+                'mensaje' => 'Módulo incorrecto'
+            ]);
+        }
+
+        $ids = DB::table('productos')->pluck('ID_Producto')->toArray();
+
+        session([
+            'export_productos_ids'  => $ids,
+            'lote_productos_actual' => 0,
+            'lote_productos_size'   => $loteSize
+        ]);
+
+        return response()->json([
+            'success'         => true,
+            'total_registros' => count($ids),
+            'lote_size'       => $loteSize
+        ]);
+    }
+
+    // ===============================
+    // LOTE DE EXPORTACIÓN DE PRODUCTOS
+    // ===============================
+    public function loteProductos(Request $request)
+    {
+        $ids        = session('export_productos_ids', []);
+        $loteActual = session('lote_productos_actual', 0);
+        $loteSize   = session('lote_productos_size', 20);
+        $totalIds   = count($ids);
+
+        if ($totalIds === 0) {
+            return response()->json([
+                'success' => false,
+                'mensaje' => 'No hay IDs en sesión. Inicie la exportación primero.'
+            ]);
+        }
+
+        $inicio  = $loteActual * $loteSize;
+        $idsLote = array_slice($ids, $inicio, $loteSize);
+
+        $productos = DB::table('productos')
+            ->whereIn('ID_Producto', $idsLote)
+            ->get();
+
+        $datos = $productos->map(function ($pro) {
+            // Obtener nombres de categoría, estado y gama
+            $categoria = DB::table('categorias')->where('ID_Categoria', $pro->ID_Categoria)->value('Nombre_Categoria');
+            $estado = DB::table('estados')->where('ID_Estado', $pro->ID_Estado)->value('Nombre_Estado');
+            $gama = DB::table('gamas')->where('ID_Gama', $pro->ID_Gama)->value('Nombre_Gama');
+
+            return [
+                'Nombre_Producto' => $pro->Nombre_Producto,
+                'Descripcion'     => $pro->Descripcion,
+                'Precio_Venta'    => $pro->Precio_Venta,
+                'Stock_Minimo'    => $pro->Stock_Minimo,
+                'Categoria'       => $categoria ?? 'N/A',
+                'Estado'          => $estado ?? 'N/A',
+                'Gama'            => $gama ?? 'N/A',
+                'Fotos'           => $pro->Fotos ?? '',
+            ];
+        });
+
+        $registrosMigrados = $inicio + count($productos);
+        $completado        = $registrosMigrados >= $totalIds;
+
+        session(['lote_productos_actual' => $loteActual + 1]);
+
+        return response()->json([
+            'success'            => true,
+            'datos'              => $datos,
+            'progreso'           => intval(($registrosMigrados / $totalIds) * 100),
+            'registros_migrados' => $registrosMigrados,
+            'total_registros'    => $totalIds,
+            'lote_actual'        => $loteActual + 1,
+            'completado'         => $completado
+        ]);
+    }
+
+    // ===============================
+    // HELPERS PARA BÚSQUEDA DE IDs
+    // ===============================
+    private function obtenerIdCategoria($nombre)
+    {
+        if (empty($nombre)) return null;
+        return DB::table('categorias')
+            ->where('Nombre_Categoria', 'LIKE', '%' . $nombre . '%')
+            ->value('ID_Categoria');
+    }
+
+    private function obtenerIdEstado($nombre)
+    {
+        if (empty($nombre)) return null;
+        return DB::table('estados')
+            ->where('Nombre_Estado', 'LIKE', '%' . $nombre . '%')
+            ->value('ID_Estado');
+    }
+
+    private function obtenerIdGama($nombre)
+    {
+        if (empty($nombre)) return null;
+        return DB::table('gamas')
+            ->where('Nombre_Gama', 'LIKE', '%' . $nombre . '%')
+            ->value('ID_Gama');
+    }
+
+
+// ===============================
+// IMPORTAR EMPLEADOS
+// ===============================
+public function importarEmpleados(Request $request)
+{
+    $modulo = $request->input('modulo');
+    $datos  = $request->input('datos', []);
+
+    if ($modulo !== 'empleados' || empty($datos)) {
+        return response()->json([
+            'success' => false,
+            'mensaje' => 'No se recibió información válida'
+        ]);
+    }
+
+    $importados = 0;
+    $errores    = [];
+
+    DB::beginTransaction();
+
+    try {
+        foreach ($datos as $index => $fila) {
+
+            // El JS manda estos nombres exactos:
+            // Documento_Empleado, Tipo_Documento, Nombre_Usuario, Apellido_Usuario,
+            // Edad, Correo_Electronico, Telefono, Genero,
+            // Estado (texto o ID), Rol (texto o ID), Fotos, Contrasena
+            $documento  = $fila['Documento_Empleado'] ?? null;
+            $tipoDoc    = $fila['Tipo_Documento']     ?? 'CC';
+            $nombre     = $fila['Nombre_Usuario']     ?? null;
+            $apellido   = $fila['Apellido_Usuario']   ?? null;
+            $edad       = $fila['Edad']               ?? null;
+            $correo     = $fila['Correo_Electronico'] ?? null;
+            $telefono   = $fila['Telefono']           ?? null;
+            $generoRaw  = $fila['Genero']             ?? null;
+            $fotos      = $fila['Fotos']              ?? null;
+            $contrasena = $fila['Contrasena']         ?? null;
+
+            // Estado y Rol pueden venir como texto ("Activo") o número (1)
+            $idEstado = $this->resolverEstado($fila['Estado'] ?? $fila['ID_Estado'] ?? 1);
+            $idRol    = $this->resolverRol($fila['Rol']    ?? $fila['ID_Rol']    ?? 2);
+            $genero   = $this->resolverGenero($generoRaw);
+
+            // --------------------------------------------------
+            // Validaciones
+            // --------------------------------------------------
+            if (empty($documento)) {
+                $errores[] = "Fila " . ($index + 2) . ": Falta el documento del empleado";
+                continue;
+            }
+
+            if (DB::table('empleados')->where('Documento_Empleado', $documento)->exists()) {
+                $errores[] = "Fila " . ($index + 2) . ": El empleado con documento '{$documento}' ya existe";
+                continue;
+            }
+
+            if ($correo && DB::table('empleados')->where('Correo_Electronico', $correo)->exists()) {
+                $errores[] = "Fila " . ($index + 2) . ": El correo '{$correo}' ya está registrado";
+                continue;
+            }
+
+            if ($telefono && DB::table('empleados')->where('Telefono', $telefono)->exists()) {
+                $errores[] = "Fila " . ($index + 2) . ": El teléfono '{$telefono}' ya está registrado";
+                continue;
+            }
+
+            // --------------------------------------------------
+            // 1) Insertar en Empleados (sin contraseña - está en tabla separada)
+            //    Fotos es NOT NULL, si no viene se guarda cadena vacía
+            // --------------------------------------------------
+            DB::table('Empleados')->insert([
+                'Documento_Empleado' => $documento,
+                'Tipo_Documento'     => $tipoDoc,
+                'Nombre_Usuario'     => $nombre,
+                'Apellido_Usuario'   => $apellido,
+                'Edad'               => $edad,
+                'Correo_Electronico' => $correo,
+                'Telefono'           => $telefono,
+                'Genero'             => $genero,
+                'ID_Estado'          => $idEstado,
+                'ID_Rol'             => $idRol,
+                'Fotos'              => $fotos ?? '',
+            ]);
+
+            // --------------------------------------------------
+            // 2) Insertar en Contrasenas (tabla separada)
+            //    Si la columna "contraseña" del Excel dice "fotos"
+            //    o viene vacía, se asigna '1234' como contraseña temporal
+            // --------------------------------------------------
+            // El login usa hash('sha256', $clave), así que guardamos igual
+            $claveValida = (!empty($contrasena) && strtolower(trim($contrasena)) !== 'fotos')
+                ? $contrasena
+                : '1234';
+
+            DB::table('Contrasenas')->insert([
+                'Documento_Empleado' => $documento,
+                'Contrasena_Hash'    => hash('sha256', $claveValida),
+            ]);
+
+            $importados++;
+        }
+
+        DB::commit();
+
+        $mensaje = "Se importaron {$importados} empleados correctamente.";
+        if (!empty($errores)) {
+            $mensaje .= " Advertencias: " . implode(" | ", $errores);
+        }
+
+        return response()->json([
+            'success'    => true,
+            'importados' => $importados,
+            'errores'    => $errores,
+            'mensaje'    => $mensaje,
+        ]);
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return response()->json([
+            'success' => false,
+            'mensaje' => 'Error al importar: ' . $e->getMessage()
+        ]);
+    }
+}
+
+// -----------------------------------------------
+// HELPERS PRIVADOS para resolver texto → ID
+// -----------------------------------------------
+
+/**
+ * Convierte "Activo"/"Inactivo"/"En proceso" → ID
+ * o devuelve el valor numérico si ya es un ID.
+ */
+private function resolverEstado($valor): int
+{
+    if (is_numeric($valor)) return (int) $valor;
+
+    $mapa = [
+        'activo'     => 1,
+        'inactivo'   => 2,
+        'en proceso' => 3,
+    ];
+
+    $clave = mb_strtolower(trim((string) $valor));
+    return $mapa[$clave] ?? 1;
+}
+
+/**
+ * Convierte "Administrador"/"Empleado" → ID
+ * o devuelve el valor numérico si ya es un ID.
+ */
+private function resolverRol($valor): int
+{
+    if (is_numeric($valor)) return (int) $valor;
+
+    $mapa = [
+        'administrador' => 1,
+        'empleado'      => 2,
+    ];
+
+    $clave = mb_strtolower(trim((string) $valor));
+    return $mapa[$clave] ?? 2;
+}
+
+/**
+ * Convierte "Masculino"/"Femenino" → "M"/"F"
+ * o devuelve "M"/"F" si ya viene en ese formato.
+ */
+private function resolverGenero($valor): string
+{
+    if (in_array(strtoupper(trim((string) $valor)), ['M', 'F'])) {
+        return strtoupper(trim((string) $valor));
+    }
+
+    $clave = mb_strtolower(trim((string) $valor));
+    if (str_starts_with($clave, 'm')) return 'M';
+    if (str_starts_with($clave, 'f')) return 'F';
+
+    return 'M'; // valor por defecto
+}
+
+// ===============================
+// INICIAR EXPORTACIÓN DE EMPLEADOS
+// ===============================
+public function iniciarEmpleados(Request $request)
+{
+    $modulo   = $request->input('modulo');
+    $loteSize = $request->input('loteSize', 20);
+
+    if ($modulo !== 'empleados') {
+        return response()->json([
+            'success' => false,
+            'mensaje' => 'Módulo incorrecto'
+        ]);
+    }
+
+    $ids = DB::table('empleados')->pluck('Documento_Empleado')->toArray();
+
+    session([
+        'export_empleados_ids'  => $ids,
+        'lote_empleados_actual' => 0,
+        'lote_empleados_size'   => $loteSize,
+    ]);
+
+    return response()->json([
+        'success'         => true,
+        'total_registros' => count($ids),
+        'lote_size'       => $loteSize,
+    ]);
+}
+
+// ===============================
+// LOTE DE EXPORTACIÓN DE EMPLEADOS
+// ===============================
+public function loteEmpleados(Request $request)
+{
+    $ids        = session('export_empleados_ids', []);
+    $loteActual = session('lote_empleados_actual', 0);
+    $loteSize   = session('lote_empleados_size', 20);
+    $totalIds   = count($ids);
+
+    if ($totalIds === 0) {
+        return response()->json([
+            'success' => false,
+            'mensaje' => 'No hay IDs en sesión. Inicie la exportación primero.'
+        ]);
+    }
+
+    $inicio  = $loteActual * $loteSize;
+    $idsLote = array_slice($ids, $inicio, $loteSize);
+
+    $empleados = DB::table('empleados')
+        ->whereIn('Documento_Empleado', $idsLote)
+        ->get();
+
+    $datos = $empleados->map(function ($emp) {
+        $estado = DB::table('estados')->where('ID_Estado', $emp->ID_Estado)->value('Nombre_Estado');
+        $rol    = DB::table('roles')->where('ID_Rol', $emp->ID_Rol)->value('Nombre');
+
+        return [
+            // Nombres de columna iguales a los que importarEmpleados ya acepta
+            'Documento_Empleado' => $emp->Documento_Empleado,
+            'Tipo_Documento'     => $emp->Tipo_Documento,
+            'Nombre_Usuario'     => $emp->Nombre_Usuario,
+            'Apellido_Usuario'   => $emp->Apellido_Usuario,
+            'Edad'               => $emp->Edad,
+            'Correo_Electronico' => $emp->Correo_Electronico,
+            'Telefono'           => $emp->Telefono,
+            'Genero'             => $emp->Genero,
+            'Estado'             => $estado ?? 'N/A',
+            'Rol'                => $rol    ?? 'N/A',
+            'Fotos'              => $emp->Fotos ?? '',
+            // Contraseña NO se exporta por seguridad
+        ];
+    });
+
+    $registrosMigrados = $inicio + count($empleados);
+    $completado        = $registrosMigrados >= $totalIds;
+
+    session(['lote_empleados_actual' => $loteActual + 1]);
+
+    return response()->json([
+        'success'            => true,
+        'datos'              => $datos,
+        'progreso'           => intval(($registrosMigrados / $totalIds) * 100),
+        'registros_migrados' => $registrosMigrados,
+        'total_registros'    => $totalIds,
+        'lote_actual'        => $loteActual + 1,
+        'completado'         => $completado,
+    ]);
+}
 }

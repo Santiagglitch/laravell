@@ -9,6 +9,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/menu.css') }}">
+    
+    {{-- ✅ AGREGADO: Librería de Excel --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body>
 
@@ -101,11 +105,23 @@
                 </script>
             @endif
 
-            <div class="text-end mt-4">
+            {{-- ✅ CAMBIO: Agregados los botones de Importar y Exportar --}}
+            <div class="d-flex justify-content-end mt-4 gap-2">
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#crearModal">
                     <i class="fa fa-plus"></i> Añadir Producto
                 </button>
+                <button class="btn btn-warning" onclick="document.getElementById('archivoExcel').click()">
+                    <i class="fa fa-upload"></i> Importar desde Excel
+                </button>
+                <input type="file" id="archivoExcel" accept=".xlsx,.xls" style="display:none;"
+                       onchange="importarDesdeExcel(event)">
+                <button class="btn btn-primary" onclick="iniciarExportacion()">
+                    <i class="fa fa-download"></i> Exportar a Excel
+                </button>
             </div>
+
+            {{-- ✅ AGREGADO: Barra de progreso --}}
+            <div id="progreso" class="mt-2"></div>
 
             <div class="table-responsive mt-4">
                 <table class="table table-bordered table-hover table-striped align-middle text-center">
@@ -131,8 +147,6 @@
                             <td>{{ $pro['Descripcion'] }}</td>
                             <td>{{ $pro['Precio_Venta'] }}</td>
                             <td>{{ $pro['Stock_Minimo'] }}</td>
-
-                            {{-- ✅ CAMBIO: mostrar NOMBRES en vez de IDs --}}
                             <td>{{ $pro['Categoria'] ?? $pro['ID_Categoria'] }}</td>
                             <td>{{ $pro['Estado'] ?? $pro['ID_Estado'] }}</td>
                             <td>{{ $pro['Gama'] ?? $pro['ID_Gama'] }}</td>
@@ -294,5 +308,213 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+
+{{-- ✅ AGREGADO: JavaScript para Importar y Exportar --}}
+<script>
+// ============================================
+// HELPERS
+// ============================================
+function normalizarClaves(obj) {
+    const r = {};
+    Object.keys(obj).forEach(key => {
+        r[key.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim()] = obj[key];
+    });
+    return r;
+}
+function buscarClave(o, ...ps) {
+    for (const p of ps) {
+        const n = p.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+        if (o[n] !== undefined) return o[n];
+    }
+    return null;
+}
+
+// ============================================
+// IMPORTACIÓN DESDE EXCEL
+// ============================================
+async function importarDesdeExcel(event) {
+    const archivo = event.target.files[0];
+    if (!archivo) return;
+
+    const progresoDiv = document.getElementById('progreso');
+    progresoDiv.className = 'alert alert-info';
+    progresoDiv.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Leyendo archivo Excel...';
+
+    try {
+        const data     = await archivo.arrayBuffer();
+        const workbook = XLSX.read(data);
+        const hoja     = workbook.Sheets[workbook.SheetNames[0]];
+        const productos = XLSX.utils.sheet_to_json(hoja).map(normalizarClaves);
+
+        if (productos.length === 0) {
+            progresoDiv.className = 'alert alert-warning';
+            progresoDiv.innerHTML = '<i class="fa fa-exclamation-triangle"></i> El archivo está vacío';
+            return;
+        }
+
+        const datosValidados = productos.map(prod => ({
+            Nombre_Producto: buscarClave(prod, 'nombre_producto', 'nombre producto', 'nombre') ?? 'Sin nombre',
+            Descripcion:     buscarClave(prod, 'descripcion') ?? 'Sin descripción',
+            Precio_Venta:    buscarClave(prod, 'precio_venta', 'precio venta', 'precio') ?? 0,
+            Stock_Minimo:    buscarClave(prod, 'stock_minimo', 'stock minimo', 'stock') ?? 0,
+            Categoria:       buscarClave(prod, 'categoria') ?? null,
+            Estado:          buscarClave(prod, 'estado') ?? null,
+            Gama:            buscarClave(prod, 'gama') ?? null,
+            Fotos:           buscarClave(prod, 'fotos', 'foto') ?? null,
+        }));
+
+        const tamañoLote = 10;
+        let importados   = 0;
+
+        for (let i = 0; i < datosValidados.length; i += tamañoLote) {
+            const lote    = datosValidados.slice(i, i + tamañoLote);
+            const progreso = Math.round(((i + lote.length) / datosValidados.length) * 100);
+
+            progresoDiv.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <strong>Importando productos...</strong>
+                    <div class="ms-auto">${progreso}%</div>
+                </div>
+                <div class="progress mt-2">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning"
+                         style="width: ${progreso}%"></div>
+                </div>
+                <small class="text-muted mt-2 d-block">
+                    Registros: ${i + lote.length} / ${datosValidados.length}
+                </small>`;
+
+            const response = await fetch('/migracion/productos/importar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ modulo: 'productos', datos: lote })
+            });
+
+            const texto = await response.text();
+            let resultado;
+            try { resultado = JSON.parse(texto); }
+            catch(e) { throw new Error('El servidor devolvió HTML. Verifica la ruta /migracion/productos/importar.'); }
+
+            if (!resultado.success) throw new Error(resultado.mensaje);
+            importados += resultado.importados || 0;
+            await new Promise(r => setTimeout(r, 300));
+        }
+
+        progresoDiv.className = 'alert alert-success';
+        progresoDiv.innerHTML = `
+            <i class="fa fa-check-circle"></i>
+            <strong>¡Importación completada!</strong>
+            <br><small>Se importaron ${importados} productos correctamente</small>
+        `;
+        setTimeout(() => location.reload(), 3000);
+
+    } catch (error) {
+        console.error('Error:', error);
+        progresoDiv.className = 'alert alert-danger';
+        progresoDiv.innerHTML = `<i class="fa fa-exclamation-triangle"></i> Error: ${error.message}`;
+    }
+
+    event.target.value = '';
+}
+
+// ============================================
+// EXPORTACIÓN A EXCEL
+// ============================================
+async function iniciarExportacion() {
+    const btnExportar = event.target;
+    btnExportar.disabled = true;
+    btnExportar.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Exportando...';
+
+    const progresoDiv = document.getElementById('progreso');
+
+    try {
+        progresoDiv.className = 'alert alert-info';
+        progresoDiv.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Iniciando exportación...';
+
+        const initResp = await fetch('/migracion/productos/iniciar', {
+            method: 'POST',
+            headers: { 'Content-Type':'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+            body: JSON.stringify({ modulo: 'productos' })
+        });
+        const initData = await initResp.json();
+        if (!initData.success) throw new Error(initData.mensaje);
+
+        let todosLosDatos = [];
+        let completado = false, intentos = 0;
+
+        while (!completado && intentos < 100) {
+            const loteResp = await fetch('/migracion/productos/lote', {
+                method: 'POST',
+                headers: { 'Content-Type':'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+                body: JSON.stringify({ modulo: 'productos' })
+            });
+            const loteData = await loteResp.json();
+            if (!loteData.success) throw new Error(loteData.mensaje);
+            if (loteData.datos?.length > 0) todosLosDatos = todosLosDatos.concat(loteData.datos);
+
+            progresoDiv.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <strong>Exportando productos...</strong>
+                    <div class="ms-auto">${loteData.progreso}%</div>
+                </div>
+                <div class="progress mt-2">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
+                         style="width: ${loteData.progreso}%"></div>
+                </div>
+                <small class="text-muted mt-2 d-block">
+                    Registros: ${loteData.registros_migrados} / ${loteData.total_registros} (Lote ${loteData.lote_actual})
+                </small>`;
+
+            completado = loteData.completado;
+            intentos++;
+            await new Promise(r => setTimeout(r, 300));
+        }
+
+        if (todosLosDatos.length === 0) {
+            progresoDiv.className = 'alert alert-warning';
+            progresoDiv.innerHTML = '<i class="fa fa-exclamation-triangle"></i> No hay datos para exportar';
+            btnExportar.disabled = false;
+            btnExportar.innerHTML = '<i class="fa fa-download"></i> Exportar a Excel';
+            return;
+        }
+
+        progresoDiv.innerHTML += '<br><i class="fa fa-spinner fa-spin"></i> Generando Excel...';
+
+        const hoja = todosLosDatos.map(prod => ({
+            'Nombre Producto': prod.Nombre_Producto,
+            'Descripcion':     prod.Descripcion,
+            'Precio Venta':    prod.Precio_Venta,
+            'Stock Minimo':    prod.Stock_Minimo,
+            'Categoria':       prod.Categoria,
+            'Estado':          prod.Estado,
+            'Gama':            prod.Gama,
+            'Fotos':           prod.Fotos
+        }));
+
+        const wb = XLSX.utils.book_new();
+        const ws1 = XLSX.utils.json_to_sheet(hoja);
+        XLSX.utils.book_append_sheet(wb, ws1, 'Productos');
+
+        XLSX.writeFile(wb, `Productos_${new Date().toISOString().split('T')[0]}.xlsx`);
+
+        progresoDiv.className = 'alert alert-success';
+        progresoDiv.innerHTML = `
+            <i class="fa fa-check-circle"></i> <strong>¡Exportación completada!</strong>
+            <br><small>${todosLosDatos.length} productos exportados</small>
+        `;
+        setTimeout(() => { progresoDiv.innerHTML=''; progresoDiv.className=''; }, 8000);
+
+    } catch (error) {
+        progresoDiv.className = 'alert alert-danger';
+        progresoDiv.innerHTML = `<i class="fa fa-exclamation-triangle"></i> Error: ${error.message}`;
+    } finally {
+        btnExportar.disabled = false;
+        btnExportar.innerHTML = '<i class="fa fa-download"></i> Exportar a Excel';
+    }
+}
+</script>
+
 </body>
 </html>
