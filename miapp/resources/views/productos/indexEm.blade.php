@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <link rel="icon" href="{{ asset('Imagenes/Logo.webp') }}" type="image/webp">
-    <title>Productos</title>
+    <title>Productos - Empleado</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/menu.css') }}">
     
-    {{-- ✅ AGREGADO: Librería de Excel --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
@@ -18,35 +17,29 @@
 
 <div class="d-flex" style="min-height: 100vh;">
 
+    <!-- BARRA LATERAL EMPLEADO -->
     <div class="barra-lateral d-flex flex-column flex-shrink-0 p-3 bg-primary text-white">
         <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
             TECNICELL RM <img src="{{ asset('Imagenes/Logo.webp') }}" style="height:48px;">
         </a>
-
         <hr>
-
         <div class="menu-barra-lateral">
             <div class="seccion-menu">
                 <a href="{{ route('InicioE.index') }}" class="elemento-menu">
                     <i class="fa-solid fa-tachometer-alt"></i><span>Dashboard</span>
                 </a>
-
-                <a href="{{ route('ventas.indexEm') }}" class="elemento-menu activo">
+                <a href="{{ route('ventas.indexEm') }}" class="elemento-menu">
                     <i class="ri-price-tag-3-line"></i><span>Ventas</span>
                 </a>
-
                 <a href="{{ route('devolucion.indexEm') }}" class="elemento-menu">
                     <i class="ri-arrow-go-back-line"></i><span>Devoluciones</span>
                 </a>
             </div>
-
             <hr>
-
             <div class="seccion-menu">
-                <a href="{{ route('productos.indexEm') }}" class="elemento-menu">
+                <a href="{{ route('productos.indexEm') }}" class="elemento-menu activo">
                     <i class="ri-box-3-line"></i><span>Productos</span>
                 </a>
-
                 <a href="{{ route('clientes.indexEm') }}" class="elemento-menu">
                     <i class="ri-user-line"></i><span>Cliente</span>
                 </a>
@@ -54,14 +47,44 @@
         </div>
     </div>
 
-   
-        <div class="container py-4">
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="contenido-principal flex-grow-1">
+        
+        <!-- NAVBAR -->
+        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+            <div class="container-fluid">
+                <a class="navbar-brand">Sistema gestión de inventarios</a>
+                <div class="dropdown ms-auto">
+                    <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle"
+                       data-bs-toggle="dropdown">
+                        <img src="{{ asset('fotos_empleados/686fe89fe865f_Foto Kevin.jpeg') }}"
+                             width="32" height="32" class="rounded-circle me-2">
+                        <strong>{{ session('nombre') ?? 'Perfil' }}</strong>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+                        <li><a class="dropdown-item" href="{{ route('perfil') }}">Mi perfil</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="dropdown-item">Cerrar sesión</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
 
+        <!-- CONTENIDO -->
+        <div class="container py-4">
+            
+            <!-- TÍTULO -->
             <div class="d-flex justify-content-center align-items-center gap-3">
                 <img src="{{ asset('Imagenes/Logo.webp') }}" style="height:48px;">
                 <h1>Gestión de Productos</h1>
             </div>
 
+            <!-- ALERTAS -->
             @if(session('mensaje'))
                 <div id="alertaMensaje" class="alert alert-success text-center mt-3">{{ session('mensaje') }}</div>
                 <script>setTimeout(()=>{let a=document.getElementById('alertaMensaje');if(a){a.style.transition="opacity 0.5s";a.style.opacity=0;setTimeout(()=>a.remove(),500);}},2000);</script>
@@ -71,6 +94,7 @@
                 <script>setTimeout(()=>{let a=document.getElementById('alertaError');if(a){a.style.transition="opacity 0.5s";a.style.opacity=0;setTimeout(()=>a.remove(),500);}},2000);</script>
             @endif
 
+            <!-- BOTONES DE ACCIÓN -->
             <div class="d-flex justify-content-end mt-4 gap-2">
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#crearModal">
                     <i class="fa fa-plus"></i> Añadir Producto
@@ -85,8 +109,10 @@
                 </button>
             </div>
 
+            <!-- BARRA DE PROGRESO -->
             <div id="progreso" class="mt-2"></div>
 
+            <!-- TABLA DE PRODUCTOS -->
             <div class="table-responsive mt-4">
                 <table class="table table-bordered table-striped table-hover text-center">
                     <thead class="table-dark">
@@ -145,7 +171,7 @@
                             </td>
                         </tr>
 
-                        <!-- Modal Editar -->
+                        <!-- MODAL EDITAR -->
                         <div class="modal fade" id="editarModal{{ $pro['ID_Producto'] }}">
                             <div class="modal-dialog modal-lg">
                                 <form method="POST" action="{{ route('productos.updateEm') }}" enctype="multipart/form-data">
@@ -177,36 +203,6 @@
                                                        value="{{ $pro['Stock_Minimo'] }}" required>
                                             </div>
                                             <div class="col-md-6">
-                                                <label>Categoría</label>
-                                                <select name="ID_Categoria" class="form-control" required>
-                                                    @foreach($categorias as $id => $nombre)
-                                                        <option value="{{ $id }}" {{ (int)$pro['ID_Categoria']===(int)$id ? 'selected' : '' }}>
-                                                            {{ $nombre }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label>Estado</label>
-                                                <select name="ID_Estado" class="form-control" required>
-                                                    @foreach($estados as $id => $nombre)
-                                                        <option value="{{ $id }}" {{ (int)$pro['ID_Estado']===(int)$id ? 'selected' : '' }}>
-                                                            {{ $nombre }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label>Gama</label>
-                                                <select name="ID_Gama" class="form-control" required>
-                                                    @foreach($gamas as $id => $nombre)
-                                                        <option value="{{ $id }}" {{ (int)$pro['ID_Gama']===(int)$id ? 'selected' : '' }}>
-                                                            {{ $nombre }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                            <div class="col-md-6">
                                                 <label>Nueva Foto (opcional)</label>
                                                 <input type="file" name="Fotos" class="form-control">
                                             </div>
@@ -220,7 +216,7 @@
                             </div>
                         </div>
 
-                        <!-- Modal Eliminar -->
+                        <!-- MODAL ELIMINAR -->
                         <div class="modal fade" id="eliminarModal{{ $pro['ID_Producto'] }}">
                             <div class="modal-dialog">
                                 <form method="POST" action="{{ route('productos.destroyEm') }}">
@@ -253,10 +249,10 @@
                 </table>
             </div>
 
-            <!-- Modal Crear -->
+       <!-- Modal Crear -->
             <div class="modal fade" id="crearModal">
                 <div class="modal-dialog modal-lg">
-                    <form method="POST" action="{{ route('productos.storeEm') }}" enctype="multipart/form-data">
+                    <form method="POST" action="{{ route('productos.store') }}" enctype="multipart/form-data">
                         @csrf
                         <div class="modal-content">
                             <div class="modal-header bg-success text-white">
@@ -325,6 +321,7 @@
     </div>
 </div>
 
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
@@ -371,7 +368,6 @@ async function importarDesdeExcel(event) {
             return;
         }
 
-        // Transformar datos
         const datosValidados = productos.map(prod => ({
             Nombre_Producto: buscarClave(prod, 'nombre_producto', 'nombre producto', 'nombre') ?? 'Sin nombre',
             Descripcion:     buscarClave(prod, 'descripcion') ?? 'Sin descripción',
@@ -385,7 +381,6 @@ async function importarDesdeExcel(event) {
 
         console.log('✅ Datos validados para enviar:', datosValidados);
 
-        // Importar en lotes
         const tamañoLote = 10;
         let importados = 0;
         let todosLosErrores = [];
@@ -427,8 +422,7 @@ async function importarDesdeExcel(event) {
             console.log('📄 Response text:', texto);
 
             if (contentType.includes('text/html') || texto.trim().startsWith('<!DOCTYPE') || texto.trim().startsWith('<html')) {
-                console.error('❌ El servidor devolvió HTML:');
-                console.error(texto);
+                console.error('❌ El servidor devolvió HTML');
                 throw new Error('El servidor devolvió HTML. Verifica la ruta /migracion/productos/importar');
             }
 
@@ -447,7 +441,6 @@ async function importarDesdeExcel(event) {
 
             importados += resultado.importados || 0;
             
-            // Acumular errores
             if (resultado.errores && resultado.errores.length > 0) {
                 todosLosErrores = todosLosErrores.concat(resultado.errores);
             }
@@ -462,7 +455,6 @@ async function importarDesdeExcel(event) {
             <br><small>Se importaron ${importados} productos correctamente</small>
         `;
 
-        // Mostrar errores si los hay
         if (todosLosErrores.length > 0) {
             mensajeFinal += `
                 <div class="mt-3">
@@ -604,4 +596,3 @@ async function iniciarExportacion() {
 
 </body>
 </html>
-
