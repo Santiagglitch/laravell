@@ -124,7 +124,6 @@
                 </script>
             @endif
 
-            {{-- ✅ Solo botón Añadir Venta, sin botón Detalle Ventas --}}
             <div class="d-flex justify-content-end mt-4">
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#crearModal">
                     <i class="fa fa-plus"></i> Añadir Venta
@@ -148,7 +147,6 @@
                             <td>{{ $venta->Documento_Cliente }}</td>
                             <td>{{ $venta->Documento_Empleado }}</td>
                             <td>
-                                {{-- ✅ Solo ojito, sin botón editar --}}
                                 <button class="btn btn-info btn-sm"
                                         onclick="abrirDetalleModal({{ $venta->ID_Venta }})">
                                     <i class="fa fa-eye"></i>
@@ -161,8 +159,6 @@
                                 </button>
                             </td>
                         </tr>
-
-                        {{-- ✅ Modal Eliminar con aviso de detalles --}}
                         <div class="modal fade" id="eliminarModal{{ $venta->ID_Venta }}">
                             <div class="modal-dialog">
                                 <form method="POST" action="{{ route('ventas.destroy') }}">

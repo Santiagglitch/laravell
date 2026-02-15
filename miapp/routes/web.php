@@ -134,6 +134,9 @@ Route::post('/detalleventas', [DetalleVentaController::class, 'post'])->name('de
 Route::put('/detalleventas', [DetalleVentaController::class, 'put'])->name('detalleventas.update');
 Route::delete('/detalleventas', [DetalleVentaController::class, 'delete'])->name('detalleventas.destroy');
 Route::get('/ventas/por-producto/{nombre}', [DetalleVentaController::class, 'ventaPorProducto']);
+Route::get('/detalleventas/buscar-producto/{nombre}', [DetalleVentaController::class, 'buscarProducto'])->name('detalleventas.buscarProducto');
+Route::get('/detalleventas/venta-info/{idVenta}', [DetalleVentaController::class, 'ventaInfo'])->name('detalleventas.ventaInfo');
+
 // Info de venta para modal editar ADMIN
 Route::get('/venta-info/{idVenta}', [DetalleDevolucionController::class, 'ventaInfo'])->name('detalledevolucion.ventaInfoAdmin');
 
