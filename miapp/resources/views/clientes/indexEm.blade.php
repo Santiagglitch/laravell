@@ -16,7 +16,7 @@
 
 <div class="d-flex" style="min-height: 100vh;">
 
-    <div class="barra-lateral d-flex flex-column flex-shrink-0 p-3 bg-success text-white">
+    <div class="barra-lateral d-flex flex-column flex-shrink-0 p-3 bg-primary text-white">
         <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
             TECNICELL RM <img src="{{ asset('Imagenes/Logo.webp') }}" style="height:48px;">
         </a>
@@ -150,7 +150,7 @@
 
             <div class="table-responsive mt-4">
                 <table class="table table-bordered table-hover table-striped align-middle text-center">
-                    <thead class="table-success">
+                    <thead class="table-dark">
                         <tr>
                             <th>Documento</th>
                             <th>Nombre</th>
