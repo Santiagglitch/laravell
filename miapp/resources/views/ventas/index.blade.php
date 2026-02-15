@@ -10,6 +10,8 @@
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/menu.css') }}">
     <link rel="stylesheet" href="{{ asset('css/ventas.css') }}">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 
 <body>
@@ -86,48 +88,35 @@
 
         <div class="container py-4">
 
-            <div class="d-flex justify-content-center align-items-center gap-3">
+            <div class="d-flex justify-content-center align-items-center gap-3 mb-4">
                 <img src="{{ asset('Imagenes/Logo.webp') }}" style="height:48px;">
-                <h1>Registro de Ventas</h1>
+                <h1 class="mb-0">Registro de Ventas</h1>
             </div>
 
             @if(session('mensaje'))
-                <div id="alertaMensaje" class="alert alert-success text-center mt-3">
-                    {{ session('mensaje') }}
-                </div>
-                <script>
-                    setTimeout(() => {
-                        let alerta = document.getElementById('alertaMensaje');
-                        if (alerta) {
-                            alerta.style.transition = "opacity 0.5s";
-                            alerta.style.opacity = 0;
-                            setTimeout(() => alerta.remove(), 500);
-                        }
-                    }, 2000);
-                </script>
+                <div id="alertaMensaje" class="alert alert-success text-center mt-3">{{ session('mensaje') }}</div>
+                <script>setTimeout(()=>{let a=document.getElementById('alertaMensaje');if(a){a.style.transition="opacity 0.5s";a.style.opacity=0;setTimeout(()=>a.remove(),500);}},2000);</script>
             @endif
 
             @if(session('error'))
-                <div id="alertaError" class="alert alert-danger text-center mt-3">
-                    {{ session('error') }}
-                </div>
-                <script>
-                    setTimeout(() => {
-                        let alerta = document.getElementById('alertaError');
-                        if (alerta) {
-                            alerta.style.transition = "opacity 0.5s";
-                            alerta.style.opacity = 0;
-                            setTimeout(() => alerta.remove(), 500);
-                        }
-                    }, 3000);
-                </script>
+                <div id="alertaError" class="alert alert-danger text-center mt-3">{{ session('error') }}</div>
+                <script>setTimeout(()=>{let a=document.getElementById('alertaError');if(a){a.style.transition="opacity 0.5s";a.style.opacity=0;setTimeout(()=>a.remove(),500);}},3000);</script>
             @endif
 
-            <div class="d-flex justify-content-end mt-4">
+            <div class="d-flex justify-content-end mt-4 gap-2">
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#crearModal">
                     <i class="fa fa-plus"></i> Añadir Venta
                 </button>
+                <button class="btn btn-warning" onclick="document.getElementById('archivoExcel').click()">
+                    <i class="fa fa-upload"></i> Importar desde Excel
+                </button>
+                <input type="file" id="archivoExcel" accept=".xlsx,.xls" style="display:none;" onchange="importarDesdeExcel(event)">
+                <button class="btn btn-primary" onclick="iniciarExportacion()">
+                    <i class="fa fa-download"></i> Exportar a Excel
+                </button>
             </div>
+
+            <div id="progreso" class="mt-2"></div>
 
             <div class="table-responsive mt-4">
                 <table class="table table-bordered table-striped table-hover text-center">
@@ -146,14 +135,10 @@
                             <td>{{ $venta->Documento_Cliente }}</td>
                             <td>{{ $venta->Documento_Empleado }}</td>
                             <td>
-                                <button class="btn btn-info btn-sm"
-                                        onclick="abrirDetalleModal({{ $venta->ID_Venta }})">
+                                <button class="btn btn-info btn-sm" onclick="abrirDetalleModal({{ $venta->ID_Venta }})">
                                     <i class="fa fa-eye"></i>
                                 </button>
-
-                                <button class="btn btn-danger btn-sm"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#eliminarModal{{ $venta->ID_Venta }}">
+                                <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#eliminarModal{{ $venta->ID_Venta }}">
                                     <i class="fa fa-trash"></i>
                                 </button>
                             </td>
@@ -161,8 +146,7 @@
                         <div class="modal fade" id="eliminarModal{{ $venta->ID_Venta }}">
                             <div class="modal-dialog">
                                 <form method="POST" action="{{ route('ventas.destroy') }}">
-                                    @csrf
-                                    @method('DELETE')
+                                    @csrf @method('DELETE')
                                     <input type="hidden" name="ID_Venta" value="{{ $venta->ID_Venta }}">
                                     <div class="modal-content">
                                         <div class="modal-header bg-danger text-white">
@@ -189,11 +173,8 @@
                                 </form>
                             </div>
                         </div>
-
                     @empty
-                        <tr>
-                            <td colspan="4" class="text-muted">No hay ventas registradas.</td>
-                        </tr>
+                        <tr><td colspan="4" class="text-muted">No hay ventas registradas.</td></tr>
                     @endforelse
                     </tbody>
                 </table>
@@ -220,18 +201,10 @@
                                         <i class="fa fa-user"></i> Documento del Cliente
                                     </label>
                                     <div class="position-relative">
-                                        <input
-                                            type="text"
-                                            id="buscarCliente"
-                                            name="Documento_Cliente"
-                                            class="form-control"
-                                            placeholder="Ej: 1234567890"
-                                            autocomplete="off"
-                                            required>
-                                        <div id="spinnerBusqueda"
-                                             class="spinner-border spinner-border-sm text-primary position-absolute"
-                                             style="right: 10px; top: 10px; display: none;">
-                                        </div>
+                                        <input type="text" id="buscarCliente" name="Documento_Cliente" class="form-control"
+                                               placeholder="Ej: 1234567890" autocomplete="off" required>
+                                        <div id="spinnerBusqueda" class="spinner-border spinner-border-sm text-primary position-absolute"
+                                             style="right: 10px; top: 10px; display: none;"></div>
                                     </div>
                                     <small class="text-muted">
                                         <i class="fa fa-info-circle"></i>
@@ -271,7 +244,7 @@
 
                                 <hr>
 
-                                {{-- ✅ Dropdown Empleado desde BD --}}
+                                {{-- Dropdown Empleado desde BD --}}
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">
                                         <i class="fa fa-user-tie"></i> Empleado que realiza la venta
@@ -315,10 +288,187 @@
 <script>
 const urlDetalleVentas = "{{ route('detalleventas.index') }}";
 
+// ============================================
+// HELPERS
+// ============================================
+function normalizarClaves(obj){const r={};Object.keys(obj).forEach(key=>{r[key.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim()]=obj[key];});return r;}
+function buscarClave(o,...ps){for(const p of ps){const n=p.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();if(o[n]!==undefined)return o[n];}return null;}
+
+// ============================================
+// IMPORTACIÓN DESDE EXCEL
+// Hoja 1: Ventas   → Documento Cliente | Nombre Cliente | Apellido Cliente | Documento Empleado
+// Hoja 2: Detalles → Nombre Producto | Cantidad | Fecha Salida
+// ============================================
+async function importarDesdeExcel(event){
+    const archivo=event.target.files[0];if(!archivo)return;
+    const progresoDiv=document.getElementById('progreso');
+    progresoDiv.className='alert alert-info';
+    progresoDiv.innerHTML='<i class="fa fa-spinner fa-spin"></i> Leyendo archivo...';
+    
+    try{
+        const data=await archivo.arrayBuffer();
+        const workbook=XLSX.read(data);
+        
+        // Hoja 1: Ventas
+        const hojaVentas=workbook.Sheets[workbook.SheetNames[0]];
+        const ventas=XLSX.utils.sheet_to_json(hojaVentas).map(normalizarClaves);
+        
+        // Hoja 2: Detalles
+        let detalles=[];
+        if(workbook.SheetNames.length>1){
+            const hojaDet=workbook.Sheets[workbook.SheetNames[1]];
+            detalles=XLSX.utils.sheet_to_json(hojaDet).map(normalizarClaves);
+        }
+        
+        console.log('Ventas raw:',ventas);
+        console.log('Detalles raw:',detalles);
+        
+        if(ventas.length===0){progresoDiv.className='alert alert-warning';progresoDiv.innerHTML='<i class="fa fa-exclamation-triangle"></i> Archivo vacío';return;}
+        
+        progresoDiv.innerHTML='<i class="fa fa-spinner fa-spin"></i> Validando datos...';
+        
+        const datosValidados=[];
+        for(let i=0;i<ventas.length;i++){
+            const v=ventas[i];
+            const docCliente=buscarClave(v,'Documento Cliente','Documento_Cliente','documento cliente')||'';
+            const nombreCliente=buscarClave(v,'Nombre Cliente','Nombre_Cliente','nombre')||'';
+            const apellidoCliente=buscarClave(v,'Apellido Cliente','Apellido_Cliente','apellido')||'';
+            const estadoCliente=buscarClave(v,'Estado Cliente','Estado_Cliente','estado')||1;
+            const docEmpleado=buscarClave(v,'Documento Empleado','Documento_Empleado','documento empleado')||'';
+            
+            if(!docCliente){throw new Error(`Fila ${i+2}: Falta documento del cliente`);}
+            
+            // Detalles de esta venta
+            const detsFila=detalles.filter((_,idx)=>idx===i);
+            const detallesValidados=[];
+            
+            for(const det of detsFila){
+                const nombreProducto=buscarClave(det,'Nombre Producto','Nombre_Producto','producto');
+                const cantidad=parseInt(buscarClave(det,'Cantidad')||0);
+                const fechaSalida=buscarClave(det,'Fecha Salida','Fecha_Salida')||new Date().toISOString().split('T')[0];
+                
+                if(!nombreProducto||cantidad<=0)continue;
+                
+                detallesValidados.push({
+                    Nombre_Producto:nombreProducto,
+                    Cantidad:cantidad,
+                    Fecha_Salida:fechaSalida
+                });
+            }
+            
+            datosValidados.push({
+                Documento_Cliente:docCliente,
+                Nombre_Cliente:nombreCliente,
+                Apellido_Cliente:apellidoCliente,
+                Estado_Cliente:estadoCliente,
+                Documento_Empleado:docEmpleado,
+                detalles:detallesValidados
+            });
+        }
+        
+        console.log('✅ Datos validados:',JSON.stringify(datosValidados,null,2));
+        
+        const tamañoLote=10;let importados=0;
+        for(let i=0;i<datosValidados.length;i+=tamañoLote){
+            const lote=datosValidados.slice(i,i+tamañoLote);
+            const progreso=Math.round(((i+lote.length)/datosValidados.length)*100);
+            progresoDiv.innerHTML=`<div class="d-flex align-items-center"><strong>Importando ventas...</strong><div class="ms-auto">${progreso}%</div></div><div class="progress mt-2"><div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" style="width:${progreso}%"></div></div><small class="text-muted mt-2 d-block">Registros: ${i+lote.length}/${datosValidados.length}</small>`;
+            
+            const response=await fetch('/migracion/importar',{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-TOKEN':document.querySelector('meta[name="csrf-token"]').content},body:JSON.stringify({modulo:'ventas',datos:lote})});
+            const resultado=await response.json();
+            if(!resultado.success)throw new Error(resultado.mensaje);
+            importados+=resultado.importados||0;
+            await new Promise(r=>setTimeout(r,300));
+        }
+        progresoDiv.className='alert alert-success';
+        progresoDiv.innerHTML=`<i class="fa fa-check-circle"></i><strong>¡Importación completada!</strong><br><small>Se importaron ${importados} ventas con detalles</small>`;
+        setTimeout(()=>location.reload(),3000);
+    }catch(error){
+        console.error('Error:',error);
+        progresoDiv.className='alert alert-danger';
+        progresoDiv.innerHTML=`<i class="fa fa-exclamation-triangle"></i> Error: ${error.message}`;
+    }
+    event.target.value='';
+}
+
+// ============================================
+// EXPORTACIÓN A EXCEL
+// Hoja 1: Ventas   → Documento Cliente | Nombre Cliente | Apellido Cliente | Documento Empleado
+// Hoja 2: Detalles → Nombre Producto | Cantidad | Fecha Salida
+// ============================================
+async function iniciarExportacion(){
+    const btnExportar=event.target;btnExportar.disabled=true;btnExportar.innerHTML='<i class="fa fa-spinner fa-spin"></i> Exportando...';
+    const progresoDiv=document.getElementById('progreso');
+    try{
+        progresoDiv.className='alert alert-info';progresoDiv.innerHTML='<i class="fa fa-spinner fa-spin"></i> Iniciando...';
+        const initResp=await fetch('/migracion/iniciar',{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-TOKEN':document.querySelector('meta[name="csrf-token"]').content},body:JSON.stringify({modulo:'ventas'})});
+        const initData=await initResp.json();if(!initData.success)throw new Error(initData.mensaje);
+        
+        let todosLosDatos=[];let completado=false,intentos=0;
+        while(!completado&&intentos<100){
+            const loteResp=await fetch('/migracion/lote',{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-TOKEN':document.querySelector('meta[name="csrf-token"]').content},body:JSON.stringify({modulo:'ventas'})});
+            const loteData=await loteResp.json();if(!loteData.success)throw new Error(loteData.mensaje);
+            if(loteData.datos?.length>0)todosLosDatos=todosLosDatos.concat(loteData.datos);
+            progresoDiv.innerHTML=`<div class="d-flex align-items-center"><strong>Exportando ventas...</strong><div class="ms-auto">${loteData.progreso}%</div></div><div class="progress mt-2"><div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" style="width:${loteData.progreso}%"></div></div><small class="text-muted mt-2 d-block">Registros: ${loteData.registros_migrados}/${loteData.total_registros}</small>`;
+            completado=loteData.completado;intentos++;await new Promise(r=>setTimeout(r,300));
+        }
+        if(todosLosDatos.length===0){progresoDiv.className='alert alert-warning';progresoDiv.innerHTML='<i class="fa fa-exclamation-triangle"></i> No hay datos';btnExportar.disabled=false;btnExportar.innerHTML='<i class="fa fa-download"></i> Exportar';return;}
+        
+        progresoDiv.innerHTML+='<br><i class="fa fa-spinner fa-spin"></i> Generando Excel...';
+        
+        // Hoja 1: Ventas → Separando Nombre y Apellido
+        const hoja1=todosLosDatos.map(v=>{
+            const nombreCompleto=v.Nombre_Cliente||'';
+            const partes=nombreCompleto.trim().split(' ');
+            let nombre='',apellido='';
+            if(partes.length===1){nombre=partes[0];}
+            else if(partes.length>=2){nombre=partes[0];apellido=partes.slice(1).join(' ');}
+            
+            return {
+                'Documento Cliente':v.Documento_Cliente,
+                'Nombre Cliente':nombre,
+                'Apellido Cliente':apellido,
+                'Documento Empleado':v.Documento_Empleado
+            };
+        });
+        
+        // Hoja 2: Detalles
+        const hoja2=[];
+        todosLosDatos.forEach(v=>{
+            (v.detalles||[]).forEach(d=>{
+                hoja2.push({
+                    'Nombre Producto':d.Producto,
+                    'Cantidad':d.Cantidad,
+                    'Fecha Salida':d.Fecha_Salida
+                });
+            });
+        });
+        
+        const wb=XLSX.utils.book_new();
+        const ws1=XLSX.utils.json_to_sheet(hoja1);ws1['!cols']=[{wch:18},{wch:20},{wch:20},{wch:18}];
+        XLSX.utils.book_append_sheet(wb,ws1,'Ventas');
+        
+        if(hoja2.length>0){
+            const ws2=XLSX.utils.json_to_sheet(hoja2);ws2['!cols']=[{wch:30},{wch:10},{wch:15}];
+            XLSX.utils.book_append_sheet(wb,ws2,'Detalles');
+        }
+        
+        const info=XLSX.utils.aoa_to_sheet([['REPORTE DE VENTAS - TECNICELL RM'],[''],['Fecha:',new Date().toLocaleString('es-ES')],['Total Ventas:',todosLosDatos.length],['Total Detalles:',hoja2.length],['Usuario:','{{ session("nombre") ?? "TECNICELL RM" }}']]);
+        info['!cols']=[{wch:25},{wch:30}];XLSX.utils.book_append_sheet(wb,info,'Información');
+        
+        XLSX.writeFile(wb,`Ventas_${new Date().toISOString().split('T')[0]}.xlsx`);
+        progresoDiv.className='alert alert-success';progresoDiv.innerHTML=`<i class="fa fa-check-circle"></i> <strong>¡Exportación completada!</strong><br><small>${todosLosDatos.length} ventas · ${hoja2.length} detalles exportados</small>`;
+        setTimeout(()=>{progresoDiv.innerHTML='';progresoDiv.className='';},8000);
+    }catch(error){progresoDiv.className='alert alert-danger';progresoDiv.innerHTML=`<i class="fa fa-exclamation-triangle"></i> Error: ${error.message}`;}
+    finally{btnExportar.disabled=false;btnExportar.innerHTML='<i class="fa fa-download"></i> Exportar a Excel';}
+}
+
+// ============================================
+// MODAL DE DETALLES Y BÚSQUEDA DE CLIENTE
+// ============================================
 function abrirDetalleModal(idVenta) {
     document.getElementById('mainContent').classList.add('devoluciones-background');
     document.getElementById('detalleBackdrop').style.display = 'block';
-
     fetch(`/ventas/${idVenta}/detalles`)
         .then(response => response.json())
         .then(data => mostrarDetalles(data))
@@ -331,24 +481,16 @@ function abrirDetalleModal(idVenta) {
 
 function mostrarDetalles(data) {
     const venta = data.venta;
-
     let detallesHTML = '';
     if (venta.detalles && venta.detalles.length > 0) {
         venta.detalles.forEach(detalle => {
             detallesHTML += `
                 <tr>
-                    <td class="py-3">
-                        <i class="fa fa-box text-primary me-2"></i>
-                        <strong>${detalle.Nombre_Producto}</strong>
-                    </td>
-                    <td class="py-3">
-                        <span class="badge bg-primary">${detalle.Cantidad}</span> unidades
-                    </td>
+                    <td class="py-3"><i class="fa fa-box text-primary me-2"></i><strong>${detalle.Nombre_Producto}</strong></td>
+                    <td class="py-3"><span class="badge bg-primary">${detalle.Cantidad}</span> unidades</td>
                     <td class="py-3">${detalle.Fecha_Salida}</td>
                     <td class="py-3 text-center">
-                        <a href="${urlDetalleVentas}" class="btn btn-sm btn-warning">
-                            <i class="fa fa-edit"></i> Editar
-                        </a>
+                        <a href="${urlDetalleVentas}" class="btn btn-sm btn-warning"><i class="fa fa-edit"></i> Editar</a>
                     </td>
                 </tr>
             `;
@@ -356,13 +498,10 @@ function mostrarDetalles(data) {
     } else {
         detallesHTML = '<tr><td colspan="4" class="text-center text-muted py-5"><i class="fa fa-inbox fa-3x mb-3 d-block"></i><p>No hay detalles registrados para esta venta</p></td></tr>';
     }
-
+    
     const modalHTML = `
         <div class="modal-header bg-primary text-white py-3">
-            <h5 class="modal-title">
-                <i class="fa fa-info-circle me-2"></i> Detalle de Venta -
-                <span class="badge bg-light text-primary ms-2">ID: ${venta.ID_Venta}</span>
-            </h5>
+            <h5 class="modal-title"><i class="fa fa-info-circle me-2"></i> Detalle de Venta - <span class="badge bg-light text-primary ms-2">ID: ${venta.ID_Venta}</span></h5>
             <button type="button" class="btn-close btn-close-white" onclick="cerrarDetalleModal()"></button>
         </div>
         <div class="modal-body p-4">
@@ -371,24 +510,14 @@ function mostrarDetalles(data) {
                     <div class="row g-4">
                         <div class="col-md-6">
                             <div class="d-flex align-items-start">
-                                <div class="bg-primary bg-opacity-10 p-3 rounded me-3">
-                                    <i class="fa fa-user fa-lg text-primary"></i>
-                                </div>
-                                <div>
-                                    <h6 class="text-muted mb-1 small">Documento Cliente</h6>
-                                    <p class="mb-0 fw-bold fs-5">${venta.Documento_Cliente}</p>
-                                </div>
+                                <div class="bg-primary bg-opacity-10 p-3 rounded me-3"><i class="fa fa-user fa-lg text-primary"></i></div>
+                                <div><h6 class="text-muted mb-1 small">Documento Cliente</h6><p class="mb-0 fw-bold fs-5">${venta.Documento_Cliente}</p></div>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="d-flex align-items-start">
-                                <div class="bg-info bg-opacity-10 p-3 rounded me-3">
-                                    <i class="fa fa-user-tie fa-lg text-info"></i>
-                                </div>
-                                <div>
-                                    <h6 class="text-muted mb-1 small">Documento Empleado</h6>
-                                    <p class="mb-0 fw-bold">${venta.Documento_Empleado}</p>
-                                </div>
+                                <div class="bg-info bg-opacity-10 p-3 rounded me-3"><i class="fa fa-user-tie fa-lg text-info"></i></div>
+                                <div><h6 class="text-muted mb-1 small">Documento Empleado</h6><p class="mb-0 fw-bold">${venta.Documento_Empleado}</p></div>
                             </div>
                         </div>
                     </div>
@@ -406,22 +535,16 @@ function mostrarDetalles(data) {
                             <th class="text-center"><i class="fa fa-cog me-2"></i> Acciones</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        ${detallesHTML}
-                    </tbody>
+                    <tbody>${detallesHTML}</tbody>
                 </table>
             </div>
         </div>
         <div class="modal-footer bg-light py-3">
-            <button type="button" class="btn btn-secondary px-4" onclick="cerrarDetalleModal()">
-                <i class="fa fa-times me-2"></i> Cerrar
-            </button>
-            <a href="${urlDetalleVentas}" class="btn btn-primary px-4">
-                <i class="fa fa-external-link-alt me-2"></i> Ir a Detalle de Ventas
-            </a>
+            <button type="button" class="btn btn-secondary px-4" onclick="cerrarDetalleModal()"><i class="fa fa-times me-2"></i> Cerrar</button>
+            <a href="${urlDetalleVentas}" class="btn btn-primary px-4"><i class="fa fa-external-link-alt me-2"></i> Ir a Detalle de Ventas</a>
         </div>
     `;
-
+    
     document.getElementById('detalleModal').innerHTML = modalHTML;
     document.getElementById('detalleModal').style.display = 'block';
 }
