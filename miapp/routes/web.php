@@ -20,6 +20,15 @@ Route::get('/', function () {
     return view('inicio');
 })->name('inicio');
 
+
+//Compras migracion 
+Route::post('/migracion/buscar-producto', [MigracionController::class, 'buscarProducto']);
+Route::post('/migracion/buscar-proveedor', [MigracionController::class, 'buscarProveedor']);
+
+// Búsqueda de producto y proveedor para importación de compras
+Route::post('/migracion/buscar-producto', [MigracionController::class, 'buscarProducto']);
+Route::post('/migracion/buscar-proveedor', [MigracionController::class, 'buscarProveedor']);
+
 // Buscar venta por documento (AJAX)
 Route::get('/ventas/por-documento/{documento}', [DetalleDevolucionController::class, 'ventaPorDocumento']);
 
