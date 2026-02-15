@@ -56,6 +56,19 @@ class ComprasController extends BaseController
     public function delete($ID_Entrada)
     {
         $compra = Compras::findOrFail($ID_Entrada);
+        
+        // Verificar si tiene detalles de compras asociados
+        $tieneDetalles = \DB::table('detalle_compras')
+            ->where('ID_Entrada', $ID_Entrada)
+            ->exists();
+        
+        if ($tieneDetalles) {
+            return redirect()
+                ->route('compras.index')
+                ->with('error', 'No se puede eliminar esta compra porque tiene detalles de compras asociados. Primero elimine los detalles de compras.');
+        }
+        
+        // Si no hay relaciones, proceder a eliminar
         $compra->delete();
 
         return redirect()

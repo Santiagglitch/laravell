@@ -25,7 +25,7 @@
                 <a href="{{ route('admin.inicio') }}" class="elemento-menu">
                     <i class="fa-solid fa-tachometer-alt"></i><span>Dashboard</span>
                 </a>
-                <a href="{{ route('compras.index') }}" class="elemento-menu activo">
+                <a href="{{ route('compras.index') }}" class="elemento-menu">
                     <i class="ri-shopping-cart-2-line"></i><span>Compras</span>
                 </a>
                 <a href="{{ route('devolucion.index') }}" class="elemento-menu">
@@ -109,6 +109,42 @@
                 </script>
             @endif
 
+            @if(session('error'))
+                <div id="alertaError" class="alert alert-danger text-center mt-3">
+                    {{ session('error') }}
+                </div>
+                <script>
+                    setTimeout(() => {
+                        let alerta = document.getElementById('alertaError');
+                        if (alerta) {
+                            alerta.style.transition = "opacity 0.5s";
+                            alerta.style.opacity = 0;
+                            setTimeout(() => alerta.remove(), 500);
+                        }
+                    }, 5000);
+                </script>
+            @endif
+
+            @if($errors->any())
+                <div id="alertaErrores" class="alert alert-danger mt-3">
+                    <ul class="mb-0">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                <script>
+                    setTimeout(() => {
+                        let alerta = document.getElementById('alertaErrores');
+                        if (alerta) {
+                            alerta.style.transition = "opacity 0.5s";
+                            alerta.style.opacity = 0;
+                            setTimeout(() => alerta.remove(), 500);
+                        }
+                    }, 4000);
+                </script>
+            @endif
+
             <div class="text-end mt-4">
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#crearModal">
                     <i class="fa fa-plus"></i> Añadir Proveedor
@@ -136,11 +172,11 @@
                             <td>{{ $prov->Telefono }}</td>
                             <td>
                                 @if($prov->ID_Estado == 1)
-                                    Activo
+                                    <span class="badge bg-success">Activo</span>
                                 @elseif($prov->ID_Estado == 2)
-                                    Inactivo
+                                    <span class="badge bg-danger">Inactivo</span>
                                 @else
-                                    En proceso
+                                    <span class="badge bg-warning text-dark">En proceso</span>
                                 @endif
                             </td>
                             <td>
@@ -173,7 +209,7 @@
                                                    value="{{ $prov->Nombre_Proveedor }}" required>
 
                                             <label>Correo</label>
-                                            <input class="form-control mb-3" name="Correo_Electronico"
+                                            <input type="email" class="form-control mb-3" name="Correo_Electronico"
                                                    value="{{ $prov->Correo_Electronico }}" required>
 
                                             <label>Telefono</label>
@@ -206,10 +242,15 @@
                                     <div class="modal-content">
                                         <div class="modal-header bg-danger text-white">
                                             <h5 class="modal-title">¿Eliminar proveedor?</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                                         </div>
                                         <div class="modal-body">
-                                            Esta acción no se puede deshacer.
+                                            <p>¿Está seguro de eliminar este proveedor?</p>
+                                            <div class="alert alert-warning">
+                                                <strong>Nombre:</strong> {{ $prov->Nombre_Proveedor }}<br>
+                                                <strong>Correo:</strong> {{ $prov->Correo_Electronico }}<br>
+                                                <strong>Teléfono:</strong> {{ $prov->Telefono }}
+                                            </div>
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -238,17 +279,20 @@
                         <div class="modal-content">
                             <div class="modal-header bg-success text-white">
                                 <h5 class="modal-title">Añadir Proveedor</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                             </div>
                             <div class="modal-body">
                                 <label>Nombre</label>
-                                <input class="form-control mb-3" name="Nombre_Proveedor" required>
+                                <input class="form-control mb-3" name="Nombre_Proveedor" 
+                                       placeholder="Ingrese el nombre del proveedor" required>
 
                                 <label>Correo</label>
-                                <input type="email" class="form-control mb-3" name="Correo_Electronico" required>
+                                <input type="email" class="form-control mb-3" name="Correo_Electronico" 
+                                       placeholder="ejemplo@correo.com" required>
 
                                 <label>Telefono</label>
-                                <input class="form-control mb-3" name="Telefono" required>
+                                <input class="form-control mb-3" name="Telefono" 
+                                       placeholder="Ingrese el teléfono" required>
 
                                 <label>Estado</label>
                                 <select class="form-control" name="ID_Estado" required>

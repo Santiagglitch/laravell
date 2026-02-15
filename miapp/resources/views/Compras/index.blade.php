@@ -149,7 +149,7 @@
                             alerta.style.opacity = 0;
                             setTimeout(() => alerta.remove(), 500);
                         }
-                    }, 2000);
+                    }, 3000);
                 </script>
             @endif
 
@@ -244,7 +244,11 @@
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                         </div>
                                         <div class="modal-body">
-                                            ¿Seguro que deseas eliminar esta compra?
+                                            <p>¿Seguro que deseas eliminar esta compra?</p>
+                                            <div class="alert alert-warning">
+                                                <strong>Producto:</strong> {{ $compra->nombre_producto }}<br>
+                                                <strong>Precio:</strong> ${{ number_format($compra->Precio_Compra, 2) }}
+                                            </div>
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -347,6 +351,7 @@ function mostrarDetalles(data) {
                 <tr>
                     <td><i class="fa fa-calendar"></i> ${detalle.Fecha_Entrada}</td>
                     <td><i class="fa fa-box"></i> ${detalle.Cantidad} unidades</td>
+                    <td><i class="fa fa-truck"></i> ${detalle.proveedor ? detalle.proveedor.Nombre_Proveedor : 'N/A'}</td>
                     <td>
                         <a href="${urlDetalleCompras}" class="btn btn-sm btn-warning">
                             <i class="fa fa-edit"></i> Editar
@@ -356,7 +361,7 @@ function mostrarDetalles(data) {
             `;
         });
     } else {
-        detallesHTML = '<tr><td colspan="3" class="text-center text-muted py-4"><i class="fa fa-inbox fa-2x mb-2"></i><br>No hay detalles registrados para esta compra</td></tr>';
+        detallesHTML = '<tr><td colspan="4" class="text-center text-muted py-4"><i class="fa fa-inbox fa-2x mb-2"></i><br>No hay detalles registrados para esta compra</td></tr>';
     }
     
     const modalHTML = `
@@ -395,6 +400,7 @@ function mostrarDetalles(data) {
                         <tr>
                             <th><i class="fa fa-calendar-alt"></i> Fecha Entrada</th>
                             <th><i class="fa fa-sort-numeric-up"></i> Cantidad</th>
+                            <th><i class="fa fa-truck"></i> Proveedor</th>
                             <th><i class="fa fa-cog"></i> Acciones</th>
                         </tr>
                     </thead>
@@ -402,14 +408,6 @@ function mostrarDetalles(data) {
                         ${detallesHTML}
                     </tbody>
                 </table>
-            </div>
-            
-            <div class="alert alert-info d-flex align-items-center" role="alert">
-                <i class="fa fa-info-circle fa-2x me-3"></i>
-                <div>
-                    Para editar los detalles, haz clic en el botón "Editar" de la tabla o ve a la sección 
-                    <a href="${urlDetalleCompras}" class="alert-link">Detalle de Compras</a>.
-                </div>
             </div>
         </div>
         <div class="modal-footer bg-light">
