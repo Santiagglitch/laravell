@@ -17,45 +17,15 @@ use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\MigracionController;
 use App\Http\Controllers\AuditoriaController;
 
-
 // ===============================================
-// RUTAS AJAX PARA DETALLE DEVOLUCIÓN
+// RUTA PRINCIPAL
 // ===============================================
-
-// Buscar ventas por documento de cliente (ADMIN)
-Route::get('/ventas/por-documento/{documento}', [DetalleDevolucionController::class, 'ventaPorDocumento'])
-    ->name('detalledevolucion.ventaPorDocumento');
-
-// Info de venta para modal editar (ADMIN)
-Route::get('/venta-info/{idVenta}', [DetalleDevolucionController::class, 'ventaInfo'])
-    ->name('detalledevolucion.ventaInfo');
-
-// EMPLEADO - Buscar ventas por documento
-Route::get('/empleado/ventas/por-documento/{documento}', [DetalleDevolucionController::class, 'ventaPorDocumento'])
-    ->name('detalledevolucion.ventaPorDocumentoEm');
-
-// EMPLEADO - Info de venta
-Route::get('/empleado/venta-info/{idVenta}', [DetalleDevolucionController::class, 'ventaInfo'])
-    ->name('detalledevolucion.ventaInfoEm');
-
 Route::get('/', function () {
     return view('inicio');
-})->name('inicio');// ===============================================
-// RUTAS DE MIGRACIÓN - PRODUCTOS
-// ===============================================
-Route::post('/migracion/productos/importar', [MigracionController::class, 'importarProductos']);
-Route::post('/migracion/productos/iniciar', [MigracionController::class, 'iniciarProductos']);
-Route::post('/migracion/productos/lote', [MigracionController::class, 'loteProductos']);
+})->name('inicio');
 
 // ===============================================
-// RUTAS DE MIGRACIÓN - EMPLEADOS
-// ===============================================
-Route::post('/migracion/empleados/importar', [MigracionController::class, 'importarEmpleados']);
-Route::post('/migracion/empleados/iniciar', [MigracionController::class, 'iniciarEmpleados']);
-Route::post('/migracion/empleados/lote', [MigracionController::class, 'loteEmpleados']);
-
-// ===============================================
-// RUTAS DE MIGRACIÓN - OTROS
+// RUTAS DE MIGRACIÓN
 // ===============================================
 Route::post('/migracion/importar', [MigracionController::class, 'importar']);
 Route::post('/migracion/iniciar', [MigracionController::class, 'iniciar']);
@@ -64,48 +34,70 @@ Route::post('/migracion/buscar-venta', [MigracionController::class, 'buscarVenta
 Route::post('/migracion/buscar-producto', [MigracionController::class, 'buscarProducto']);
 Route::post('/migracion/buscar-proveedor', [MigracionController::class, 'buscarProveedor']);
 Route::get('/migracion/historial', [MigracionController::class, 'historial']);
-// Detalle Devolucion - ADMIN
-Route::get('/detalledevolucion', [DetalleDevolucionController::class, 'get'])->name('detalledevolucion.index');
-Route::post('/detalledevolucion', [DetalleDevolucionController::class, 'post'])->name('detalledevolucion.store');
-Route::put('/detalledevolucion/{ID_Devolucion}', [DetalleDevolucionController::class, 'update'])->name('detalledevolucion.update');
-Route::delete('/detalledevolucion/{ID_Devolucion}', [DetalleDevolucionController::class, 'destroy'])->name('detalledevolucion.destroy');
 
-// Clientes
+// Rutas específicas para empleados
+Route::post('/migracion/empleados/importar', [MigracionController::class, 'importarEmpleados']);
+Route::post('/migracion/empleados/iniciar', [MigracionController::class, 'iniciarEmpleados']);
+Route::post('/migracion/empleados/lote', [MigracionController::class, 'loteEmpleados']);
+
+// Rutas específicas para productos
+Route::post('/migracion/productos/importar', [MigracionController::class, 'importarProductos']);
+Route::post('/migracion/productos/iniciar', [MigracionController::class, 'iniciarProductos']);
+Route::post('/migracion/productos/lote', [MigracionController::class, 'loteProductos']);
+
+// ===============================================
+// RUTAS AJAX PARA DETALLE DEVOLUCIÓN
+// ===============================================
+Route::get('/ventas/por-documento/{documento}', [DetalleDevolucionController::class, 'ventaPorDocumento'])
+    ->name('detalledevolucion.ventaPorDocumento');
+
+Route::get('/venta-info/{idVenta}', [DetalleDevolucionController::class, 'ventaInfo'])
+    ->name('detalledevolucion.ventaInfo');
+
+Route::get('/empleado/ventas/por-documento/{documento}', [DetalleDevolucionController::class, 'ventaPorDocumento'])
+    ->name('detalledevolucion.ventaPorDocumentoEm');
+
+Route::get('/empleado/venta-info/{idVenta}', [DetalleDevolucionController::class, 'ventaInfo'])
+    ->name('detalledevolucion.ventaInfoEm');
+
+// ===============================================
+// CLIENTES
+// ===============================================
 Route::get('/clientes', [ClienteController::class, 'get'])->name('clientes.index');
 Route::post('/clientes', [ClienteController::class, 'post'])->name('clientes.store');
 Route::put('/clientes', [ClienteController::class, 'put'])->name('clientes.update');
 Route::delete('/clientes', [ClienteController::class, 'delete'])->name('clientes.destroy');
 
-
-//Proveedor
+// ===============================================
+// PROVEEDORES
+// ===============================================
 Route::get('/proveedores', [ProveedorController::class, 'get'])->name('proveedor.index');
 Route::post('/proveedores', [ProveedorController::class, 'post'])->name('proveedor.store');
 Route::put('/proveedores', [ProveedorController::class, 'put'])->name('proveedor.update');
 Route::delete('/proveedores', [ProveedorController::class, 'delete'])->name('proveedor.destroy');
 
-
-
-//Empleados
+// ===============================================
+// EMPLEADOS
+// ===============================================
 Route::get('/empleados', [EmpleadoController::class, 'get'])->name('empleados.index');
 Route::post('/empleados', [EmpleadoController::class, 'post'])->name('empleados.store');
 Route::put('/empleados', [EmpleadoController::class, 'put'])->name('empleados.update');
 Route::delete('/empleados', [EmpleadoController::class, 'delete'])->name('empleados.destroy');
 
-
-
-// Productos
+// ===============================================
+// PRODUCTOS
+// ===============================================
 Route::get('/productos',  [ProductoController::class, 'get'])->name('productos.index');
 Route::post('/productos', [ProductoController::class, 'post'])->name('productos.store');
 Route::put('/productos',  [ProductoController::class, 'put'])->name('productos.update');
 Route::delete('/productos', [ProductoController::class, 'delete'])->name('productos.destroy');
 
-
 Route::get('/empleado/productos', [ProductoController::class, 'indexEmpleado'])
     ->name('productos.indexEm');
 
-
-
-// Ventas
+// ===============================================
+// VENTAS
+// ===============================================
 Route::get('/ventas', [VentaController::class, 'get'])->name('ventas.index');
 Route::get('/api/buscar-cliente/{documento}', [VentaController::class, 'buscarClienteAjax']);
 Route::post('/ventas', [VentaController::class, 'post'])->name('ventas.store');
@@ -113,9 +105,9 @@ Route::put('/ventas/update', [VentaController::class, 'put'])->name('ventas.upda
 Route::delete('/ventas', [VentaController::class, 'delete'])->name('ventas.destroy');
 Route::get('/ventas/{id}/detalles', [VentaController::class, 'obtenerDetalles']);
 
-
-
-// Detalle Ventas
+// ===============================================
+// DETALLE VENTAS
+// ===============================================
 Route::get('/detalleventas', [DetalleVentaController::class, 'get'])->name('detalleventas.index');
 Route::post('/detalleventas', [DetalleVentaController::class, 'post'])->name('detalleventas.store');
 Route::put('/detalleventas', [DetalleVentaController::class, 'put'])->name('detalleventas.update');
@@ -124,10 +116,9 @@ Route::get('/ventas/por-producto/{nombre}', [DetalleVentaController::class, 'ven
 Route::get('/detalleventas/buscar-producto/{nombre}', [DetalleVentaController::class, 'buscarProducto'])->name('detalleventas.buscarProducto');
 Route::get('/detalleventas/venta-info/{idVenta}', [DetalleVentaController::class, 'ventaInfo'])->name('detalleventas.ventaInfo');
 
-// Info de venta para modal editar ADMIN
-Route::get('/venta-info/{idVenta}', [DetalleDevolucionController::class, 'ventaInfo'])->name('detalledevolucion.ventaInfoAdmin');
-
-// Devolucio
+// ===============================================
+// DEVOLUCIONES
+// ===============================================
 Route::get('/devolucion', [DevolucionController::class, 'get'])->name('devolucion.index');
 Route::get('/devolucion/{id}/detalles', [DevolucionController::class, 'obtenerDetalles'])
     ->name('devolucion.detalles');
@@ -135,153 +126,139 @@ Route::post('/devolucion', [DevolucionController::class, 'post'])->name('devoluc
 Route::put('/devolucion', [DevolucionController::class, 'put'])->name('devolucion.update');
 Route::delete('/devolucion', [DevolucionController::class, 'delete'])->name('devolucion.destroy');
 
-
-// Detalle Devolucion
+// ===============================================
+// DETALLE DEVOLUCIONES - ADMIN
+// ===============================================
 Route::get('/detalledevolucion', [DetalleDevolucionController::class, 'get'])->name('detalledevolucion.index');
 Route::post('/detalledevolucion', [DetalleDevolucionController::class, 'post'])->name('detalledevolucion.store');
-Route::put('/detalledevolucion', [DetalleDevolucionController::class, 'put'])->name('detalledevolucion.update');
-Route::delete('/detalledevolucion', [DetalleDevolucionController::class, 'delete'])->name('detalledevolucion.destroy');
+Route::put('/detalledevolucion/{ID_Devolucion}', [DetalleDevolucionController::class, 'update'])->name('detalledevolucion.update');
+Route::delete('/detalledevolucion/{ID_Devolucion}', [DetalleDevolucionController::class, 'destroy'])->name('detalledevolucion.destroy');
+Route::get('/venta-info/{idVenta}', [DetalleDevolucionController::class, 'ventaInfo'])->name('detalledevolucion.ventaInfoAdmin');
 
-
-// Compras (mantén estas como están)
+// ===============================================
+// COMPRAS
+// ===============================================
 Route::get('/compras', [ComprasController::class, 'get'])->name('compras.index');
 Route::post('/compras', [ComprasController::class, 'post'])->name('compras.store');
 Route::put('/compras/{ID_Entrada}', [ComprasController::class, 'put'])->name('compras.update');
 Route::delete('/compras/{ID_Entrada}', [ComprasController::class, 'delete'])->name('compras.destroy');
-Route::get('/compras/{ID_Entrada}/detalles', [ComprasController::class, 'getDetalles'])->name('compras.detalles'); // ← SOLO AGREGA ESTA LÍNEA
+Route::get('/compras/{ID_Entrada}/detalles', [ComprasController::class, 'getDetalles'])->name('compras.detalles');
 
-// Detalle Compras (mantén estas como están)
+// ===============================================
+// DETALLE COMPRAS
+// ===============================================
 Route::get('/detallecompras', [DetalleComprasController::class, 'get'])->name('detallecompras.index');
 Route::post('/detallecompras', [DetalleComprasController::class, 'post'])->name('detallecompras.store');
 Route::put('/detallecompras', [DetalleComprasController::class, 'put'])->name('detallecompras.update');
 Route::delete('/detallecompras', [DetalleComprasController::class, 'delete'])->name('detallecompras.destroy');
 
-//Login
+// ===============================================
+// AUTENTICACIÓN
+// ===============================================
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.form');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
-//Logout
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-// Password Reset
+
+// ===============================================
+// RECUPERACIÓN DE CONTRASEÑA
+// ===============================================
 Route::get('/forgot-password', [PasswordResetController::class, 'showForgotForm'])->name('password.forgot');
 Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLink'])->name('password.email');
 Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
 Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])->name('password.update');
 
-
+// ===============================================
+// ADMIN
+// ===============================================
 Route::get('/admin', function () {
     return view('admin.inicio');
 })->name('admin.inicio');
 
-
-
-
+// ===============================================
+// RUTAS DE EMPLEADO
+// ===============================================
 Route::prefix('empleado')->group(function () {
 
     // CLIENTES 
     Route::get('/clientes', [ClienteController::class, 'indexEmpleado'])
         ->name('clientes.indexEm');
-
     Route::post('/clientes/store', [ClienteController::class, 'storeEmpleado'])
         ->name('clientes.storeEm');
-
     Route::put('/clientes/update', [ClienteController::class, 'updateEmpleado'])
         ->name('clientes.updateEm');
-
     Route::delete('/clientes/destroy', [ClienteController::class, 'destroyEmpleado'])
         ->name('clientes.destroyEm');
 
-
     // PRODUCTOS
     Route::get('/productos', [ProductoController::class, 'indexEmpleado'])
-    ->name('productos.indexEm');
-
+        ->name('productos.indexEm');
     Route::post('/productos/store', [ProductoController::class, 'storeEmpleado'])
-    ->name('productos.storeEm');
-
+        ->name('productos.storeEm');
     Route::put('/productos/update', [ProductoController::class, 'updateEmpleado'])
-    ->name('productos.updateEm');
-
+        ->name('productos.updateEm');
     Route::delete('/productos/destroy', [ProductoController::class, 'destroyEmpleado'])
-    ->name('productos.destroyEm');
+        ->name('productos.destroyEm');
 
     // VENTAS 
     Route::get('/ventas', [VentaController::class, 'indexEmpleado'])
-    ->name('ventas.indexEm');
-
+        ->name('ventas.indexEm');
     Route::post('/ventas/store', [VentaController::class, 'storeEmpleado'])
-    ->name('ventas.storeEm');
-
+        ->name('ventas.storeEm');
     Route::put('/ventas/update', [VentaController::class, 'updateEmpleado'])
-    ->name('ventas.updateEm');
-
+        ->name('ventas.updateEm');
     Route::delete('/ventas/destroy', [VentaController::class, 'destroyEmpleado'])
-    ->name('ventas.destroyEm');
-
+        ->name('ventas.destroyEm');
 
     // DETALLE VENTAS
     Route::get('/detalleventas', [DetalleVentaController::class, 'indexEmpleado'])
-    ->name('detalleventas.indexEm');
-
+        ->name('detalleventas.indexEm');
     Route::post('/detalleventas/store', [DetalleVentaController::class, 'storeEmpleado'])
-    ->name('detalleventas.storeEm');
-
+        ->name('detalleventas.storeEm');
     Route::put('/detalleventas/update', [DetalleVentaController::class, 'updateEmpleado'])
-    ->name('detalleventas.updateEm');
-
+        ->name('detalleventas.updateEm');
     Route::delete('/detalleventas/destroy', [DetalleVentaController::class, 'destroyEmpleado'])
-    ->name('detalleventas.destroyEm');
-
+        ->name('detalleventas.destroyEm');
 
     // DEVOLUCIONES 
     Route::get('/devolucion', [DevolucionController::class, 'indexEmpleado'])
-    ->name('devolucion.indexEm');
-
+        ->name('devolucion.indexEm');
     Route::post('/devolucion/store', [DevolucionController::class, 'storeEmpleado'])
-    ->name('devolucion.storeEm');
-
+        ->name('devolucion.storeEm');
     Route::put('/devolucion/update', [DevolucionController::class, 'updateEmpleado'])
-    ->name('devolucion.updateEm');
-
+        ->name('devolucion.updateEm');
     Route::delete('/devolucion/destroy', [DevolucionController::class, 'destroyEmpleado'])
-    ->name('devolucion.destroyEm');
-// Dentro del grupo prefix('empleado'), junto a las demás rutas de devolucion:
-Route::get('/devolucion/{id}/detalles', [DevolucionController::class, 'obtenerDetalles'])
-    ->name('devolucion.detallesEm');
-
-
+        ->name('devolucion.destroyEm');
+    Route::get('/devolucion/{id}/detalles', [DevolucionController::class, 'obtenerDetalles'])
+        ->name('devolucion.detallesEm');
 
     // DETALLE DEVOLUCIONES 
     Route::get('/detalledevolucion', [DetalleDevolucionController::class, 'indexEmpleado'])
-    ->name('detalledevolucion.indexEm');
-Route::put('/detalledevolucion/update/{ID_Devolucion}', [DetalleDevolucionController::class, 'updateEmpleado'])
-    ->name('detalledevolucion.updateEm');
+        ->name('detalledevolucion.indexEm');
+    Route::put('/detalledevolucion/update/{ID_Devolucion}', [DetalleDevolucionController::class, 'updateEmpleado'])
+        ->name('detalledevolucion.updateEm');
     Route::post('/detalledevolucion/store', [DetalleDevolucionController::class, 'storeEmpleado'])
-    ->name('detalledevolucion.storeEm');
-    // Obtener info de una venta para el modal editar
-Route::get('/venta-info/{idVenta}', [DetalleDevolucionController::class, 'ventaInfo'])
-    ->name('detalledevolucion.ventaInfo');
-Route::get('/venta-info/{idVenta}', [DetalleDevolucionController::class, 'ventaInfo'])
+        ->name('detalledevolucion.storeEm');
+    Route::get('/venta-info/{idVenta}', [DetalleDevolucionController::class, 'ventaInfo'])
         ->name('detalledevolucion.ventaInfo');
-
- // ← cierre del grupo prefix('empleado')
-   Route::prefix('empleado')->group(function () {
-
     Route::delete('/detalledevolucion/delete/{ID_Devolucion}',
         [DetalleDevolucionController::class, 'destroyEmpleado']
     )->name('detalledevolucion.destroyEm');
-
 });
 
-});
-
-        Route::get('/InicioE', function () {
-        return view('InicioE.index');
-        })->name('InicioE.index');
+// ===============================================
+// OTRAS VISTAS
+// ===============================================
+Route::get('/InicioE', function () {
+    return view('InicioE.index');
+})->name('InicioE.index');
 
 Route::get('/pie-pag', function () {
     return view('Pie_pag.index');
 })->name('pie.pag');
 
+// ===============================================
+// PERFIL
+// ===============================================
 Route::get('/perfil', [PerfilController::class, 'mostrar'])->name('perfil');
 Route::post('/perfil/actualizar', [PerfilController::class, 'actualizar'])->name('perfil.actualizar');
 
