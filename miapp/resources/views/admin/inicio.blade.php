@@ -17,59 +17,101 @@
 
 <div class="d-flex" style="min-height:100vh">
 
-    
+    <!-- ===================== SIDEBAR ===================== -->
     <div class="barra-lateral d-flex flex-column flex-shrink-0 p-3 bg-primary text-white">
         <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-            TECNICELL RM <img src="{{ asset('Imagenes/Logo.webp') }}" style="height:48px;">
+            TECNICELL RM
+            <img src="{{ asset('Imagenes/Logo.webp') }}" style="height:48px;">
         </a>
         <hr>
 
         <div class="menu-barra-lateral">
+
+            <!-- SECCIÓN PRINCIPAL -->
             <div class="seccion-menu">
-                <a href="{{ route('admin.inicio') }}" class="elemento-menu activo">
-                    <i class="fa-solid fa-tachometer-alt"></i><span>Dashboard</span>
+
+                <a href="{{ route('admin.inicio') }}"
+                   class="elemento-menu {{ request()->routeIs('admin.inicio') ? 'activo' : '' }}">
+                    <i class="fa-solid fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
                 </a>
-                <a href="{{ route('compras.index') }}" class="elemento-menu">
-                    <i class="ri-shopping-cart-2-line"></i><span>Compras</span>
+
+                <a href="{{ route('compras.index') }}"
+                   class="elemento-menu {{ request()->routeIs('compras.*') ? 'activo' : '' }}">
+                    <i class="ri-shopping-cart-2-line"></i>
+                    <span>Compras</span>
                 </a>
-                <a href="{{ route('devolucion.index') }}" class="elemento-menu">
-                    <i class="ri-arrow-go-back-line"></i><span>Devoluciones</span>
+
+                <a href="{{ route('devolucion.index') }}"
+                   class="elemento-menu {{ request()->routeIs('devolucion.*') ? 'activo' : '' }}">
+                    <i class="ri-arrow-go-back-line"></i>
+                    <span>Devoluciones</span>
                 </a>
-                <a href="{{ route('ventas.index') }}" class="elemento-menu">
-                    <i class="ri-price-tag-3-line"></i><span>Ventas</span>
+
+                <a href="{{ route('ventas.index') }}"
+                   class="elemento-menu {{ request()->routeIs('ventas.*') ? 'activo' : '' }}">
+                    <i class="ri-price-tag-3-line"></i>
+                    <span>Ventas</span>
                 </a>
+
+                <!-- NUEVO MÓDULO AUDITORÍA -->
+                <a href="{{ route('auditoria.index') }}"
+                   class="elemento-menu {{ request()->routeIs('auditoria.*') ? 'activo' : '' }}">
+                    <i class="ri-shield-check-line"></i>
+                    <span>Auditoría</span>
+                </a>
+
             </div>
 
             <hr>
 
+            <!-- SECCIÓN ADMINISTRACIÓN -->
             <div class="seccion-menu">
-                <a href="{{ route('productos.index') }}" class="elemento-menu">
-                    <i class="ri-box-3-line"></i><span>Productos</span>
+
+                <a href="{{ route('productos.index') }}"
+                   class="elemento-menu {{ request()->routeIs('productos.*') ? 'activo' : '' }}">
+                    <i class="ri-box-3-line"></i>
+                    <span>Productos</span>
                 </a>
 
-                <a href="{{ route('proveedor.index') }}" class="elemento-menu">
-                    <i class="ri-truck-line"></i><span>Proveedores</span>
-              
+                <a href="{{ route('proveedor.index') }}"
+                   class="elemento-menu {{ request()->routeIs('proveedor.*') ? 'activo' : '' }}">
+                    <i class="ri-truck-line"></i>
+                    <span>Proveedores</span>
+                </a>
 
                 <div class="dropdown">
-                    <a class="elemento-menu d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+                    <a class="elemento-menu d-flex align-items-center text-white text-decoration-none dropdown-toggle 
+                       {{ request()->routeIs('clientes.*') || request()->routeIs('empleados.*') ? 'activo' : '' }}"
                        href="#" data-bs-toggle="dropdown">
-                        <i class="ri-user-line"></i><span>Usuarios</span>
+                        <i class="ri-user-line"></i>
+                        <span>Usuarios</span>
                     </a>
-                
+
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{ route('clientes.index') }}">Cliente</a></li>
-                        <li><a class="dropdown-item" href="{{ route('empleados.index') }}">Empleado</a></li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('clientes.index') }}">
+                                Cliente
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('empleados.index') }}">
+                                Empleado
+                            </a>
+                        </li>
                     </ul>
                 </div>
+
             </div>
         </div>
     </div>
+    <!-- ===================== FIN SIDEBAR ===================== -->
 
-    
+
+    <!-- ===================== CONTENIDO PRINCIPAL ===================== -->
     <div class="contenido-principal flex-grow-1">
 
-        
+        <!-- NAVBAR SUPERIOR -->
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
                 <a class="navbar-brand">Sistema gestión de inventarios</a>
@@ -86,23 +128,30 @@
                     </a>
 
                     <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-                        <li><a class="dropdown-item" href="{{ route('perfil') }}">Mi perfil</a></li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('perfil') }}">
+                                Mi perfil
+                            </a>
+                        </li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="dropdown-item">Cerrar sesión</button>
-                        </form>
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="dropdown-item">
+                                    Cerrar sesión
+                                </button>
+                            </form>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
 
-        
+        <!-- DASHBOARD -->
         <div class="container py-4">
             <div class="row g-4">
 
+                <!-- TARJETAS -->
                 <div class="col-md-4">
                     <div class="card tarjeta-dashboard azul h-100 text-center">
                         <div class="icono-tarjeta-dashboard mx-auto mt-3">

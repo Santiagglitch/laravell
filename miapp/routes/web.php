@@ -15,6 +15,7 @@ use App\Http\Controllers\DetalleComprasController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\MigracionController;
+use App\Http\Controllers\AuditoriaController;
 
 
 // ===============================================
@@ -283,3 +284,6 @@ Route::get('/pie-pag', function () {
 
 Route::get('/perfil', [PerfilController::class, 'mostrar'])->name('perfil');
 Route::post('/perfil/actualizar', [PerfilController::class, 'actualizar'])->name('perfil.actualizar');
+
+Route::get('/auditoria', [AuditoriaController::class, 'index'])
+    ->name('auditoria.index');

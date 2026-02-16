@@ -108,9 +108,9 @@ class PasswordResetController
         // Actualizar contraseña con SHA256
         $nuevoHash = hash('sha256', $request->password);
 
-        DB::table('Contrasenas')
-            ->where('Documento_Empleado', $reset->documento_empleado)
-            ->update(['Contrasena_Hash' => $nuevoHash]);
+       DB::table('Contrasenas')
+    ->where('Documento_Empleado', $reset->documento_empleado)
+    ->update(['Contrasena_Hash' => $request->password]); // el trigger la hashea
 
         // ✅ Criterio 4: Invalidar el token después de usado
         DB::table('password_resets')

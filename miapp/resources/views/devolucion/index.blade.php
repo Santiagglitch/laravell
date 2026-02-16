@@ -53,6 +53,11 @@
                 <a href="{{ route('ventas.index') }}" class="elemento-menu">
                     <i class="ri-price-tag-3-line"></i><span>Ventas</span>
                 </a>
+                  <a href="{{ route('auditoria.index') }}"
+                   class="elemento-menu {{ request()->routeIs('auditoria.*') ? 'activo' : '' }}">
+                    <i class="ri-shield-check-line"></i>
+                    <span>Auditoría</span>
+                </a>
             </div>
             <hr>
             <div class="seccion-menu">
