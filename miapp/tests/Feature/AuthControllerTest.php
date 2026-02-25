@@ -3,14 +3,14 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
 
 class AuthControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     protected function setUp(): void
     {
@@ -20,23 +20,65 @@ class AuthControllerTest extends TestCase
         Http::preventStrayRequests();
         Http::fake(['*' => Http::response([], 200)]);
 
-        // Tablas mínimas para pruebas
-        DB::statement('
-            CREATE TABLE IF NOT EXISTS Empleados (
-                Documento_Empleado VARCHAR(30) PRIMARY KEY,
-                Nombre_Usuario VARCHAR(80) NOT NULL,
-                ID_Rol INT NOT NULL,
-                Fotos VARCHAR(255) NULL
-            )
-        ');
+        // Asegura FKs mínimas (Estados/Roles) SIN borrar tablas
+        $this->seedLookups();
+    }
 
-        DB::statement('
-            CREATE TABLE IF NOT EXISTS Contrasenas (
-                ID_Contrasena INT AUTO_INCREMENT PRIMARY KEY,
-                Documento_Empleado VARCHAR(30) NOT NULL,
-                Contrasena_Hash VARCHAR(64) NOT NULL
-            )
-        ');
+    private function seedLookups(): void
+    {
+        // Estados (IDs 1..)
+        DB::table('Estados')->updateOrInsert(
+            ['ID_Estado' => 1],
+            ['Nombre_Estado' => 'Activo']
+        );
+
+        DB::table('Estados')->updateOrInsert(
+            ['ID_Estado' => 2],
+            ['Nombre_Estado' => 'Inactivo']
+        );
+
+        // Roles (IDs 1..)
+        DB::table('Roles')->updateOrInsert(
+            ['ID_Rol' => 1],
+            ['Nombre' => 'Administrador']
+        );
+
+        DB::table('Roles')->updateOrInsert(
+            ['ID_Rol' => 2],
+            ['Nombre' => 'Empleado']
+        );
+    }
+
+    private function insertEmpleado(array $overrides = []): array
+    {
+        $base = [
+            'Documento_Empleado' => '9999999999',
+            'Tipo_Documento'     => 'CC',
+            'Nombre_Usuario'     => 'Test',
+            'Apellido_Usuario'   => 'User',
+            'Edad'               => '20',
+            'Correo_Electronico' => 'test' . uniqid() . '@mail.com',
+            'Telefono'           => '3000000000',
+            'Genero'             => 'M',
+            'ID_Estado'          => 1,
+            'ID_Rol'             => 2,
+            'Fotos'              => 'fotos', // NOT NULL en tu BD
+        ];
+
+        $data = array_merge($base, $overrides);
+        DB::table('Empleados')->insert($data);
+
+        return $data;
+    }
+
+    private function insertContrasena(string $documento, string $contrasenaPlana): void
+    {
+        // IMPORTANTE: en tu BD hay trigger que hace SHA2( ,256) antes de insertar,
+        // así que aquí insertamos la contraseña PLANA.
+        DB::table('Contrasenas')->insert([
+            'Documento_Empleado' => $documento,
+            'Contrasena_Hash'    => $contrasenaPlana,
+        ]);
     }
 
     public function test_login_falla_si_faltan_campos()
@@ -63,19 +105,16 @@ class AuthControllerTest extends TestCase
     {
         $documento = '1001';
         $clave     = '1234';
-        $hashClave = hash('sha256', $clave);
 
-        DB::table('Empleados')->insert([
+        $this->insertEmpleado([
             'Documento_Empleado' => $documento,
             'Nombre_Usuario'     => 'Kata',
+            'Apellido_Usuario'   => 'Test',
             'ID_Rol'             => 2,
-            'Fotos'              => null,
+            'Fotos'              => 'fotos',
         ]);
 
-        DB::table('Contrasenas')->insert([
-            'Documento_Empleado' => $documento,
-            'Contrasena_Hash'    => $hashClave,
-        ]);
+        $this->insertContrasena($documento, $clave);
 
         $response = $this->post('/login', [
             'usuario'    => $documento,
@@ -88,7 +127,6 @@ class AuthControllerTest extends TestCase
         $response->assertSessionHas('nombre', 'Kata');
         $response->assertSessionHas('rol', 2);
 
-        // ✅ NO validamos jwt_token aquí (eso es integración con API externa)
         $response->assertSessionMissing('jwt_token');
     }
 
@@ -96,19 +134,16 @@ class AuthControllerTest extends TestCase
     {
         $documento = '2002';
         $clave     = 'abcd';
-        $hashClave = hash('sha256', $clave);
 
-        DB::table('Empleados')->insert([
+        $this->insertEmpleado([
             'Documento_Empleado' => $documento,
             'Nombre_Usuario'     => 'Admin',
+            'Apellido_Usuario'   => 'Test',
             'ID_Rol'             => 1,
-            'Fotos'              => null,
+            'Fotos'              => 'fotos',
         ]);
 
-        DB::table('Contrasenas')->insert([
-            'Documento_Empleado' => $documento,
-            'Contrasena_Hash'    => $hashClave,
-        ]);
+        $this->insertContrasena($documento, $clave);
 
         $response = $this->post('/login', [
             'usuario'    => $documento,
@@ -122,19 +157,16 @@ class AuthControllerTest extends TestCase
     {
         $documento = '3003';
         $clave     = 'pass';
-        $hashClave = hash('sha256', $clave);
 
-        DB::table('Empleados')->insert([
+        $this->insertEmpleado([
             'Documento_Empleado' => $documento,
             'Nombre_Usuario'     => 'FotoUser',
+            'Apellido_Usuario'   => 'Test',
             'ID_Rol'             => 2,
             'Fotos'              => 'http://site.com/foto.jpg',
         ]);
 
-        DB::table('Contrasenas')->insert([
-            'Documento_Empleado' => $documento,
-            'Contrasena_Hash'    => $hashClave,
-        ]);
+        $this->insertContrasena($documento, $clave);
 
         $response = $this->post('/login', [
             'usuario'    => $documento,
@@ -150,19 +182,16 @@ class AuthControllerTest extends TestCase
 
         $documento = '4004';
         $clave     = 'pass';
-        $hashClave = hash('sha256', $clave);
 
-        DB::table('Empleados')->insert([
+        $this->insertEmpleado([
             'Documento_Empleado' => $documento,
             'Nombre_Usuario'     => 'FotoUser2',
+            'Apellido_Usuario'   => 'Test',
             'ID_Rol'             => 2,
             'Fotos'              => 'uploads/foto.png',
         ]);
 
-        DB::table('Contrasenas')->insert([
-            'Documento_Empleado' => $documento,
-            'Contrasena_Hash'    => $hashClave,
-        ]);
+        $this->insertContrasena($documento, $clave);
 
         $response = $this->post('/login', [
             'usuario'    => $documento,
