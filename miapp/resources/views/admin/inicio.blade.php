@@ -112,34 +112,23 @@
     <div class="contenido-principal flex-grow-1">
 
         <!-- NAVBAR SUPERIOR -->
-        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+              <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
                 <a class="navbar-brand">Sistema gestión de inventarios</a>
-
                 <div class="dropdown ms-auto">
                     <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle"
-                       data-bs-toggle="dropdown">
+                       id="dropdownUser1" data-bs-toggle="dropdown">
                         <img src="{{ session('foto') ?? asset('Imagenes/default-user.png') }}"
-                             width="32"
-                             height="32"
-                             class="rounded-circle me-2"
-                             alt="Perfil">
+                             width="32" height="32" class="rounded-circle me-2">
                         <strong>{{ session('nombre') ?? 'Perfil' }}</strong>
                     </a>
-
                     <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-                        <li>
-                            <a class="dropdown-item" href="{{ route('perfil') }}">
-                                Mi perfil
-                            </a>
-                        </li>
+                        <li><a class="dropdown-item" href="{{ route('perfil') }}">Mi perfil</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <form action="{{ route('logout') }}" method="POST">
                                 @csrf
-                                <button type="submit" class="dropdown-item">
-                                    Cerrar sesión
-                                </button>
+                                <button type="submit" class="dropdown-item">Cerrar sesión</button>
                             </form>
                         </li>
                     </ul>
@@ -228,6 +217,9 @@
         </div>
 
     </div>
+</div>
+<div style="position: fixed; bottom: 10px; left: 0; width: 100%; text-align: center; margin-left: 115px;">
+    <p style="color: #aaaaaa; font-size: 13px; margin: 0;">Copyright © 2026 Fonrio</p>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>

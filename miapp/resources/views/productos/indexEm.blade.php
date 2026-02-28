@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="icon" href="{{ asset('Imagenes/Logo.webp') }}" type="image/webp">
-    <title>Productos - Empleado</title>
-
+    <title>Clientes - Empleado</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
@@ -17,7 +16,6 @@
 
 <div class="d-flex" style="min-height: 100vh;">
 
-    <!-- BARRA LATERAL EMPLEADO -->
     <div class="barra-lateral d-flex flex-column flex-shrink-0 p-3 bg-primary text-white">
         <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
             TECNICELL RM <img src="{{ asset('Imagenes/Logo.webp') }}" style="height:48px;">
@@ -37,32 +35,31 @@
             </div>
             <hr>
             <div class="seccion-menu">
-                <a href="{{ route('productos.indexEm') }}" class="elemento-menu activo">
+                <a href="{{ route('productos.indexEm') }}" class="elemento-menu">
                     <i class="ri-box-3-line"></i><span>Productos</span>
                 </a>
-                <a href="{{ route('clientes.indexEm') }}" class="elemento-menu">
-                    <i class="ri-user-line"></i><span>Cliente</span>
+                <a href="{{ route('clientes.indexEm') }}" class="elemento-menu activo">
+                    <i class="ri-user-line"></i><span>Clientes</span>
                 </a>
             </div>
         </div>
     </div>
 
-    <!-- CONTENIDO PRINCIPAL -->
     <div class="contenido-principal flex-grow-1">
+
         
-        <!-- NAVBAR -->
-        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
                 <a class="navbar-brand">Sistema gestión de inventarios</a>
                 <div class="dropdown ms-auto">
                     <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle"
-                       data-bs-toggle="dropdown">
-                        <img src="{{ asset('fotos_empleados/686fe89fe865f_Foto Kevin.jpeg') }}"
+                       id="dropdownUser1" data-bs-toggle="dropdown">
+                        <img src="{{ session('foto') ?? asset('Imagenes/default-user.png') }}"
                              width="32" height="32" class="rounded-circle me-2">
                         <strong>{{ session('nombre') ?? 'Perfil' }}</strong>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-                        <li><a class="dropdown-item" href="{{ route('perfil') }}">Mi perfil</a></li>
+                        <li><a class="dropdown-item" href="{{ route('perfilEm') }}">Mi perfil</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <form action="{{ route('logout') }}" method="POST">
@@ -74,7 +71,6 @@
                 </div>
             </div>
         </nav>
-
         <!-- CONTENIDO -->
         <div class="container py-4">
             
@@ -252,7 +248,7 @@
        <!-- Modal Crear -->
             <div class="modal fade" id="crearModal">
                 <div class="modal-dialog modal-lg">
-                    <form method="POST" action="{{ route('productos.store') }}" enctype="multipart/form-data">
+                    <form method="POST" action="{{ route('productos.storeEm') }}" enctype="multipart/form-data">
                         @csrf
                         <div class="modal-content">
                             <div class="modal-header bg-success text-white">
@@ -593,6 +589,8 @@ async function iniciarExportacion() {
     }
 }
 </script>
-
+<div style="position: fixed; bottom: 10px; left: 0; width: 100%; text-align: center; margin-left: 115px;">
+    <p style="color: #aaaaaa; font-size: 13px; margin: 0;">Copyright © 2026 Fonrio</p>
+</div>
 </body>
 </html>

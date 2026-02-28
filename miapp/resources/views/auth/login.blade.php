@@ -97,7 +97,7 @@
                         <a href="{{ route('password.forgot') }}" class="link-recuperar">¿Olvidaste tu contraseña?</a>
                     </div>
 
-                    <div class="d-grid">
+                   <div class="d-grid">
                         <button type="submit" class="btn btn-primary">Entrar</button>
                     </div>
                 </form>
@@ -105,6 +105,11 @@
             </div>
         </div>
     </div>
+
+</div>
+
+<div style="position: fixed; bottom: 10px; left: 0; width: 100%; text-align: center;">
+    <p style="color: #fafafa; font-size: 13px; margin: 0;">Copyright © 2026 Fonrio</p>
 </div>
 </body>
 </html>

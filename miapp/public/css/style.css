@@ -148,15 +148,19 @@ body {
     box-sizing: border-box;
     list-style: none;
 }
+/* Footer */
 .footer {
     background-color: #000000;
     padding: 30px 0;
-    list-style: none;
 }
 
 .footer-row {
     display: flex;
     flex-wrap: wrap;
+    justify-content: space-around;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
 .Fonrio, .Ayuda, .Tienda, .Clases_link {
@@ -167,11 +171,21 @@ body {
 .footer h4 {
     font-size: 20px;
     color: #ffffff;
-    margin-bottom: 30px;
-    font-weight: 200;
+    margin-bottom: 20px;
+    font-weight: 600;
     border-bottom: 2px solid #ff7f3d;
     padding-bottom: 5px;
     display: inline-block;
+}
+
+.footer ul {
+    list-style: none;  /* 👈 quita los bullets */
+    padding: 0;        /* 👈 quita la sangría por defecto */
+    margin: 0;
+}
+
+.footer ul li {
+    margin-bottom: 12px; /* 👈 espacio entre ítems */
 }
 
 .footer ul li a {
@@ -179,81 +193,65 @@ body {
     color: #bbbbbb;
     text-decoration: none;
     display: block;
-    margin-bottom: 10px;
 }
 
 .footer ul li a:hover {
     color: #ffffff;
     padding-left: 8px;
+    transition: padding-left 0.2s;
 }
 
+.social-links {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 4px;
+}
 
 .social-links svg {
     cursor: pointer;
     width: 25px;
     height: auto;
     color: #ffffff;
-    margin-right: 10px;
 }
+
 .social-links svg:hover {
-    color: #ffffff;
+    color: #ff7f3d;
     transform: scale(1.2);
+    transition: transform 0.2s;
 }
 
-
+.social-links a {
+    display: flex;
+    align-items: center;
+    color: #ffffff;
+}
 
 .copy {
     text-align: center;
-    color: #ffffff;
-    font-size: 15px;
-    margin-top: 100px;
+    color: #aaaaaa;
+    font-size: 13px;
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px solid #333333;
     text-decoration: none;
 }
-
-.contenedor-quienes {
-    max-width: 1200px;
-    margin: 60px auto;
-    padding: 20px;
+.copy {
     text-align: center;
+    color: #aaaaaa;
+    font-size: 13px;
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px solid #333333;
+    text-decoration: none;
+    pointer-events: none; /* 👈 desactiva cualquier clic */
 }
 
-.titulo-principal {
-    color: #ff7f3d;
-    font-size: 32px;
-    margin-bottom: 10px;
+.copy a {
+    color: #aaaaaa !important;
+    text-decoration: none !important;
+    pointer-events: none !important;
 }
-
-.descripcion {
-    font-size: 16px;
-    max-width: 800px;
-    margin: 0 auto 40px auto;
-    line-height: 1.6;
-}
-
-.tarjetas {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 20px;
-    padding: 0 20px;
-}
-
-.tarjeta {
-    flex: 1 1 30%;
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    min-width: 280px;
-}
-
-.tarjeta h2 {
-    color: #d66c00;
-    margin-bottom: 10px;
-}
-
-.tarjeta p {
-    font-size: 15px;
-    text-align: justify;
-    line-height: 1.5;
+.btn-1 {
+    margin-bottom: 40px; /* 👈 espacio entre el botón y el footer */
 }

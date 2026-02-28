@@ -92,18 +92,18 @@
                 <div class="dropdown ms-auto">
                     <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle"
                        id="dropdownUser1" data-bs-toggle="dropdown">
-                        <img src="{{ asset('fotos_empleados/686fe89fe865f_Foto Kevin.jpeg') }}"
+                        <img src="{{ session('foto') ?? asset('Imagenes/default-user.png') }}"
                              width="32" height="32" class="rounded-circle me-2">
                         <strong>{{ session('nombre') ?? 'Perfil' }}</strong>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-                        <li><a class="dropdown-item" href="{{ route('perfil') }}">Mi perfil</a></li>
+                        <li><a class="dropdown-item" href="{{ route('perfilEm') }}">Mi perfil</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="dropdown-item">Cerrar sesión</button>
-                        </form>
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="dropdown-item">Cerrar sesión</button>
+                            </form>
                         </li>
                     </ul>
                 </div>
@@ -767,6 +767,8 @@ document.addEventListener('keydown', function(event) {
     }
 });
 </script>
-
+<div style="position: fixed; bottom: 10px; left: 0; width: 100%; text-align: center; margin-left: 115px;">
+    <p style="color: #aaaaaa; font-size: 13px; margin: 0;">Copyright © 2026 Fonrio</p>
+</div>
 </body>
 </html>

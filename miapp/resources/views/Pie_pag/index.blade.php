@@ -13,6 +13,10 @@
     <div>
   <a href="../php/index.html"><img  src="../Imagenes/Logo.webp" alt="Logo esquina" class="logo" /></a>
   </div>
+  <div>
+    <a href="../php/index.html"><img src="../Imagenes/Logo.webp" alt="Logo" class="logo" /></a>
+    <a onclick="history.back()" style="cursor:pointer; color:#dc6f17; font-weight:bold; font-size:20px;">← Volver</a>
+</div>
   <h1>FONRIO</h1>
 
   <div class="contenido-principal">
@@ -160,7 +164,7 @@
 </div>
 
   <footer class="footer">
-    <p>Copyright © 2025 Fonrio</p>
+    <p>Copyright © 2026 Fonrio</p>
   </footer>
 <script src="../js/bootstrap.bundle.min.js"></script>
 </body>

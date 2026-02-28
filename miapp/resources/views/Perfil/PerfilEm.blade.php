@@ -15,7 +15,7 @@
 
 <div class="d-flex" style="min-height:100vh">
 
-    {{-- SIDEBAR --}}
+    {{-- SIDEBAR EMPLEADO --}}
     <div class="barra-lateral d-flex flex-column flex-shrink-0 p-3 bg-primary text-white">
         <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
             TECNICELL RM <img src="{{ asset('Imagenes/Logo.webp') }}" style="height:48px;">
@@ -23,42 +23,24 @@
         <hr>
         <div class="menu-barra-lateral">
             <div class="seccion-menu">
-                <a href="{{ route('admin.inicio') }}" class="elemento-menu">
+                <a href="{{ route('InicioE.index') }}" class="elemento-menu">
                     <i class="fa-solid fa-tachometer-alt"></i><span>Dashboard</span>
                 </a>
-                <a href="{{ route('compras.index') }}" class="elemento-menu">
-                    <i class="ri-shopping-cart-2-line"></i><span>Compras</span>
-                </a>
-                <a href="{{ route('devolucion.index') }}" class="elemento-menu">
-                    <i class="ri-arrow-go-back-line"></i><span>Devoluciones</span>
-                </a>
-                <a href="{{ route('ventas.index') }}" class="elemento-menu">
+                <a href="{{ route('ventas.indexEm') }}" class="elemento-menu">
                     <i class="ri-price-tag-3-line"></i><span>Ventas</span>
                 </a>
-                  <a href="{{ route('auditoria.index') }}"
-                   class="elemento-menu {{ request()->routeIs('auditoria.*') ? 'activo' : '' }}">
-                    <i class="ri-shield-check-line"></i>
-                    <span>Auditoría</span>
+                <a href="{{ route('devolucion.indexEm') }}" class="elemento-menu">
+                    <i class="ri-arrow-go-back-line"></i><span>Devoluciones</span>
                 </a>
             </div>
             <hr>
             <div class="seccion-menu">
-                <a href="{{ route('productos.index') }}" class="elemento-menu">
+                <a href="{{ route('productos.indexEm') }}" class="elemento-menu">
                     <i class="ri-box-3-line"></i><span>Productos</span>
                 </a>
-                <a href="{{ route('proveedor.index') }}" class="elemento-menu">
-                    <i class="ri-truck-line"></i><span>Proveedores</span>
+                <a href="{{ route('clientes.indexEm') }}" class="elemento-menu">
+                    <i class="ri-user-line"></i><span>Clientes</span>
                 </a>
-                <div class="dropdown">
-                    <a class="elemento-menu d-flex align-items-center text-white text-decoration-none dropdown-toggle"
-                       data-bs-toggle="dropdown">
-                        <i class="ri-user-line"></i><span>Usuarios</span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{ route('clientes.index') }}">Cliente</a></li>
-                        <li><a class="dropdown-item" href="{{ route('empleados.index') }}">Empleado</a></li>
-                    </ul>
-                </div>
             </div>
         </div>
     </div>
@@ -66,7 +48,7 @@
     <div class="contenido-principal flex-grow-1">
 
         {{-- NAVBAR --}}
-          <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
                 <a class="navbar-brand">Sistema gestión de inventarios</a>
                 <div class="dropdown ms-auto">
@@ -77,7 +59,7 @@
                         <strong>{{ session('nombre') ?? 'Perfil' }}</strong>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-                        <li><a class="dropdown-item" href="{{ route('perfil') }}">Mi perfil</a></li>
+                        <li><a class="dropdown-item" href="{{ route('perfilEm') }}">Mi perfil</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <form action="{{ route('logout') }}" method="POST">
@@ -132,7 +114,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('perfil.actualizar') }}" method="POST"
+            <form action="{{ route('perfilEm.actualizar') }}" method="POST"
                   enctype="multipart/form-data" id="formPerfil">
                 @csrf
 
@@ -147,7 +129,6 @@
                                      class="rounded-circle shadow"
                                      style="width:140px; height:140px; object-fit:cover; border:4px solid #dee2e6;">
 
-                                {{-- Botón cámara --}}
                                 <label for="inputFoto"
                                        class="btn btn-primary btn-sm rounded-circle position-absolute"
                                        style="bottom:5px; right:5px; width:34px; height:34px; cursor:pointer;"
@@ -159,13 +140,10 @@
                             </div>
 
                             <h5 class="fw-bold mb-0">{{ $empleado->Nombre_Usuario }} {{ $empleado->Apellido_Usuario }}</h5>
-                            <small class="text-muted">
-                                {{ $empleado->ID_Rol == 1 ? 'Administrador' : 'Empleado' }}
-                            </small>
+                            <small class="text-muted">Empleado</small>
 
                             <hr>
 
-                            {{-- Info no editable --}}
                             <div class="text-start small">
                                 <p class="mb-1">
                                     <i class="fa fa-id-card text-primary me-2"></i>
@@ -208,7 +186,6 @@
 
                             <div class="row g-3">
 
-                                {{-- Nombre --}}
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold">Nombre</label>
                                     <input type="text" name="Nombre_Usuario"
@@ -220,7 +197,6 @@
                                     @enderror
                                 </div>
 
-                                {{-- Apellido --}}
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold">Apellido</label>
                                     <input type="text" name="Apellido_Usuario"
@@ -232,7 +208,6 @@
                                     @enderror
                                 </div>
 
-                                {{-- Correo --}}
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold">Correo Electrónico</label>
                                     <input type="email" name="Correo_Electronico"
@@ -244,7 +219,6 @@
                                     @enderror
                                 </div>
 
-                                {{-- Teléfono --}}
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold">Teléfono</label>
                                     <input type="text" name="Telefono"
@@ -260,7 +234,6 @@
 
                             <hr class="my-4">
 
-                            {{-- SECCIÓN CONTRASEÑA --}}
                             <h5 class="fw-bold mb-3">
                                 <i class="fa fa-lock text-primary me-2"></i>
                                 Contraseña
@@ -301,7 +274,6 @@
 
                             <hr class="my-4">
 
-                            {{-- CONTRASEÑA ACTUAL requerida para guardar --}}
                             <div class="alert alert-warning">
                                 <i class="fa fa-shield-alt me-2"></i>
                                 <strong>Seguridad:</strong> Ingresa tu contraseña actual para confirmar los cambios.
@@ -324,7 +296,6 @@
                                 @enderror
                             </div>
 
-                            {{-- BOTONES --}}
                             <div class="d-flex gap-3 mt-4">
                                 <button type="submit" class="btn btn-primary px-4" id="btnGuardar" disabled>
                                     <i class="fa fa-save me-2"></i> Guardar Cambios
@@ -347,9 +318,6 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 
-/* ============================================================
-   VALORES ORIGINALES para detectar cambios
-============================================================ */
 const valoresOriginales = {
     Nombre_Usuario:     '{{ $empleado->Nombre_Usuario }}',
     Apellido_Usuario:   '{{ $empleado->Apellido_Usuario }}',
@@ -365,7 +333,6 @@ function hayModificaciones() {
         if (campo.name in valoresOriginales) {
             if (campo.value !== valoresOriginales[campo.name]) return true;
         }
-        // Si escribió nueva contraseña
         if (campo.name === 'nueva_contrasena' && campo.value.length > 0) return true;
     }
     return fotoModificada;
@@ -377,28 +344,21 @@ function verificarCambios() {
     btnGuardar.disabled = !(hayModificaciones() && contrasenaOk);
 }
 
-// Escuchar cambios en todos los campos editables
 document.querySelectorAll('.campo-editable').forEach(campo => {
     campo.addEventListener('input', verificarCambios);
 });
-
 document.getElementById('contrasena_actual').addEventListener('input', verificarCambios);
 
-/* ============================================================
-   PREVISUALIZACIÓN DE FOTO
-============================================================ */
 document.getElementById('inputFoto').addEventListener('change', function() {
     const file = this.files[0];
     if (!file) return;
 
-    // Validar tamaño
     if (file.size > 2 * 1024 * 1024) {
         alert('⚠️ La imagen no debe superar 2MB.');
         this.value = '';
         return;
     }
 
-    // Validar formato
     const formatos = ['image/jpeg', 'image/png', 'image/webp'];
     if (!formatos.includes(file.type)) {
         alert('⚠️ Formatos permitidos: JPG, PNG, WEBP.');
@@ -406,14 +366,12 @@ document.getElementById('inputFoto').addEventListener('change', function() {
         return;
     }
 
-    // Preview
     const reader = new FileReader();
     reader.onload = function(e) {
         document.getElementById('previewFoto').src = e.target.result;
     };
     reader.readAsDataURL(file);
 
-    // Mostrar nombre
     document.getElementById('fotoNombre').textContent = file.name;
     document.getElementById('fotoNombreArchivo').classList.remove('d-none');
 
@@ -421,9 +379,6 @@ document.getElementById('inputFoto').addEventListener('change', function() {
     verificarCambios();
 });
 
-/* ============================================================
-   VALIDAR CONTRASEÑAS COINCIDEN
-============================================================ */
 document.getElementById('confirmar_contrasena').addEventListener('input', function() {
     const nueva    = document.getElementById('nueva_contrasena').value;
     const confirma = this.value;
@@ -441,11 +396,7 @@ document.getElementById('confirmar_contrasena').addEventListener('input', functi
     verificarCambios();
 });
 
-/* ============================================================
-   CANCELAR — revertir cambios
-============================================================ */
 document.getElementById('btnCancelar').addEventListener('click', function() {
-    // Restaurar valores originales
     document.querySelector('[name="Nombre_Usuario"]').value     = valoresOriginales.Nombre_Usuario;
     document.querySelector('[name="Apellido_Usuario"]').value   = valoresOriginales.Apellido_Usuario;
     document.querySelector('[name="Correo_Electronico"]').value = valoresOriginales.Correo_Electronico;
@@ -454,19 +405,13 @@ document.getElementById('btnCancelar').addEventListener('click', function() {
     document.querySelector('[name="nueva_contrasena_confirmation"]').value = '';
     document.getElementById('contrasena_actual').value          = '';
     document.getElementById('matchTexto').textContent           = '';
-
-    // Restaurar foto
     document.getElementById('previewFoto').src = '{{ $fotoUrl ?? asset("Imagenes/default-user.png") }}';
     document.getElementById('inputFoto').value = '';
     document.getElementById('fotoNombreArchivo').classList.add('d-none');
     fotoModificada = false;
-
     document.getElementById('btnGuardar').disabled = true;
 });
 
-/* ============================================================
-   TOGGLE VER/OCULTAR CONTRASEÑAS
-============================================================ */
 [
     ['toggleNueva',    'nueva_contrasena',    'iconNueva'],
     ['toggleConfirmar','confirmar_contrasena', 'iconConfirmar'],
@@ -485,9 +430,6 @@ document.getElementById('btnCancelar').addEventListener('click', function() {
     });
 });
 
-/* ============================================================
-   VALIDAR ANTES DE ENVIAR
-============================================================ */
 document.getElementById('formPerfil').addEventListener('submit', function(e) {
     const nueva    = document.getElementById('nueva_contrasena').value;
     const confirma = document.getElementById('confirmar_contrasena').value;
@@ -504,6 +446,7 @@ document.getElementById('formPerfil').addEventListener('submit', function(e) {
     }
 });
 </script>
+
 <div style="position: fixed; bottom: 10px; left: 0; width: 100%; text-align: center; margin-left: 115px;">
     <p style="color: #aaaaaa; font-size: 13px; margin: 0;">Copyright © 2026 Fonrio</p>
 </div>

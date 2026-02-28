@@ -155,11 +155,52 @@ public function delete(Request $request)
         $ventas = Venta::all();
         return view('ventas.indexEm', compact('ventas'));
     }
+public function storeEmpleado(Request $request)
+{
+    try {
+        $validated = $request->validate([
+            'Documento_Cliente'  => 'required|string|max:20',
+            'Documento_Empleado' => 'required|string|max:20',
+            'cliente_nuevo'      => 'nullable|string',
+            'Nombre_Cliente'     => 'required_if:cliente_nuevo,1|nullable|string|max:100',
+            'Apellido_Cliente'   => 'required_if:cliente_nuevo,1|nullable|string|max:100',
+            'Estado_Cliente'     => 'nullable|string|in:activo,inactivo',
+        ]);
 
-    public function storeEmpleado(Request $request)
-    {
-        return $this->post($request);
+        if ($request->cliente_nuevo == '1') {
+            $clienteCreado = $this->ventasService->crearCliente([
+                'Documento_Cliente' => $request->Documento_Cliente,
+                'Nombre_Cliente'    => $request->Nombre_Cliente,
+                'Apellido_Cliente'  => $request->Apellido_Cliente,
+                'ID_Estado'         => $request->Estado_Cliente == 'activo' ? '1' : '2'
+            ]);
+
+            if (!$clienteCreado) {
+                return back()->with('error', 'Error al registrar el cliente en la API');
+            }
+        }
+
+        $ventaCreada = $this->ventasService->crearVenta([
+            'Documento_Cliente'  => $request->Documento_Cliente,
+            'Documento_Empleado' => $request->Documento_Empleado
+        ]);
+
+        if (!$ventaCreada) {
+            return back()->with('error', 'Error al registrar la venta en la API');
+        }
+
+        return redirect()
+            ->route('ventas.indexEm') // 👈 CORREGIDO
+            ->with('mensaje', 'Venta registrada correctamente.');
+
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        return back()->with('error', 'Error de validación: ' . json_encode($e->errors()));
+
+    } catch (\Exception $e) {
+        \Log::error('Error en storeEmpleado: ' . $e->getMessage());
+        return back()->with('error', 'Error inesperado: ' . $e->getMessage());
     }
+}
 
     public function updateEmpleado(Request $request)
     {

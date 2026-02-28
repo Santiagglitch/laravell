@@ -91,20 +91,18 @@
 
     <div class="contenido-principal flex-grow-1">
 
-        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+       <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
                 <a class="navbar-brand">Sistema gestión de inventarios</a>
-
                 <div class="dropdown ms-auto">
                     <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle"
-                       data-bs-toggle="dropdown">
-                        <img src="{{ asset('fotos_empleados/686fe89fe865f_Foto Kevin.jpeg') }}"
-                             alt="Perfil" width="32" height="32" class="rounded-circle me-2">
+                       id="dropdownUser1" data-bs-toggle="dropdown">
+                        <img src="{{ session('foto') ?? asset('Imagenes/default-user.png') }}"
+                             width="32" height="32" class="rounded-circle me-2">
                         <strong>{{ session('nombre') ?? 'Perfil' }}</strong>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-dark">
-                        <li><a class="dropdown-item" href="#">Mi perfil</a></li>
-                        <li><a class="dropdown-item" href="#">Editar perfil</a></li>
+                    <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+                        <li><a class="dropdown-item" href="{{ route('perfil') }}">Mi perfil</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <form action="{{ route('logout') }}" method="POST">
@@ -131,19 +129,19 @@
                 </div>
                 <div class="col-md-3">
                     <div class="card audit-kpi p-3">
-                        <div class="text-muted">Insert</div>
+                        <div class="text-muted">Insertar</div>
                         <div class="fs-4 fw-bold">{{ $stats['insert'] ?? 0 }}</div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="card audit-kpi p-3">
-                        <div class="text-muted">Update</div>
+                        <div class="text-muted">Actualizar</div>
                         <div class="fs-4 fw-bold">{{ $stats['update'] ?? 0 }}</div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="card audit-kpi p-3">
-                        <div class="text-muted">Delete</div>
+                        <div class="text-muted">Eliminar</div>
                         <div class="fs-4 fw-bold">{{ $stats['delete'] ?? 0 }}</div>
                     </div>
                 </div>
@@ -271,7 +269,8 @@
         </div>
     </div>
 </div>
-
+<div style="position: fixed; bottom: 10px; left: 0; width: 100%; text-align: center; margin-left: 115px;">
+    <p style="color: #aaaaaa; font-size: 13px; margin: 0;">Copyright © 2026 Fonrio</p>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

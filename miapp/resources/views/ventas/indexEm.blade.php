@@ -2,21 +2,34 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" href="{{ asset('Imagenes/Logo.webp') }}" type="image/webp">
     <title>Ventas - Empleado</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/menu.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/ventas.css') }}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <style>
+        .modal-detalle-backdrop {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 1040; display: none;
+        }
+        .modal-detalle-content {
+            position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: white; border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            z-index: 1050; max-width: 900px; width: 90%;
+            max-height: 90vh; overflow-y: auto;
+        }
+        .devoluciones-background { opacity: 0.3; pointer-events: none; }
+    </style>
 </head>
 <body>
 
 <div class="d-flex" style="min-height:100vh" id="mainContent">
 
-    {{-- BARRA LATERAL --}}
     <div class="barra-lateral d-flex flex-column flex-shrink-0 p-3 bg-primary text-white">
         <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
             TECNICELL RM <img src="{{ asset('Imagenes/Logo.webp') }}" style="height:48px;">
@@ -46,21 +59,20 @@
         </div>
     </div>
 
-    {{-- CONTENIDO PRINCIPAL --}}
     <div class="contenido-principal flex-grow-1">
 
-        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+          <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
                 <a class="navbar-brand">Sistema gestión de inventarios</a>
                 <div class="dropdown ms-auto">
                     <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle"
-                       data-bs-toggle="dropdown">
-                        <img src="{{ asset('fotos_empleados/686fe89fe865f_Foto Kevin.jpeg') }}"
+                       id="dropdownUser1" data-bs-toggle="dropdown">
+                        <img src="{{ session('foto') ?? asset('Imagenes/default-user.png') }}"
                              width="32" height="32" class="rounded-circle me-2">
                         <strong>{{ session('nombre') ?? 'Perfil' }}</strong>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-                        <li><a class="dropdown-item" href="{{ route('perfil') }}">Mi perfil</a></li>
+                        <li><a class="dropdown-item" href="{{ route('perfilEm') }}">Mi perfil</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <form action="{{ route('logout') }}" method="POST">
@@ -90,7 +102,6 @@
                 <script>setTimeout(()=>{let a=document.getElementById('alertaError');if(a){a.style.transition="opacity 0.5s";a.style.opacity=0;setTimeout(()=>a.remove(),500);}},3000);</script>
             @endif
 
-            {{-- BOTONES (igual que admin, sin importar/exportar si no aplica) --}}
             <div class="d-flex justify-content-end mt-4 gap-2">
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#crearModal">
                     <i class="fa fa-plus"></i> Añadir Venta
@@ -106,7 +117,6 @@
 
             <div id="progreso" class="mt-2"></div>
 
-            {{-- TABLA --}}
             <div class="table-responsive mt-4">
                 <table class="table table-bordered table-striped table-hover text-center">
                     <thead class="table-dark">
@@ -124,11 +134,9 @@
                             <td>{{ $venta->Documento_Cliente }}</td>
                             <td>{{ $venta->Documento_Empleado }}</td>
                             <td>
-                                {{-- Ver detalles (igual que admin) --}}
                                 <button class="btn btn-info btn-sm" onclick="abrirDetalleModal({{ $venta->ID_Venta }})">
                                     <i class="fa fa-eye"></i>
                                 </button>
-                                {{-- Eliminar (igual que admin) --}}
                                 <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
                                         data-bs-target="#eliminarModal{{ $venta->ID_Venta }}">
                                     <i class="fa fa-trash"></i>
@@ -136,7 +144,6 @@
                             </td>
                         </tr>
 
-                        {{-- Modal Eliminar (alineado con admin: incluye advertencia de detalles) --}}
                         <div class="modal fade" id="eliminarModal{{ $venta->ID_Venta }}" tabindex="-1">
                             <div class="modal-dialog">
                                 <form method="POST" action="{{ route('ventas.destroyEm') }}">
@@ -190,8 +197,6 @@
                                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                             </div>
                             <div class="modal-body">
-
-                                {{-- Búsqueda de Cliente --}}
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">
                                         <i class="fa fa-user"></i> Documento del Cliente
@@ -212,7 +217,6 @@
 
                                 <div id="mensajeCliente" class="alert d-none mb-3"></div>
 
-                                {{-- Campos Cliente Nuevo --}}
                                 <div id="camposNuevoCliente" style="display: none;">
                                     <div class="card border-warning mb-3">
                                         <div class="card-header bg-warning bg-opacity-25">
@@ -242,7 +246,6 @@
 
                                 <hr>
 
-                                {{-- Empleado: campo de solo lectura con el documento de sesión --}}
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">
                                         <i class="fa fa-user-tie"></i> Empleado que realiza la venta
@@ -251,7 +254,6 @@
                                            value="{{ session('documento') }}" readonly>
                                     <small class="text-muted">Empleado asignado a tu sesión</small>
                                 </div>
-
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
@@ -270,25 +272,17 @@
     </div>
 </div>
 
-{{-- Modal flotante de detalles (idéntico al admin) --}}
 <div class="modal-detalle-backdrop" id="detalleBackdrop" onclick="cerrarDetalleModal()"></div>
 <div class="modal-detalle-content" id="detalleModal" style="display: none;"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-// Ruta correcta al detalle ventas de empleado
 const urlDetalleVentas = "{{ route('detalleventas.indexEm') }}";
 
-// ============================================
-// HELPERS
-// ============================================
 function normalizarClaves(obj){const r={};Object.keys(obj).forEach(key=>{r[key.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim()]=obj[key];});return r;}
 function buscarClave(o,...ps){for(const p of ps){const n=p.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();if(o[n]!==undefined)return o[n];}return null;}
 
-// ============================================
-// IMPORTACIÓN DESDE EXCEL
-// ============================================
 async function importarDesdeExcel(event){
     const archivo=event.target.files[0];if(!archivo)return;
     const progresoDiv=document.getElementById('progreso');
@@ -344,9 +338,6 @@ async function importarDesdeExcel(event){
     event.target.value='';
 }
 
-// ============================================
-// EXPORTACIÓN A EXCEL
-// ============================================
 async function iniciarExportacion(){
     const btnExportar=event.target;btnExportar.disabled=true;btnExportar.innerHTML='<i class="fa fa-spinner fa-spin"></i> Exportando...';
     const progresoDiv=document.getElementById('progreso');
@@ -378,13 +369,11 @@ async function iniciarExportacion(){
     finally{btnExportar.disabled=false;btnExportar.innerHTML='<i class="fa fa-download"></i> Exportar a Excel';}
 }
 
-// ============================================
-// MODAL FLOTANTE DE DETALLES (idéntico al admin)
-// ============================================
+// ✅ CORREGIDO: usa ruta de empleado
 function abrirDetalleModal(idVenta) {
     document.getElementById('mainContent').classList.add('devoluciones-background');
     document.getElementById('detalleBackdrop').style.display = 'block';
-    fetch(`/ventas/${idVenta}/detalles`)
+    fetch(`/empleado/ventas/${idVenta}/detalles`)  // 👈 CORREGIDO
         .then(response => response.json())
         .then(data => mostrarDetalles(data))
         .catch(error => {
@@ -493,9 +482,6 @@ document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') cerrarDetalleModal();
 });
 
-// ============================================
-// BÚSQUEDA DE CLIENTE
-// ============================================
 document.addEventListener('DOMContentLoaded', function() {
     const inputDocumento  = document.getElementById('buscarCliente');
     const spinnerBusqueda = document.getElementById('spinnerBusqueda');
@@ -531,7 +517,8 @@ document.addEventListener('DOMContentLoaded', function() {
         mensajeCliente.classList.add('d-none');
         clienteValidado = false;
         btnGuardar.disabled = true;
-        fetch(`/api/buscar-cliente/${documento}`)
+        // ✅ CORREGIDO: usa ruta de empleado
+        fetch(`/empleado/api/buscar-cliente/${documento}`)
             .then(r => r.json())
             .then(data => {
                 spinnerBusqueda.style.display = 'none';
@@ -595,6 +582,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
+<div style="position: fixed; bottom: 0px; left: 0; width: 100%; text-align: center; margin-left: 115px; padding: 6px 0;">
+    <p style="color: #aaaaaa; font-size: 13px; margin: 0;">Copyright © 2026 Fonrio</p>
+</div>
 
 </body>
 </html>

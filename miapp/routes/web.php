@@ -196,20 +196,29 @@ Route::prefix('empleado')->group(function () {
     Route::put('/productos/update',    [ProductoController::class, 'updateEmpleado'])->name('productos.updateEm');
     Route::delete('/productos/destroy',[ProductoController::class, 'destroyEmpleado'])->name('productos.destroyEm');
 
-    // VENTAS
-    Route::get('/ventas',            [VentaController::class, 'indexEmpleado'])->name('ventas.indexEm');
-    Route::post('/ventas/store',     [VentaController::class, 'storeEmpleado'])->name('ventas.storeEm');
-    Route::put('/ventas/update',     [VentaController::class, 'updateEmpleado'])->name('ventas.updateEm');
-    Route::delete('/ventas/destroy', [VentaController::class, 'destroyEmpleado'])->name('ventas.destroyEm');
+  // VENTAS
+Route::get('/ventas',            [VentaController::class, 'indexEmpleado'])->name('ventas.indexEm');
+Route::post('/ventas/store',     [VentaController::class, 'storeEmpleado'])->name('ventas.storeEm');
+Route::put('/ventas/update',     [VentaController::class, 'updateEmpleado'])->name('ventas.updateEm');
+Route::delete('/ventas/destroy', [VentaController::class, 'destroyEmpleado'])->name('ventas.destroyEm');
+Route::get('/ventas/{id}/detalles', [VentaController::class, 'obtenerDetalles'])->name('ventas.detallesEm');          // 👈 NUEVA
+Route::get('/api/buscar-cliente/{documento}', [VentaController::class, 'buscarClienteAjax'])->name('ventas.buscarClienteEm'); // 👈 NUEVA
 
-    // DETALLE VENTAS
-    // ✅ CORREGIDO: apuntan a los métodos que SÍ existen en el controlador
-    Route::get('/detalleventas',            [DetalleVentaController::class, 'indexEmpleado'])->name('detalleventas.indexEm');
-    Route::post('/detalleventas/store',     [DetalleVentaController::class, 'post'])->name('detalleventas.storeEm');
-    Route::put('/detalleventas/update',     [DetalleVentaController::class, 'put'])->name('detalleventas.updateEm');
-    Route::delete('/detalleventas/destroy', [DetalleVentaController::class, 'delete'])->name('detalleventas.destroyEm');
+// Detalle ventas 
+Route::get('/detalleventas',            [DetalleVentaController::class, 'indexEmpleado'])->name('detalleventas.indexEm');
+Route::post('/detalleventas/store',     [DetalleVentaController::class, 'postEm'])->name('detalleventas.storeEm');
+Route::put('/detalleventas/update',     [DetalleVentaController::class, 'putEm'])->name('detalleventas.updateEm');
+Route::delete('/detalleventas/destroy', [DetalleVentaController::class, 'deleteEm'])->name('detalleventas.destroyEm');
 
-    // DEVOLUCIONES
+Route::get('/detalleventas/buscar-producto/{nombre}', [DetalleVentaController::class, 'buscarProducto']);
+Route::get('/detalleventas/venta-info/{idVenta}',     [DetalleVentaController::class, 'ventaInfo']);
+
+
+//perfil 
+Route::get('/perfil',             [PerfilController::class, 'showEm'])->name('perfilEm');
+Route::post('/perfil/actualizar', [PerfilController::class, 'updateEm'])->name('perfilEm.actualizar');
+
+// DEVOLUCIONES
     Route::get('/devolucion',            [DevolucionController::class, 'indexEmpleado'])->name('devolucion.indexEm');
     Route::post('/devolucion/store',     [DevolucionController::class, 'storeEmpleado'])->name('devolucion.storeEm');
     Route::put('/devolucion/update',     [DevolucionController::class, 'updateEmpleado'])->name('devolucion.updateEm');

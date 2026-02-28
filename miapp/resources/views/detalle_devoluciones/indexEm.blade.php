@@ -3,16 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <link rel="icon" href="{{ asset('Imagenes/Logo.webp') }}" type="image/webp">
-    <title>Detalle de devolucion</title>
+    <title>Clientes - Empleado</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/menu.css') }}">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
-
 <body>
 
-<div class="d-flex" style="min-height:100vh">
+<div class="d-flex" style="min-height: 100vh;">
 
     <div class="barra-lateral d-flex flex-column flex-shrink-0 p-3 bg-primary text-white">
         <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
@@ -24,7 +26,7 @@
                 <a href="{{ route('InicioE.index') }}" class="elemento-menu">
                     <i class="fa-solid fa-tachometer-alt"></i><span>Dashboard</span>
                 </a>
-                <a href="{{ route('ventas.indexEm') }}" class="elemento-menu activo">
+                <a href="{{ route('ventas.indexEm') }}" class="elemento-menu">
                     <i class="ri-price-tag-3-line"></i><span>Ventas</span>
                 </a>
                 <a href="{{ route('devolucion.indexEm') }}" class="elemento-menu">
@@ -36,8 +38,8 @@
                 <a href="{{ route('productos.indexEm') }}" class="elemento-menu">
                     <i class="ri-box-3-line"></i><span>Productos</span>
                 </a>
-                <a href="{{ route('clientes.indexEm') }}" class="elemento-menu">
-                    <i class="ri-user-line"></i><span>Cliente</span>
+                <a href="{{ route('clientes.indexEm') }}" class="elemento-menu activo">
+                    <i class="ri-user-line"></i><span>Clientes</span>
                 </a>
             </div>
         </div>
@@ -45,24 +47,25 @@
 
     <div class="contenido-principal flex-grow-1">
 
-        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        
+       <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
                 <a class="navbar-brand">Sistema gestión de inventarios</a>
                 <div class="dropdown ms-auto">
                     <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle"
-                       data-bs-toggle="dropdown">
-                        <img src="{{ asset('fotos_empleados/686fe89fe865f_Foto Kevin.jpeg') }}"
+                       id="dropdownUser1" data-bs-toggle="dropdown">
+                        <img src="{{ session('foto') ?? asset('Imagenes/default-user.png') }}"
                              width="32" height="32" class="rounded-circle me-2">
                         <strong>{{ session('nombre') ?? 'Perfil' }}</strong>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-                        <li><a class="dropdown-item" href="{{ route('perfil') }}">Mi perfil</a></li>
+                        <li><a class="dropdown-item" href="{{ route('perfilEm') }}">Mi perfil</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="dropdown-item">Cerrar sesión</button>
-                        </form>
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="dropdown-item">Cerrar sesión</button>
+                            </form>
                         </li>
                     </ul>
                 </div>
@@ -560,6 +563,8 @@ document.querySelector('#crearModal form').addEventListener('submit', function (
     }
 });
 </script>
-
+<div style="position: fixed; bottom: 10px; left: 0; width: 100%; text-align: center; margin-left: 115px;">
+    <p style="color: #aaaaaa; font-size: 13px; margin: 0;">Copyright © 2026 Fonrio</p>
+</div>
 </body>
 </html>

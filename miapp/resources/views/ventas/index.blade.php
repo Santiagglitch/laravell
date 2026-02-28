@@ -2,18 +2,34 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" href="{{ asset('Imagenes/Logo.webp') }}" type="image/webp">
-    <title>Ventas</title>
+    <title>Devoluciones</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/menu.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/ventas.css') }}">
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-</head>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <style>
+        .modal-detalle-backdrop {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1040; display: none;
+        }
+        .modal-detalle-content {
+            position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: white; border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            z-index: 1050; max-width: 900px; width: 90%;
+            max-height: 90vh; overflow-y: auto;
+        }
+        .devoluciones-background { opacity: 0.3; pointer-events: none; }
+    </style>
+</head>
 <body>
 
 <div class="d-flex" style="min-height:100vh" id="mainContent">
@@ -31,10 +47,10 @@
                 <a href="{{ route('compras.index') }}" class="elemento-menu">
                     <i class="ri-shopping-cart-2-line"></i><span>Compras</span>
                 </a>
-                <a href="{{ route('devolucion.index') }}" class="elemento-menu">
+                <a href="{{ route('devolucion.index') }}" class="elemento-menu activo">
                     <i class="ri-arrow-go-back-line"></i><span>Devoluciones</span>
                 </a>
-                <a href="{{ route('ventas.index') }}" class="elemento-menu activo">
+                <a href="{{ route('ventas.index') }}" class="elemento-menu">
                     <i class="ri-price-tag-3-line"></i><span>Ventas</span>
                 </a>
                   <a href="{{ route('auditoria.index') }}"
@@ -67,13 +83,13 @@
 
     <div class="contenido-principal flex-grow-1">
 
-        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
                 <a class="navbar-brand">Sistema gestión de inventarios</a>
                 <div class="dropdown ms-auto">
                     <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle"
-                       data-bs-toggle="dropdown">
-                        <img src="{{ asset('fotos_empleados/686fe89fe865f_Foto Kevin.jpeg') }}"
+                       id="dropdownUser1" data-bs-toggle="dropdown">
+                        <img src="{{ session('foto') ?? asset('Imagenes/default-user.png') }}"
                              width="32" height="32" class="rounded-circle me-2">
                         <strong>{{ session('nombre') ?? 'Perfil' }}</strong>
                     </a>
@@ -81,16 +97,16 @@
                         <li><a class="dropdown-item" href="{{ route('perfil') }}">Mi perfil</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="dropdown-item">Cerrar sesión</button>
-                        </form>
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="dropdown-item">Cerrar sesión</button>
+                            </form>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
-
+        
         <div class="container py-4">
 
             <div class="d-flex justify-content-center align-items-center gap-3 mb-4">
@@ -675,6 +691,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-
+<div style="position: fixed; bottom: 10px; left: 0; width: 100%; text-align: center; margin-left: 115px;">
+    <p style="color: #aaaaaa; font-size: 13px; margin: 0;">Copyright © 2026 Fonrio</p>
+</div>
 </body>
 </html>

@@ -165,13 +165,17 @@ h2 {
 .tarjeta-producto p {
   font-size: 16px;
   margin-top: 30px;
-}
-/*Footer*/
+}/* Footer */
 .footer {
-  text-align: center;
-  font-size: 14spx;
-  color: #ffffff;
-  padding: 5px;
-  border-radius: 0;
-  width: 100%;
+    color: #9c9292;
+    text-align: center;
+    padding: 20px;
+    width: 100%;
+    margin-top: 60px;
+}
+
+.footer p {
+    color: #aaaaaa;
+    font-size: 13px;
+    margin: 0;
 }
