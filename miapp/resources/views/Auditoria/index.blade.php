@@ -11,7 +11,6 @@
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/Inicio.css') }}">
     <link rel="stylesheet" href="{{ asset('css/menu.css') }}">
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
 
     <style>
         .badge-op { font-weight: 700; }
@@ -35,6 +34,24 @@
 
         .field-line { margin-bottom:4px; }
         .field-label { font-weight:600; color:#6c757d; }
+
+        /* ✅ Arreglo para textos largos */
+        .audit-table {
+            table-layout: fixed;
+            width: 100%;
+        }
+
+        .audit-table td, .audit-table th { vertical-align: top; }
+
+        .audit-cell { max-width: 420px; }
+
+        .audit-preview{
+            max-width: 420px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+        }
     </style>
 </head>
 
@@ -91,18 +108,20 @@
 
     <div class="contenido-principal flex-grow-1">
 
-       <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
                 <a class="navbar-brand">Sistema gestión de inventarios</a>
+
                 <div class="dropdown ms-auto">
                     <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle"
-                       id="dropdownUser1" data-bs-toggle="dropdown">
-                        <img src="{{ session('foto') ?? asset('Imagenes/default-user.png') }}"
-                             width="32" height="32" class="rounded-circle me-2">
+                       data-bs-toggle="dropdown">
+                        <img src="{{ asset('fotos_empleados/686fe89fe865f_Foto Kevin.jpeg') }}"
+                             alt="Perfil" width="32" height="32" class="rounded-circle me-2">
                         <strong>{{ session('nombre') ?? 'Perfil' }}</strong>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-                        <li><a class="dropdown-item" href="{{ route('perfil') }}">Mi perfil</a></li>
+                    <ul class="dropdown-menu dropdown-menu-dark">
+                        <li><a class="dropdown-item" href="#">Mi perfil</a></li>
+                        <li><a class="dropdown-item" href="#">Editar perfil</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <form action="{{ route('logout') }}" method="POST">
@@ -129,19 +148,19 @@
                 </div>
                 <div class="col-md-3">
                     <div class="card audit-kpi p-3">
-                        <div class="text-muted">Insertar</div>
+                        <div class="text-muted">Insert</div>
                         <div class="fs-4 fw-bold">{{ $stats['insert'] ?? 0 }}</div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="card audit-kpi p-3">
-                        <div class="text-muted">Actualizar</div>
+                        <div class="text-muted">Update</div>
                         <div class="fs-4 fw-bold">{{ $stats['update'] ?? 0 }}</div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="card audit-kpi p-3">
-                        <div class="text-muted">Eliminar</div>
+                        <div class="text-muted">Delete</div>
                         <div class="fs-4 fw-bold">{{ $stats['delete'] ?? 0 }}</div>
                     </div>
                 </div>
@@ -194,14 +213,14 @@
             <!-- TABLA -->
             <div class="card audit-card">
                 <div class="card-body p-0">
-                    <table class="table table-hover mb-0">
+                    <table class="table table-hover mb-0 audit-table">
                         <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Operación</th>
-                            <th>Tabla</th>
-                            <th>Registro</th>
-                            <th>Fecha</th>
+                            <th style="width:90px;">ID</th>
+                            <th style="width:120px;">Operación</th>
+                            <th style="width:160px;">Tabla</th>
+                            <th style="width:190px;">Registro</th>
+                            <th style="width:190px;">Fecha</th>
                             <th>Antes</th>
                             <th>Después</th>
                         </tr>
@@ -213,7 +232,7 @@
 
                                 <td>
                                     @php
-                                        $op = strtoupper($a->Operacion);
+                                        $op = strtoupper(trim($a->Operacion));
                                         $cls = $op === 'INSERT' ? 'op-insert' :
                                                ($op === 'UPDATE' ? 'op-update' : 'op-delete');
                                     @endphp
@@ -224,8 +243,17 @@
                                 <td class="mono">{{ $a->ID_Registro }}</td>
                                 <td class="mono">{{ $a->Fecha }}</td>
 
-                                <td>{!! $a->Datos_Antes !!}</td>
-                                <td>{!! $a->Datos_Despues !!}</td>
+                                <td class="audit-cell">
+                                    <span class="audit-preview" title="{{ strip_tags($a->Datos_Antes) }}">
+                                        {!! $a->Datos_Antes !!}
+                                    </span>
+                                </td>
+
+                                <td class="audit-cell">
+                                    <span class="audit-preview" title="{{ strip_tags($a->Datos_Despues) }}">
+                                        {!! $a->Datos_Despues !!}
+                                    </span>
+                                </td>
                             </tr>
                         @empty
                             <tr>
@@ -238,39 +266,19 @@
                     </table>
                 </div>
 
-                <!-- ✅ PAGINACIÓN 1,2,3... (5 por página en el controller) -->
-                <!-- PAGINACIÓN SOLO NÚMEROS -->
-<div class="card-footer bg-white text-center">
+                <!-- ✅ PAGINACIÓN LIMPIA (no saca 1..200) -->
+                <div class="card-footer bg-white text-center">
+                    
 
-    <div class="text-muted mb-2">
-        Mostrando {{ $auditorias->count() }} de {{ $auditorias->total() }} registros.
-    </div>
+                    {{ $auditorias->onEachSide(1)->links('pagination::bootstrap-5') }}
+                </div>
 
-    @if ($auditorias->lastPage() > 1)
-        <nav>
-            <ul class="pagination justify-content-center mb-0">
-
-                @for ($i = 1; $i <= $auditorias->lastPage(); $i++)
-                    <li class="page-item {{ $auditorias->currentPage() == $i ? 'active' : '' }}">
-                        <a class="page-link"
-                           href="{{ $auditorias->url($i) }}">
-                            {{ $i }}
-                        </a>
-                    </li>
-                @endfor
-
-            </ul>
-        </nav>
-    @endif
-
-</div>
             </div>
 
         </div>
     </div>
 </div>
-<div style="position: fixed; bottom: 10px; left: 0; width: 100%; text-align: center; margin-left: 115px;">
-    <p style="color: #aaaaaa; font-size: 13px; margin: 0;">Copyright © 2026 Fonrio</p>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
