@@ -148,19 +148,19 @@
                 </div>
                 <div class="col-md-3">
                     <div class="card audit-kpi p-3">
-                        <div class="text-muted">Insert</div>
+                        <div class="text-muted">Registros</div>
                         <div class="fs-4 fw-bold">{{ $stats['insert'] ?? 0 }}</div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="card audit-kpi p-3">
-                        <div class="text-muted">Update</div>
+                        <div class="text-muted">Actualizaciones</div>
                         <div class="fs-4 fw-bold">{{ $stats['update'] ?? 0 }}</div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="card audit-kpi p-3">
-                        <div class="text-muted">Delete</div>
+                        <div class="text-muted">Eliminaciones</div>
                         <div class="fs-4 fw-bold">{{ $stats['delete'] ?? 0 }}</div>
                     </div>
                 </div>
