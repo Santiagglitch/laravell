@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="{{ asset('Imagenes/Logo.webp') }}" type="image/webp">
     <title>Administrador</title>
 
@@ -15,10 +15,13 @@
 
 <body>
 
+<!-- Overlay oscuro al abrir sidebar -->
+<div class="overlay-sidebar" id="overlay"></div>
+
 <div class="d-flex" style="min-height:100vh">
 
     <!-- ===================== SIDEBAR ===================== -->
-    <div class="barra-lateral d-flex flex-column flex-shrink-0 p-3 bg-primary text-white">
+    <div class="barra-lateral d-flex flex-column flex-shrink-0 p-3 bg-primary text-white" id="sidebar">
         <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
             TECNICELL RM
             <img src="{{ asset('Imagenes/Logo.webp') }}" style="height:48px;">
@@ -27,7 +30,6 @@
 
         <div class="menu-barra-lateral">
 
-            <!-- SECCIÓN PRINCIPAL -->
             <div class="seccion-menu">
 
                 <a href="{{ route('admin.inicio') }}"
@@ -54,7 +56,6 @@
                     <span>Ventas</span>
                 </a>
 
-                <!-- NUEVO MÓDULO AUDITORÍA -->
                 <a href="{{ route('auditoria.index') }}"
                    class="elemento-menu {{ request()->routeIs('auditoria.*') ? 'activo' : '' }}">
                     <i class="ri-shield-check-line"></i>
@@ -65,7 +66,6 @@
 
             <hr>
 
-            <!-- SECCIÓN ADMINISTRACIÓN -->
             <div class="seccion-menu">
 
                 <a href="{{ route('productos.index') }}"
@@ -81,24 +81,15 @@
                 </a>
 
                 <div class="dropdown">
-                    <a class="elemento-menu d-flex align-items-center text-white text-decoration-none dropdown-toggle 
+                    <a class="elemento-menu d-flex align-items-center text-white text-decoration-none dropdown-toggle
                        {{ request()->routeIs('clientes.*') || request()->routeIs('empleados.*') ? 'activo' : '' }}"
                        href="#" data-bs-toggle="dropdown">
                         <i class="ri-user-line"></i>
                         <span>Usuarios</span>
                     </a>
-
                     <ul class="dropdown-menu">
-                        <li>
-                            <a class="dropdown-item" href="{{ route('clientes.index') }}">
-                                Cliente
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ route('empleados.index') }}">
-                                Empleado
-                            </a>
-                        </li>
+                        <li><a class="dropdown-item" href="{{ route('clientes.index') }}">Cliente</a></li>
+                        <li><a class="dropdown-item" href="{{ route('empleados.index') }}">Empleado</a></li>
                     </ul>
                 </div>
 
@@ -112,9 +103,15 @@
     <div class="contenido-principal flex-grow-1">
 
         <!-- NAVBAR SUPERIOR -->
-              <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
+
+                <button class="btn-sidebar-toggle" id="btnToggleSidebar">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+
                 <a class="navbar-brand">Sistema gestión de inventarios</a>
+
                 <div class="dropdown ms-auto">
                     <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle"
                        id="dropdownUser1" data-bs-toggle="dropdown">
@@ -140,88 +137,119 @@
         <div class="container py-4">
             <div class="row g-4">
 
-                <!-- TARJETAS -->
                 <div class="col-md-4">
-                    <div class="card tarjeta-dashboard azul h-100 text-center">
-                        <div class="icono-tarjeta-dashboard mx-auto mt-3">
-                            <i class="ri-shopping-cart-2-line fw-bold"></i>
+                    <a href="{{ route('compras.index') }}" style="text-decoration:none; color:inherit;">
+                        <div class="card tarjeta-dashboard azul h-100 text-center">
+                            <div class="icono-tarjeta-dashboard mx-auto mt-3">
+                                <i class="ri-shopping-cart-2-line fw-bold"></i>
+                            </div>
+                            <div class="card-body">
+                                <div class="titulo-tarjeta-dashboard">Compras</div>
+                                <div class="numero-tarjeta-dashboard">{{ $compras }}</div>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <div class="titulo-tarjeta-dashboard">Compras</div>
-                            <div class="numero-tarjeta-dashboard">3</div>
-                        </div>
-                    </div>
+                    </a>
                 </div>
 
                 <div class="col-md-4">
-                    <div class="card tarjeta-dashboard verde-azul h-100 text-center">
-                        <div class="icono-tarjeta-dashboard mx-auto mt-3">
-                            <i class="ri-arrow-go-back-line fw-bold"></i>
+                    <a href="{{ route('devolucion.index') }}" style="text-decoration:none; color:inherit;">
+                        <div class="card tarjeta-dashboard verde-azul h-100 text-center">
+                            <div class="icono-tarjeta-dashboard mx-auto mt-3">
+                                <i class="ri-arrow-go-back-line fw-bold"></i>
+                            </div>
+                            <div class="card-body">
+                                <div class="titulo-tarjeta-dashboard">Devoluciones</div>
+                                <div class="numero-tarjeta-dashboard">{{ $devoluciones }}</div>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <div class="titulo-tarjeta-dashboard">Devoluciones</div>
-                            <div class="numero-tarjeta-dashboard">2</div>
-                        </div>
-                    </div>
+                    </a>
                 </div>
 
                 <div class="col-md-4">
-                    <div class="card tarjeta-dashboard naranja h-100 text-center">
-                        <div class="icono-tarjeta-dashboard mx-auto mt-3">
-                            <i class="ri-price-tag-3-line fw-bold"></i>
+                    <a href="{{ route('ventas.index') }}" style="text-decoration:none; color:inherit;">
+                        <div class="card tarjeta-dashboard naranja h-100 text-center">
+                            <div class="icono-tarjeta-dashboard mx-auto mt-3">
+                                <i class="ri-price-tag-3-line fw-bold"></i>
+                            </div>
+                            <div class="card-body">
+                                <div class="titulo-tarjeta-dashboard">Ventas</div>
+                                <div class="numero-tarjeta-dashboard">{{ $ventas }}</div>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <div class="titulo-tarjeta-dashboard">Ventas</div>
-                            <div class="numero-tarjeta-dashboard">1</div>
-                        </div>
-                    </div>
+                    </a>
                 </div>
 
                 <div class="col-md-4">
-                    <div class="card tarjeta-dashboard azul-oscuro h-100 text-center">
-                        <div class="icono-tarjeta-dashboard mx-auto mt-3">
-                            <i class="ri-truck-line fw-bold"></i>
+                    <a href="{{ route('proveedor.index') }}" style="text-decoration:none; color:inherit;">
+                        <div class="card tarjeta-dashboard azul-oscuro h-100 text-center">
+                            <div class="icono-tarjeta-dashboard mx-auto mt-3">
+                                <i class="ri-truck-line fw-bold"></i>
+                            </div>
+                            <div class="card-body">
+                                <div class="titulo-tarjeta-dashboard">Proveedores</div>
+                                <div class="numero-tarjeta-dashboard">{{ $proveedores }}</div>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <div class="titulo-tarjeta-dashboard">Proveedores</div>
-                            <div class="numero-tarjeta-dashboard">1</div>
-                        </div>
-                    </div>
+                    </a>
                 </div>
 
                 <div class="col-md-4">
-                    <div class="card tarjeta-dashboard naranja-alternativo h-100 text-center">
-                        <div class="icono-tarjeta-dashboard mx-auto mt-3">
-                            <i class="ri-box-3-line fw-bold"></i>
+                    <a href="{{ route('productos.index') }}" style="text-decoration:none; color:inherit;">
+                        <div class="card tarjeta-dashboard naranja-alternativo h-100 text-center">
+                            <div class="icono-tarjeta-dashboard mx-auto mt-3">
+                                <i class="ri-box-3-line fw-bold"></i>
+                            </div>
+                            <div class="card-body">
+                                <div class="titulo-tarjeta-dashboard">Productos</div>
+                                <div class="numero-tarjeta-dashboard">{{ $productos }}</div>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <div class="titulo-tarjeta-dashboard">Productos</div>
-                            <div class="numero-tarjeta-dashboard">1</div>
-                        </div>
-                    </div>
+                    </a>
                 </div>
 
                 <div class="col-md-4">
-                    <div class="card tarjeta-dashboard morado h-100 text-center">
-                        <div class="icono-tarjeta-dashboard mx-auto mt-3">
-                            <i class="ri-user-line fw-bold"></i>
+                    
+                        <div class="card tarjeta-dashboard morado h-100 text-center">
+                            <div class="icono-tarjeta-dashboard mx-auto mt-3">
+                                <i class="ri-user-line fw-bold"></i>
+                            </div>
+                            <div class="card-body">
+                                <div class="titulo-tarjeta-dashboard">Usuarios</div>
+                                <div class="numero-tarjeta-dashboard">2</div>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <div class="titulo-tarjeta-dashboard">Usuarios</div>
-                            <div class="numero-tarjeta-dashboard">2</div>
-                        </div>
-                    </div>
+                    </a>
                 </div>
 
             </div>
         </div>
 
     </div>
+    <!-- ===================== FIN CONTENIDO PRINCIPAL ===================== -->
+
 </div>
+
 <div style="position: fixed; bottom: 10px; left: 0; width: 100%; text-align: center; margin-left: 115px;">
     <p style="color: #aaaaaa; font-size: 13px; margin: 0;">Copyright © 2026 Fonrio</p>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    const btnToggle = document.getElementById('btnToggleSidebar');
+    const sidebar   = document.getElementById('sidebar');
+    const overlay   = document.getElementById('overlay');
+
+    btnToggle.addEventListener('click', function () {
+        sidebar.classList.toggle('abierto');
+        overlay.classList.toggle('activo');
+    });
+
+    overlay.addEventListener('click', function () {
+        sidebar.classList.remove('abierto');
+        overlay.classList.remove('activo');
+    });
+</script>
+
 </body>
 </html>

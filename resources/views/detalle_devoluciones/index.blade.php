@@ -2,70 +2,116 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="{{ asset('Imagenes/Logo.webp') }}" type="image/webp">
     <title>Detalle de Devolución</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/Inicio.css') }}">
     <link rel="stylesheet" href="{{ asset('css/menu.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
 </head>
 
 <body>
 
+<!-- Overlay oscuro al abrir sidebar -->
+<div class="overlay-sidebar" id="overlay"></div>
+
 <div class="d-flex" style="min-height:100vh">
 
-    <div class="barra-lateral d-flex flex-column flex-shrink-0 p-3 bg-primary text-white">
+    <!-- ===================== SIDEBAR ===================== -->
+    <div class="barra-lateral d-flex flex-column flex-shrink-0 p-3 bg-primary text-white" id="sidebar">
         <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-            TECNICELL RM <img src="{{ asset('Imagenes/Logo.webp') }}" style="height:48px;">
+            TECNICELL RM
+            <img src="{{ asset('Imagenes/Logo.webp') }}" style="height:48px;">
         </a>
         <hr>
+
         <div class="menu-barra-lateral">
+
             <div class="seccion-menu">
-                <a href="{{ route('admin.inicio') }}" class="elemento-menu">
-                    <i class="fa-solid fa-tachometer-alt"></i><span>Dashboard</span>
+
+                <a href="{{ route('admin.inicio') }}"
+                   class="elemento-menu {{ request()->routeIs('admin.inicio') ? 'activo' : '' }}">
+                    <i class="fa-solid fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
                 </a>
-                <a href="{{ route('compras.index') }}" class="elemento-menu">
-                    <i class="ri-shopping-cart-2-line"></i><span>Compras</span>
+
+                <a href="{{ route('compras.index') }}"
+                   class="elemento-menu {{ request()->routeIs('compras.*') ? 'activo' : '' }}">
+                    <i class="ri-shopping-cart-2-line"></i>
+                    <span>Compras</span>
                 </a>
-                <a href="{{ route('devolucion.index') }}" class="elemento-menu activo">
-                    <i class="ri-arrow-go-back-line"></i><span>Devoluciones</span>
+
+                <a href="{{ route('devolucion.index') }}"
+                   class="elemento-menu {{ request()->routeIs('devolucion.*') ? 'activo' : '' }}">
+                    <i class="ri-arrow-go-back-line"></i>
+                    <span>Devoluciones</span>
                 </a>
-                <a href="{{ route('ventas.index') }}" class="elemento-menu">
-                    <i class="ri-price-tag-3-line"></i><span>Ventas</span>
-                    
+
+                <a href="{{ route('ventas.index') }}"
+                   class="elemento-menu {{ request()->routeIs('ventas.*') ? 'activo' : '' }}">
+                    <i class="ri-price-tag-3-line"></i>
+                    <span>Ventas</span>
                 </a>
-                  <a href="{{ route('auditoria.index') }}"
+
+                <a href="{{ route('auditoria.index') }}"
                    class="elemento-menu {{ request()->routeIs('auditoria.*') ? 'activo' : '' }}">
                     <i class="ri-shield-check-line"></i>
                     <span>Auditoría</span>
                 </a>
+
             </div>
+
             <hr>
+
             <div class="seccion-menu">
-                <a href="{{ route('productos.index') }}" class="elemento-menu">
-                    <i class="ri-box-3-line"></i><span>Productos</span>
+
+                <a href="{{ route('productos.index') }}"
+                   class="elemento-menu {{ request()->routeIs('productos.*') ? 'activo' : '' }}">
+                    <i class="ri-box-3-line"></i>
+                    <span>Productos</span>
                 </a>
-                <a href="{{ route('proveedor.index') }}" class="elemento-menu">
-                    <i class="ri-truck-line"></i><span>Proveedores</span>
+
+                <a href="{{ route('proveedor.index') }}"
+                   class="elemento-menu {{ request()->routeIs('proveedor.*') ? 'activo' : '' }}">
+                    <i class="ri-truck-line"></i>
+                    <span>Proveedores</span>
                 </a>
+
                 <div class="dropdown">
-                    <a class="elemento-menu d-flex align-items-center text-white text-decoration-none dropdown-toggle"
-                       data-bs-toggle="dropdown">
-                        <i class="ri-user-line"></i><span>Usuarios</span>
+                    <a class="elemento-menu d-flex align-items-center text-white text-decoration-none dropdown-toggle
+                       {{ request()->routeIs('clientes.*') || request()->routeIs('empleados.*') ? 'activo' : '' }}"
+                       href="#" data-bs-toggle="dropdown">
+                        <i class="ri-user-line"></i>
+                        <span>Usuarios</span>
                     </a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="{{ route('clientes.index') }}">Cliente</a></li>
                         <li><a class="dropdown-item" href="{{ route('empleados.index') }}">Empleado</a></li>
                     </ul>
                 </div>
+
             </div>
         </div>
     </div>
+    <!-- ===================== FIN SIDEBAR ===================== -->
 
+
+    <!-- ===================== CONTENIDO PRINCIPAL ===================== -->
     <div class="contenido-principal flex-grow-1">
-  <nav class="navbar navbar-expand-lg bg-body-tertiary">
+
+        <!-- NAVBAR SUPERIOR -->
+        <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
+
+                <button class="btn-sidebar-toggle" id="btnToggleSidebar">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+
                 <a class="navbar-brand">Sistema gestión de inventarios</a>
+
                 <div class="dropdown ms-auto">
                     <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle"
                        id="dropdownUser1" data-bs-toggle="dropdown">
@@ -87,13 +133,14 @@
             </div>
         </nav>
 
+        <!-- CONTENIDO -->
         <div class="container py-4">
 
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div></div>
+            <!-- Título + botón volver -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
                 <div class="d-flex align-items-center gap-3">
                     <img src="{{ asset('Imagenes/Logo.webp') }}" style="height:48px;">
-                    <h1>Detalle de Devoluciones</h1>
+                    <h1 class="mb-0">Detalle de Devoluciones</h1>
                 </div>
                 <a href="{{ route('devolucion.index') }}" class="btn btn-secondary">
                     <i class="fa fa-arrow-left"></i> Volver a Devoluciones
@@ -101,27 +148,12 @@
             </div>
 
             @if(session('mensaje'))
-                <div id="alertaMensaje" class="alert alert-success text-center mt-3">
-                    {{ session('mensaje') }}
-                </div>
-                <script>
-                    setTimeout(() => {
-                        let alerta = document.getElementById('alertaMensaje');
-                        if (alerta) { alerta.style.transition = "opacity 0.5s"; alerta.style.opacity = 0; setTimeout(() => alerta.remove(), 500); }
-                    }, 2000);
-                </script>
+                <div id="alertaMensaje" class="alert alert-success text-center mt-3">{{ session('mensaje') }}</div>
+                <script>setTimeout(()=>{let a=document.getElementById('alertaMensaje');if(a){a.style.transition="opacity 0.5s";a.style.opacity=0;setTimeout(()=>a.remove(),500);}},2000);</script>
             @endif
-
             @if(session('error'))
-                <div id="alertaError" class="alert alert-danger text-center mt-3">
-                    {{ session('error') }}
-                </div>
-                <script>
-                    setTimeout(() => {
-                        let alerta = document.getElementById('alertaError');
-                        if (alerta) { alerta.style.transition = "opacity 0.5s"; alerta.style.opacity = 0; setTimeout(() => alerta.remove(), 500); }
-                    }, 2000);
-                </script>
+                <div id="alertaError" class="alert alert-danger text-center mt-3">{{ session('error') }}</div>
+                <script>setTimeout(()=>{let a=document.getElementById('alertaError');if(a){a.style.transition="opacity 0.5s";a.style.opacity=0;setTimeout(()=>a.remove(),500);}},2000);</script>
             @endif
 
             <div class="text-end mt-4">
@@ -147,7 +179,6 @@
                             <td>{{ $detalle->Cantidad_Devuelta }}</td>
                             <td>{{ $detalle->ID_Venta }}</td>
                             <td>
-                                {{-- Botón editar: llama a JS con los datos del detalle --}}
                                 <button class="btn btn-warning btn-sm"
                                         onclick="abrirModalEditar(
                                             {{ $detalle->ID_Devolucion }},
@@ -156,7 +187,6 @@
                                         )">
                                     <i class="fa fa-edit"></i>
                                 </button>
-
                                 <button class="btn btn-danger btn-sm"
                                         data-bs-toggle="modal"
                                         data-bs-target="#eliminarModal{{ $loop->index }}">
@@ -169,8 +199,7 @@
                         <div class="modal fade" id="eliminarModal{{ $loop->index }}">
                             <div class="modal-dialog">
                                 <form method="POST" action="{{ route('detalledevolucion.destroy', $detalle->ID_Devolucion) }}">
-                                    @csrf
-                                    @method('DELETE')
+                                    @csrf @method('DELETE')
                                     <div class="modal-content">
                                         <div class="modal-header bg-danger text-white">
                                             <h5 class="modal-title"><i class="fa fa-trash"></i> Eliminar Detalle</h5>
@@ -201,20 +230,17 @@
             </div>
 
 
-            {{-- ===================== MODAL EDITAR (único, reutilizable) ===================== --}}
+            <!-- ===================== MODAL EDITAR ===================== -->
             <div class="modal fade" id="editarModal">
                 <div class="modal-dialog modal-lg">
                     <form method="POST" id="formEditar">
-                        @csrf
-                        @method('PUT')
+                        @csrf @method('PUT')
                         <input type="hidden" name="ID_Venta" id="edit_id_venta">
-
                         <div class="modal-content">
                             <div class="modal-header bg-warning">
                                 <h5 class="modal-title"><i class="fa fa-edit"></i> Editar Detalle de Devolución</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
-
                             <div class="modal-body">
 
                                 <div id="edit_cargando" class="text-center py-3 d-none">
@@ -264,7 +290,6 @@
                                 </div>
 
                             </div>
-
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                                 <button type="submit" class="btn btn-warning" id="edit_btn_guardar" disabled>
@@ -277,7 +302,7 @@
             </div>
 
 
-            {{-- ===================== MODAL CREAR ===================== --}}
+            <!-- ===================== MODAL CREAR ===================== -->
             <div class="modal fade" id="crearModal">
                 <div class="modal-dialog modal-lg">
                     <form method="POST" action="{{ route('detalledevolucion.store') }}">
@@ -337,7 +362,7 @@
                                                     <thead class="table-light">
                                                         <tr>
                                                             <th>Producto</th>
-                                                            <th>Cantidad Comprada</th>
+                                                            <th>Cantidad</th>
                                                             <th>ID Venta</th>
                                                             <th>Acción</th>
                                                         </tr>
@@ -376,204 +401,194 @@
 
         </div>
     </div>
+    <!-- ===================== FIN CONTENIDO PRINCIPAL ===================== -->
+
+</div>
+
+<div style="position: fixed; bottom: 10px; left: 0; width: 100%; text-align: center; margin-left: 115px;">
+    <p style="color: #aaaaaa; font-size: 13px; margin: 0;">Copyright © 2026 Fonrio</p>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
+    // ============================================
+    // SIDEBAR RESPONSIVE (igual que el dashboard)
+    // ============================================
+    const btnToggle = document.getElementById('btnToggleSidebar');
+    const sidebar   = document.getElementById('sidebar');
+    const overlay   = document.getElementById('overlay');
 
-/* ============================================================
-   MODAL EDITAR — carga info de la venta y valida cantidad
-   ============================================================ */
-let editMaxCantidad = 0;
+    btnToggle.addEventListener('click', function () {
+        sidebar.classList.toggle('abierto');
+        overlay.classList.toggle('activo');
+    });
 
-function abrirModalEditar(idDevolucion, idVenta, cantidadActual) {
-    // Resetear estado
-    document.getElementById('edit_cargando').classList.remove('d-none');
-    document.getElementById('edit_info').classList.add('d-none');
-    document.getElementById('edit_error').classList.add('d-none');
-    document.getElementById('edit_btn_guardar').disabled = true;
-    document.getElementById('edit_alerta_cantidad').classList.add('d-none');
+    overlay.addEventListener('click', function () {
+        sidebar.classList.remove('abierto');
+        overlay.classList.remove('activo');
+    });
 
-    // Poner la acción del form con el ID correcto (ruta admin)
-    document.getElementById('formEditar').action = `/detalledevolucion/${idDevolucion}`;
+    // ============================================
+    // MODAL EDITAR
+    // ============================================
+    let editMaxCantidad = 0;
 
-    // Abrir modal
-    new bootstrap.Modal(document.getElementById('editarModal')).show();
+    function abrirModalEditar(idDevolucion, idVenta, cantidadActual) {
+        document.getElementById('edit_cargando').classList.remove('d-none');
+        document.getElementById('edit_info').classList.add('d-none');
+        document.getElementById('edit_error').classList.add('d-none');
+        document.getElementById('edit_btn_guardar').disabled = true;
+        document.getElementById('edit_alerta_cantidad').classList.add('d-none');
 
-    // Buscar info de la venta via AJAX (ruta admin)
-    fetch(`/venta-info/${idVenta}`)
-        .then(res => res.json())
-        .then(data => {
-            document.getElementById('edit_cargando').classList.add('d-none');
+        document.getElementById('formEditar').action = `/detalledevolucion/${idDevolucion}`;
+        new bootstrap.Modal(document.getElementById('editarModal')).show();
 
-            if (data.error) {
+        fetch(`/venta-info/${idVenta}`)
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('edit_cargando').classList.add('d-none');
+                if (data.error) { document.getElementById('edit_error').classList.remove('d-none'); return; }
+
+                editMaxCantidad = data.cantidad;
+                document.getElementById('edit_id_venta').value               = idVenta;
+                document.getElementById('edit_venta_id').textContent         = idVenta;
+                document.getElementById('edit_producto').textContent         = data.producto;
+                document.getElementById('edit_cantidad_comprada').textContent = data.cantidad + ' unidades';
+                document.getElementById('edit_max_label').textContent        = data.cantidad;
+                document.getElementById('edit_cantidad').max                 = data.cantidad;
+                document.getElementById('edit_cantidad').value               = cantidadActual;
+                document.getElementById('edit_info').classList.remove('d-none');
+                document.getElementById('edit_btn_guardar').disabled = false;
+            })
+            .catch(() => {
+                document.getElementById('edit_cargando').classList.add('d-none');
                 document.getElementById('edit_error').classList.remove('d-none');
-                return;
-            }
-
-            editMaxCantidad = data.cantidad;
-
-            document.getElementById('edit_id_venta').value            = idVenta;
-            document.getElementById('edit_venta_id').textContent      = idVenta;
-            document.getElementById('edit_producto').textContent      = data.producto;
-            document.getElementById('edit_cantidad_comprada').textContent = data.cantidad + ' unidades';
-            document.getElementById('edit_max_label').textContent     = data.cantidad;
-            document.getElementById('edit_cantidad').max              = data.cantidad;
-            document.getElementById('edit_cantidad').value            = cantidadActual;
-
-            document.getElementById('edit_info').classList.remove('d-none');
-            document.getElementById('edit_btn_guardar').disabled = false;
-        })
-        .catch(() => {
-            document.getElementById('edit_cargando').classList.add('d-none');
-            document.getElementById('edit_error').classList.remove('d-none');
-        });
-}
-
-// Validar cantidad en tiempo real en modal editar
-document.getElementById('edit_cantidad').addEventListener('input', function () {
-    const val    = parseInt(this.value);
-    const alerta = document.getElementById('edit_alerta_cantidad');
-    const texto  = document.getElementById('edit_alerta_texto');
-    const btn    = document.getElementById('edit_btn_guardar');
-
-    if (val > editMaxCantidad) {
-        texto.textContent = `⚠️ No puedes devolver más de ${editMaxCantidad} unidades. Ingresa un número entre 1 y ${editMaxCantidad}.`;
-        alerta.classList.remove('d-none');
-        btn.disabled = true;
-    } else if (val < 1 || isNaN(val)) {
-        texto.textContent = '⚠️ La cantidad debe ser al menos 1.';
-        alerta.classList.remove('d-none');
-        btn.disabled = true;
-    } else {
-        alerta.classList.add('d-none');
-        btn.disabled = false;
-    }
-});
-
-// Validar antes de enviar editar
-document.getElementById('formEditar').addEventListener('submit', function (e) {
-    const val = parseInt(document.getElementById('edit_cantidad').value);
-    if (val > editMaxCantidad || val < 1 || isNaN(val)) {
-        e.preventDefault();
-        alert(`⚠️ La cantidad debe estar entre 1 y ${editMaxCantidad} unidades.`);
-    }
-});
-
-
-/* ============================================================
-   MODAL CREAR
-   ============================================================ */
-let ventaSeleccionada = null;
-
-function buscarCliente() {
-    let documento    = document.getElementById('documento_cliente').value.trim();
-    let mensajeError = document.getElementById('mensajeError');
-    let infoCliente  = document.getElementById('infoCliente');
-
-    mensajeError.classList.add('d-none');
-    infoCliente.classList.add('d-none');
-    document.getElementById('formularioDevolucion').classList.add('d-none');
-    document.getElementById('btnGuardar').disabled = true;
-
-    if (!documento) {
-        mensajeError.textContent = 'Por favor ingrese un documento';
-        mensajeError.classList.remove('d-none');
-        return;
+            });
     }
 
-    fetch(`/ventas/por-documento/${documento}`)
-        .then(res => res.json())
-        .then(data => {
-            if (data && data.ventas && data.ventas.length > 0) {
-                document.getElementById('nombreCliente').textContent = data.cliente.nombre || 'N/A';
-                document.getElementById('docCliente').textContent    = data.cliente.documento;
+    document.getElementById('edit_cantidad').addEventListener('input', function () {
+        const val    = parseInt(this.value);
+        const alerta = document.getElementById('edit_alerta_cantidad');
+        const texto  = document.getElementById('edit_alerta_texto');
+        const btn    = document.getElementById('edit_btn_guardar');
 
-                let productosHTML = '';
-                data.ventas.forEach(venta => {
-                    productosHTML += `
-                        <tr>
-                            <td>${venta.producto}</td>
-                            <td><span class="badge bg-primary">${venta.cantidad}</span></td>
-                            <td>${venta.id_venta}</td>
-                            <td>
-                                <button type="button" class="btn btn-sm btn-success"
-                                        onclick="seleccionarVenta(${venta.id_venta}, ${venta.cantidad}, '${venta.producto}', this)">
-                                    <i class="fa fa-check"></i> Seleccionar
-                                </button>
-                            </td>
-                        </tr>`;
-                });
+        if (val > editMaxCantidad) {
+            texto.textContent = `⚠️ No puedes devolver más de ${editMaxCantidad} unidades. Ingresa entre 1 y ${editMaxCantidad}.`;
+            alerta.classList.remove('d-none');
+            btn.disabled = true;
+        } else if (val < 1 || isNaN(val)) {
+            texto.textContent = '⚠️ La cantidad debe ser al menos 1.';
+            alerta.classList.remove('d-none');
+            btn.disabled = true;
+        } else {
+            alerta.classList.add('d-none');
+            btn.disabled = false;
+        }
+    });
 
-                document.getElementById('productosCliente').innerHTML = productosHTML;
-                infoCliente.classList.remove('d-none');
-            } else {
-                mensajeError.classList.remove('d-none');
-            }
-        })
-        .catch(() => mensajeError.classList.remove('d-none'));
-}
+    document.getElementById('formEditar').addEventListener('submit', function (e) {
+        const val = parseInt(document.getElementById('edit_cantidad').value);
+        if (val > editMaxCantidad || val < 1 || isNaN(val)) {
+            e.preventDefault();
+            alert(`⚠️ La cantidad debe estar entre 1 y ${editMaxCantidad} unidades.`);
+        }
+    });
 
-function seleccionarVenta(idVenta, cantidad, producto, btn) {
-    ventaSeleccionada = { id: idVenta, cantidad: cantidad, producto: producto };
+    // ============================================
+    // MODAL CREAR
+    // ============================================
+    let ventaSeleccionada = null;
 
-    document.getElementById('id_venta').value                = idVenta;
-    document.getElementById('cantidadDisponible').textContent = cantidad + ' unidades de ' + producto;
-    document.getElementById('cantidad_devuelta').max          = cantidad;
-    document.getElementById('cantidad_devuelta').value        = '';
-    document.getElementById('crear_alerta_cantidad').classList.add('d-none');
+    function buscarCliente() {
+        let documento    = document.getElementById('documento_cliente').value.trim();
+        let mensajeError = document.getElementById('mensajeError');
+        let infoCliente  = document.getElementById('infoCliente');
 
-    document.getElementById('formularioDevolucion').classList.remove('d-none');
-    document.getElementById('btnGuardar').disabled = false;
+        mensajeError.classList.add('d-none');
+        infoCliente.classList.add('d-none');
+        document.getElementById('formularioDevolucion').classList.add('d-none');
+        document.getElementById('btnGuardar').disabled = true;
 
-    document.querySelectorAll('#productosCliente tr').forEach(tr => tr.classList.remove('table-success'));
-    btn.closest('tr').classList.add('table-success');
-}
+        if (!documento) {
+            mensajeError.textContent = 'Por favor ingrese un documento';
+            mensajeError.classList.remove('d-none');
+            return;
+        }
 
-// Validar cantidad en tiempo real en modal crear
-document.getElementById('cantidad_devuelta').addEventListener('input', function () {
-    if (!ventaSeleccionada) return;
-    const val    = parseInt(this.value);
-    const alerta = document.getElementById('crear_alerta_cantidad');
-    const texto  = document.getElementById('crear_alerta_texto');
-    const btn    = document.getElementById('btnGuardar');
+        fetch(`/ventas/por-documento/${documento}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.ventas && data.ventas.length > 0) {
+                    document.getElementById('nombreCliente').textContent = data.cliente.nombre || 'N/A';
+                    document.getElementById('docCliente').textContent    = data.cliente.documento;
 
-    if (val > ventaSeleccionada.cantidad) {
-        texto.textContent = `⚠️ No puedes devolver más de ${ventaSeleccionada.cantidad} unidades de "${ventaSeleccionada.producto}". Ingresa un número entre 1 y ${ventaSeleccionada.cantidad}.`;
-        alerta.classList.remove('d-none');
-        btn.disabled = true;
-    } else if (val < 1 || isNaN(val)) {
-        texto.textContent = '⚠️ La cantidad debe ser al menos 1.';
-        alerta.classList.remove('d-none');
-        btn.disabled = true;
-    } else {
-        alerta.classList.add('d-none');
-        btn.disabled = false;
+                    let productosHTML = '';
+                    data.ventas.forEach(venta => {
+                        productosHTML += `
+                            <tr>
+                                <td>${venta.producto}</td>
+                                <td><span class="badge bg-primary">${venta.cantidad}</span></td>
+                                <td>${venta.id_venta}</td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-success"
+                                            onclick="seleccionarVenta(${venta.id_venta}, ${venta.cantidad}, '${venta.producto}', this)">
+                                        <i class="fa fa-check"></i> Seleccionar
+                                    </button>
+                                </td>
+                            </tr>`;
+                    });
+
+                    document.getElementById('productosCliente').innerHTML = productosHTML;
+                    infoCliente.classList.remove('d-none');
+                } else {
+                    mensajeError.classList.remove('d-none');
+                }
+            })
+            .catch(() => mensajeError.classList.remove('d-none'));
     }
-});
 
-// Validar antes de enviar crear
-document.querySelector('#crearModal form').addEventListener('submit', function (e) {
-    const val = parseInt(document.getElementById('cantidad_devuelta').value);
-    if (!ventaSeleccionada) {
-        e.preventDefault();
-        alert('⚠️ Por favor selecciona un producto para devolver');
-        return;
+    function seleccionarVenta(idVenta, cantidad, producto, btn) {
+        ventaSeleccionada = { id: idVenta, cantidad: cantidad, producto: producto };
+        document.getElementById('id_venta').value                 = idVenta;
+        document.getElementById('cantidadDisponible').textContent = cantidad + ' unidades de ' + producto;
+        document.getElementById('cantidad_devuelta').max          = cantidad;
+        document.getElementById('cantidad_devuelta').value        = '';
+        document.getElementById('crear_alerta_cantidad').classList.add('d-none');
+        document.getElementById('formularioDevolucion').classList.remove('d-none');
+        document.getElementById('btnGuardar').disabled = false;
+        document.querySelectorAll('#productosCliente tr').forEach(tr => tr.classList.remove('table-success'));
+        btn.closest('tr').classList.add('table-success');
     }
-    if (val > ventaSeleccionada.cantidad) {
-        e.preventDefault();
-        alert(`⚠️ No puedes devolver ${val} unidades. Solo se compraron ${ventaSeleccionada.cantidad} unidades de "${ventaSeleccionada.producto}".`);
-        return;
-    }
-    if (val < 1 || isNaN(val)) {
-        e.preventDefault();
-        alert('⚠️ La cantidad debe ser al menos 1');
-    }
-});
+
+    document.getElementById('cantidad_devuelta').addEventListener('input', function () {
+        if (!ventaSeleccionada) return;
+        const val    = parseInt(this.value);
+        const alerta = document.getElementById('crear_alerta_cantidad');
+        const texto  = document.getElementById('crear_alerta_texto');
+        const btn    = document.getElementById('btnGuardar');
+
+        if (val > ventaSeleccionada.cantidad) {
+            texto.textContent = `⚠️ No puedes devolver más de ${ventaSeleccionada.cantidad} unidades de "${ventaSeleccionada.producto}".`;
+            alerta.classList.remove('d-none');
+            btn.disabled = true;
+        } else if (val < 1 || isNaN(val)) {
+            texto.textContent = '⚠️ La cantidad debe ser al menos 1.';
+            alerta.classList.remove('d-none');
+            btn.disabled = true;
+        } else {
+            alerta.classList.add('d-none');
+            btn.disabled = false;
+        }
+    });
+
+    document.querySelector('#crearModal form').addEventListener('submit', function (e) {
+        const val = parseInt(document.getElementById('cantidad_devuelta').value);
+        if (!ventaSeleccionada) { e.preventDefault(); alert('⚠️ Por favor selecciona un producto para devolver'); return; }
+        if (val > ventaSeleccionada.cantidad) { e.preventDefault(); alert(`⚠️ No puedes devolver ${val} unidades. Solo se compraron ${ventaSeleccionada.cantidad}.`); return; }
+        if (val < 1 || isNaN(val)) { e.preventDefault(); alert('⚠️ La cantidad debe ser al menos 1'); }
+    });
 </script>
-<div style="position: fixed; bottom: 10px; left: 0; width: 100%; text-align: center; margin-left: 115px;">
-    <p style="color: #aaaaaa; font-size: 13px; margin: 0;">Copyright © 2026 Fonrio</p>
-</div>
+
 </body>
 </html>

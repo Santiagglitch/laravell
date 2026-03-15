@@ -68,7 +68,17 @@ Route::post('/perfil/actualizar',[PerfilController::class, 'actualizar'])->name(
 // OTRAS VISTAS
 // ===============================================
 Route::get('/admin', function () {
-    return view('admin.inicio');
+    $compras      = \App\Models\Compras::count();
+    $devoluciones = \App\Models\Devolucion::count();
+    $ventas       = \Illuminate\Support\Facades\DB::table('Ventas')->count();
+    $proveedores  = \Illuminate\Support\Facades\DB::table('Proveedores')->count();
+    $productos    = \Illuminate\Support\Facades\DB::table('Productos')->count();
+    $usuarios = \Illuminate\Support\Facades\DB::table('Empleados')->count();
+
+    return view('admin.inicio', compact(
+        'compras', 'devoluciones', 'ventas',
+        'proveedores', 'productos', 'usuarios'
+    ));
 })->name('admin.inicio');
 
 Route::get('/InicioE', function () {

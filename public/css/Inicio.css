@@ -108,3 +108,115 @@ body {
     position: relative;
     z-index: 2;
 }
+
+/* ── Botón hamburguesa ──────────────────────── */
+.btn-sidebar-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: #333;
+    font-size: 1.4rem;
+    cursor: pointer;
+    padding: 0 10px;
+}
+
+/* ── Overlay oscuro detrás del sidebar ──────── */
+.overlay-sidebar {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+.overlay-sidebar.activo {
+    display: block;
+}
+
+/* ================================================
+   RESPONSIVE
+   ================================================ */
+
+/* ── TABLET (max 992px) ─────────────────────── */
+@media (max-width: 992px) {
+
+    /* Sidebar oculto por defecto */
+    .barra-lateral {
+        left: -250px !important;
+        transition: left 0.3s ease;
+        z-index: 1001;
+    }
+
+    /* Sidebar visible al abrir */
+    .barra-lateral.abierto {
+        left: 0 !important;
+    }
+
+    /* Contenido ocupa todo el ancho */
+    .contenido-principal {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+
+    /* Mostrar botón hamburguesa */
+    .btn-sidebar-toggle {
+        display: inline-block;
+    }
+
+    /* Tarjetas: 2 por fila */
+    .col-md-4 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+
+/* ── MÓVIL (max 576px) ──────────────────────── */
+@media (max-width: 576px) {
+
+    /* Tarjetas: 1 por fila */
+    .col-md-4 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    .container-fluid {
+        padding: 0.5rem 1rem;
+    }
+}
+/* ── MÓVIL - Botones y tabla de devoluciones ── */
+@media (max-width: 576px) {
+    .d-flex.flex-wrap .btn {
+        flex: 1 1 45%;
+        font-size: 0.8rem;
+        padding: 0.4rem 0.5rem;
+    }
+
+    .table thead th,
+    .table tbody td {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.3rem;
+        white-space: nowrap;
+    }
+
+    h1 {
+        font-size: 1.4rem;
+    }
+}
+
+/* ── Modal detalle responsive ── */
+@media (max-width: 576px) {
+    .modal-detalle-content {
+        width: 95% !important;
+        max-height: 85vh;
+    }
+
+    .modal-detalle-content .table thead th,
+    .modal-detalle-content .table tbody td {
+        font-size: 0.7rem;
+        padding: 0.25rem;
+        white-space: nowrap;
+    }
+}

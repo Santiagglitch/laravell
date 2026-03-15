@@ -59,3 +59,42 @@ p {
 .enlace-olvido:hover {
     text-decoration: underline;
 }
+
+/* ================================================
+   RESPONSIVE
+   ================================================ */
+
+/* ── TABLET (max 768px) ─────────────────────── */
+@media (max-width: 768px) {
+
+    .InicioI {
+        padding: 1.5rem;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+}
+
+/* ── MÓVIL (max 480px) ──────────────────────── */
+@media (max-width: 480px) {
+
+    .InicioI {
+        padding: 1.2rem;
+        border-radius: 8px;
+    }
+
+    h1 {
+        font-size: 1.3rem;
+    }
+
+    .form-control {
+        padding: 0.5rem;
+        font-size: 14px;
+    }
+
+    .btn-primary {
+        font-size: 15px;
+        padding: 0.6rem;
+    }
+}

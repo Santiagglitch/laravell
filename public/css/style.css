@@ -1,4 +1,3 @@
-
 * {
     margin: 0;
     padding: 0;
@@ -18,11 +17,10 @@ body {
     padding: 0 20px;
 }
 
-
 .header {
     background-position: center;
     background-size: cover;
-    min-height: 80px;   
+    min-height: 80px;
     color: white;
     position: relative;
 }
@@ -61,7 +59,6 @@ body {
     color: #00b4d8;
 }
 
-
 .btn-1 {
     display: inline-block;
     background-color: #00b4d8;
@@ -73,13 +70,12 @@ body {
     text-decoration: none;
     font-weight: bold;
     transition: background 0.3s;
+    margin-bottom: 40px;
 }
 
 .btn-1:hover {
     background-color: #0077b6;
 }
-
-
 
 .TECNICELL {
     padding: 60px 0;
@@ -142,12 +138,12 @@ body {
     margin-bottom: 10px;
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    list-style: none;
+/* Carrusel */
+.carousel-img {
+    height: 300px;
+    object-fit: cover;
 }
+
 /* Footer */
 .footer {
     background-color: #000000;
@@ -179,13 +175,13 @@ body {
 }
 
 .footer ul {
-    list-style: none;  /* 👈 quita los bullets */
-    padding: 0;        /* 👈 quita la sangría por defecto */
+    list-style: none;
+    padding: 0;
     margin: 0;
 }
 
 .footer ul li {
-    margin-bottom: 12px; /* 👈 espacio entre ítems */
+    margin-bottom: 12px;
 }
 
 .footer ul li a {
@@ -235,16 +231,7 @@ body {
     padding-top: 16px;
     border-top: 1px solid #333333;
     text-decoration: none;
-}
-.copy {
-    text-align: center;
-    color: #aaaaaa;
-    font-size: 13px;
-    margin-top: 40px;
-    padding-top: 16px;
-    border-top: 1px solid #333333;
-    text-decoration: none;
-    pointer-events: none; /* 👈 desactiva cualquier clic */
+    pointer-events: none;
 }
 
 .copy a {
@@ -252,6 +239,64 @@ body {
     text-decoration: none !important;
     pointer-events: none !important;
 }
-.btn-1 {
-    margin-bottom: 40px; /* 👈 espacio entre el botón y el footer */
+
+/* ================================================
+   RESPONSIVE
+   ================================================ */
+
+/* ── TABLET (max 768px) ─────────────────────── */
+@media (max-width: 768px) {
+
+    /* Carrusel */
+    .carousel-img { height: 200px !important; }
+
+    /* Botón iniciar sesión */
+    .position-absolute.top-0.end-0.p-3 .btn {
+        font-size: 13px;
+        padding: 6px 12px;
+    }
+
+    /* Tarjeta presentación: apila imagen arriba, texto abajo */
+    .container.text-center.card .row { flex-direction: column !important; }
+    .container.text-center.card .col-md-4,
+    .container.text-center.card .col-md-8 { width: 100% !important; }
+    .container.text-center.card .col-md-4 img {
+        max-width: 160px;
+        margin: 20px auto 0;
+        display: block;
+    }
+
+    /* Sección categorías: apila las dos columnas */
+    .seccion .row { flex-direction: column !important; }
+    .seccion .col-md-6 { width: 100% !important; margin-bottom: 20px; }
+
+    /* Celulares y accesorios: 2 por fila */
+    .celular   { width: calc(50% - 20px) !important; }
+    .accesorio { width: calc(50% - 20px) !important; }
+
+    /* Footer: 2 columnas */
+    .Fonrio, .Ayuda, .Tienda, .Clases_link { width: 45% !important; margin-bottom: 20px; }
+}
+
+/* ── MÓVIL (max 480px) ──────────────────────── */
+@media (max-width: 480px) {
+
+    /* Carrusel */
+    .carousel-img { height: 150px !important; }
+
+    /* Logo */
+    .logo { width: 80px !important; }
+
+    /* Botón iniciar sesión */
+    .position-absolute.top-0.end-0.p-3 .btn {
+        font-size: 12px;
+        padding: 5px 10px;
+    }
+
+    /* Celulares y accesorios: 1 por fila */
+    .celular   { width: 100% !important; }
+    .accesorio { width: 100% !important; }
+
+    /* Footer: 1 columna */
+    .Fonrio, .Ayuda, .Tienda, .Clases_link { width: 100% !important; }
 }

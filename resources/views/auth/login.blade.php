@@ -7,18 +7,15 @@
 
     <link rel="icon" type="image/png" href="{{ asset('Imagenes/Logo.webp') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-
-
-
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet"/>
     <link href="{{ asset('css/IniciarSesion.css') }}" rel="stylesheet"/>
 </head>
 <body>
+
 <div class="container">
     <div class="row justify-content-center align-items-center min-vh-100">
-        <div class="col-md-4">
+        <div class="col-md-4 col-sm-8 col-11">
             <div class="InicioI">
                 <div class="text-center mb-4">
                     <h1>Bienvenido</h1>
@@ -57,47 +54,44 @@
                         />
                     </div>
 
-                 <div class="mb-1 position-relative">
-                <label for="contrasena" class="form-label">Contraseña</label>
-                <div class="input-group">
-                 <input
-                 type="password"
-                 class="form-control"
-                 id="contrasena"
-                 name="contrasena"
-                 placeholder="Ingrese su contraseña"
-                 required
-                 />
-        <span class="input-group-text" id="togglePassword" style="cursor:pointer;">
-            <i class="bi bi-eye"></i>
-        </span>
-    </div>
-        </div>
-        <script>
-    
-    
-    document.getElementById('togglePassword').addEventListener('click', function () {
-        const input = document.getElementById('contrasena');
-        const icon = this.querySelector('i');
+                    <div class="mb-1 position-relative">
+                        <label for="contrasena" class="form-label">Contraseña</label>
+                        <div class="input-group">
+                            <input
+                                type="password"
+                                class="form-control"
+                                id="contrasena"
+                                name="contrasena"
+                                placeholder="Ingrese su contraseña"
+                                required
+                            />
+                            <span class="input-group-text" id="togglePassword" style="cursor:pointer;">
+                                <i class="bi bi-eye"></i>
+                            </span>
+                        </div>
+                    </div>
 
-        if (input.type === "password") {
-            input.type = "text";
-            icon.classList.remove("bi-eye");
-            icon.classList.add("bi-eye-slash");
-        } else {
-            input.type = "password";
-            icon.classList.remove("bi-eye-slash");
-            icon.classList.add("bi-eye");
-        }
-    });
-    </script>
-
+                    <script>
+                        document.getElementById('togglePassword').addEventListener('click', function () {
+                            const input = document.getElementById('contrasena');
+                            const icon = this.querySelector('i');
+                            if (input.type === "password") {
+                                input.type = "text";
+                                icon.classList.remove("bi-eye");
+                                icon.classList.add("bi-eye-slash");
+                            } else {
+                                input.type = "password";
+                                icon.classList.remove("bi-eye-slash");
+                                icon.classList.add("bi-eye");
+                            }
+                        });
+                    </script>
 
                     <div class="mb-3 text-end">
                         <a href="{{ route('password.forgot') }}" class="link-recuperar">¿Olvidaste tu contraseña?</a>
                     </div>
 
-                   <div class="d-grid">
+                    <div class="d-grid">
                         <button type="submit" class="btn btn-primary">Entrar</button>
                     </div>
                 </form>
@@ -105,11 +99,11 @@
             </div>
         </div>
     </div>
-
 </div>
 
 <div style="position: fixed; bottom: 10px; left: 0; width: 100%; text-align: center;">
     <p style="color: #fafafa; font-size: 13px; margin: 0;">Copyright © 2026 Fonrio</p>
 </div>
+
 </body>
 </html>
