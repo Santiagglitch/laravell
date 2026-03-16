@@ -2,56 +2,71 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="{{ asset('Imagenes/Logo.webp') }}" type="image/webp">
     <title>Productos</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/Inicio.css') }}">
     <link rel="stylesheet" href="{{ asset('css/menu.css') }}">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
+
 <body>
+
+<!-- Overlay oscuro al abrir sidebar -->
+<div class="overlay-sidebar" id="overlay"></div>
 
 <div class="d-flex" style="min-height:100vh">
 
-    <div class="barra-lateral d-flex flex-column flex-shrink-0 p-3 bg-primary text-white">
+    <!-- ===================== SIDEBAR ===================== -->
+    <div class="barra-lateral d-flex flex-column flex-shrink-0 p-3 bg-primary text-white" id="sidebar">
         <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-            TECNICELL RM <img src="{{ asset('Imagenes/Logo.webp') }}" style="height:48px;">
+            TECNICELL RM
+            <img src="{{ asset('Imagenes/Logo.webp') }}" style="height:48px;">
         </a>
         <hr>
         <div class="menu-barra-lateral">
             <div class="seccion-menu">
-                <a href="{{ route('admin.inicio') }}" class="elemento-menu">
+                <a href="{{ route('admin.inicio') }}"
+                   class="elemento-menu {{ request()->routeIs('admin.inicio') ? 'activo' : '' }}">
                     <i class="fa-solid fa-tachometer-alt"></i><span>Dashboard</span>
                 </a>
-                <a href="{{ route('compras.index') }}" class="elemento-menu">
+                <a href="{{ route('compras.index') }}"
+                   class="elemento-menu {{ request()->routeIs('compras.*') ? 'activo' : '' }}">
                     <i class="ri-shopping-cart-2-line"></i><span>Compras</span>
                 </a>
-                <a href="{{ route('devolucion.index') }}" class="elemento-menu">
+                <a href="{{ route('devolucion.index') }}"
+                   class="elemento-menu {{ request()->routeIs('devolucion.*') ? 'activo' : '' }}">
                     <i class="ri-arrow-go-back-line"></i><span>Devoluciones</span>
                 </a>
-                <a href="{{ route('ventas.index') }}" class="elemento-menu">
+                <a href="{{ route('ventas.index') }}"
+                   class="elemento-menu {{ request()->routeIs('ventas.*') ? 'activo' : '' }}">
                     <i class="ri-price-tag-3-line"></i><span>Ventas</span>
                 </a>
-                  <a href="{{ route('auditoria.index') }}"
+                <a href="{{ route('auditoria.index') }}"
                    class="elemento-menu {{ request()->routeIs('auditoria.*') ? 'activo' : '' }}">
-                    <i class="ri-shield-check-line"></i>
-                    <span>Auditoría</span>
+                    <i class="ri-shield-check-line"></i><span>Auditoría</span>
                 </a>
             </div>
             <hr>
             <div class="seccion-menu">
-                <a href="{{ route('productos.index') }}" class="elemento-menu activo">
+                <a href="{{ route('productos.index') }}"
+                   class="elemento-menu {{ request()->routeIs('productos.*') ? 'activo' : '' }}">
                     <i class="ri-box-3-line"></i><span>Productos</span>
                 </a>
-                <a href="{{ route('proveedor.index') }}" class="elemento-menu">
+                <a href="{{ route('proveedor.index') }}"
+                   class="elemento-menu {{ request()->routeIs('proveedor.*') ? 'activo' : '' }}">
                     <i class="ri-truck-line"></i><span>Proveedores</span>
                 </a>
                 <div class="dropdown">
-                    <a class="elemento-menu d-flex align-items-center text-white text-decoration-none dropdown-toggle"
-                       data-bs-toggle="dropdown">
+                    <a class="elemento-menu d-flex align-items-center text-white text-decoration-none dropdown-toggle
+                       {{ request()->routeIs('clientes.*') || request()->routeIs('empleados.*') ? 'activo' : '' }}"
+                       href="#" data-bs-toggle="dropdown">
                         <i class="ri-user-line"></i><span>Usuarios</span>
                     </a>
                     <ul class="dropdown-menu">
@@ -62,11 +77,22 @@
             </div>
         </div>
     </div>
+    <!-- ===================== FIN SIDEBAR ===================== -->
 
+
+    <!-- ===================== CONTENIDO PRINCIPAL ===================== -->
     <div class="contenido-principal flex-grow-1">
-  <nav class="navbar navbar-expand-lg bg-body-tertiary">
+
+        <!-- NAVBAR SUPERIOR -->
+        <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
+
+                <button class="btn-sidebar-toggle" id="btnToggleSidebar">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+
                 <a class="navbar-brand">Sistema gestión de inventarios</a>
+
                 <div class="dropdown ms-auto">
                     <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle"
                        id="dropdownUser1" data-bs-toggle="dropdown">
@@ -88,6 +114,7 @@
             </div>
         </nav>
 
+        <!-- CONTENIDO -->
         <div class="container py-4">
 
             <div class="d-flex justify-content-center align-items-center gap-3">
@@ -104,7 +131,7 @@
                 <script>setTimeout(()=>{let a=document.getElementById('alertaError');if(a){a.style.transition="opacity 0.5s";a.style.opacity=0;setTimeout(()=>a.remove(),500);}},2000);</script>
             @endif
 
-            <div class="d-flex justify-content-end mt-4 gap-2">
+            <div class="d-flex justify-content-end mt-4 gap-2 flex-wrap">
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#crearModal">
                     <i class="fa fa-plus"></i> Añadir Producto
                 </button>
@@ -126,13 +153,13 @@
                         <tr>
                             <th>ID</th>
                             <th>Nombre</th>
-                            <th>Descripción</th>
+                            <th class="col-ocultar-sm">Descripción</th>
                             <th>Precio</th>
-                            <th>Stock Mín</th>
-                            <th>Categoría</th>
-                            <th>Estado</th>
-                            <th>Gama</th>
-                            <th>Foto</th>
+                            <th class="col-ocultar-sm">Stock Mín</th>
+                            <th class="col-ocultar-md">Categoría</th>
+                            <th class="col-ocultar-md">Estado</th>
+                            <th class="col-ocultar-md">Gama</th>
+                            <th class="col-ocultar-sm">Foto</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -141,13 +168,13 @@
                         <tr>
                             <td>{{ $pro['ID_Producto'] }}</td>
                             <td>{{ $pro['Nombre_Producto'] }}</td>
-                            <td>{{ $pro['Descripcion'] }}</td>
+                            <td class="col-ocultar-sm">{{ $pro['Descripcion'] }}</td>
                             <td>{{ $pro['Precio_Venta'] }}</td>
-                            <td>{{ $pro['Stock_Minimo'] }}</td>
-                            <td>{{ $pro['Categoria'] ?? $pro['ID_Categoria'] }}</td>
-                            <td>{{ $pro['Estado'] ?? $pro['ID_Estado'] }}</td>
-                            <td>{{ $pro['Gama'] ?? $pro['ID_Gama'] }}</td>
-                            <td>
+                            <td class="col-ocultar-sm">{{ $pro['Stock_Minimo'] }}</td>
+                            <td class="col-ocultar-md">{{ $pro['Categoria'] ?? $pro['ID_Categoria'] }}</td>
+                            <td class="col-ocultar-md">{{ $pro['Estado'] ?? $pro['ID_Estado'] }}</td>
+                            <td class="col-ocultar-md">{{ $pro['Gama'] ?? $pro['ID_Gama'] }}</td>
+                            <td class="col-ocultar-sm">
                                 @if(!empty($pro['Fotos']))
                                     @php
                                         $foto = $pro['Fotos'];
@@ -356,286 +383,226 @@
 
         </div>
     </div>
+    <!-- ===================== FIN CONTENIDO PRINCIPAL ===================== -->
+
+</div>
+
+<div style="position: fixed; bottom: 10px; left: 0; width: 100%; text-align: center; margin-left: 115px;">
+    <p style="color: #aaaaaa; font-size: 13px; margin: 0;">Copyright © 2026 Fonrio</p>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-// ============================================
-// HELPERS
-// ============================================
-function normalizarClaves(obj) {
-    const r = {};
-    Object.keys(obj).forEach(key => {
-        r[key.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim()] = obj[key];
+    // ============================================
+    // SIDEBAR RESPONSIVE
+    // ============================================
+    const btnToggle = document.getElementById('btnToggleSidebar');
+    const sidebar   = document.getElementById('sidebar');
+    const overlay   = document.getElementById('overlay');
+
+    btnToggle.addEventListener('click', function () {
+        sidebar.classList.toggle('abierto');
+        overlay.classList.toggle('activo');
     });
-    return r;
-}
-function buscarClave(o, ...ps) {
-    for (const p of ps) {
-        const n = p.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
-        if (o[n] !== undefined) return o[n];
-    }
-    return null;
-}
 
-// ============================================
-// IMPORTACIÓN DESDE EXCEL
-// ============================================
-async function importarDesdeExcel(event) {
-    const archivo = event.target.files[0];
-    if (!archivo) return;
+    overlay.addEventListener('click', function () {
+        sidebar.classList.remove('abierto');
+        overlay.classList.remove('activo');
+    });
 
-    const progresoDiv = document.getElementById('progreso');
-    progresoDiv.className = 'alert alert-info';
-    progresoDiv.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Leyendo archivo Excel...';
-
-    try {
-        const data = await archivo.arrayBuffer();
-        const workbook = XLSX.read(data);
-        const hoja = workbook.Sheets[workbook.SheetNames[0]];
-        const productos = XLSX.utils.sheet_to_json(hoja).map(normalizarClaves);
-
-        console.log('📊 Productos leídos del Excel:', productos);
-
-        if (productos.length === 0) {
-            progresoDiv.className = 'alert alert-warning';
-            progresoDiv.innerHTML = '<i class="fa fa-exclamation-triangle"></i> El archivo está vacío';
-            return;
-        }
-
-        // Transformar datos
-        const datosValidados = productos.map(prod => ({
-            Nombre_Producto: buscarClave(prod, 'nombre_producto', 'nombre producto', 'nombre') ?? 'Sin nombre',
-            Descripcion:     buscarClave(prod, 'descripcion') ?? 'Sin descripción',
-            Precio_Venta:    buscarClave(prod, 'precio_venta', 'precio venta', 'precio') ?? 0,
-            Stock_Minimo:    buscarClave(prod, 'stock_minimo', 'stock minimo', 'stock') ?? 0,
-            Categoria:       buscarClave(prod, 'categoria') ?? null,
-            Estado:          buscarClave(prod, 'estado') ?? null,
-            Gama:            buscarClave(prod, 'gama') ?? null,
-            Fotos:           buscarClave(prod, 'fotos', 'foto') ?? '',
-        }));
-
-        console.log('✅ Datos validados para enviar:', datosValidados);
-
-        // Importar en lotes
-        const tamañoLote = 10;
-        let importados = 0;
-        let todosLosErrores = [];
-
-        for (let i = 0; i < datosValidados.length; i += tamañoLote) {
-            const lote = datosValidados.slice(i, i + tamañoLote);
-            const progreso = Math.round(((i + lote.length) / datosValidados.length) * 100);
-
-            progresoDiv.innerHTML = `
-                <div class="d-flex align-items-center">
-                    <strong>Importando productos...</strong>
-                    <div class="ms-auto">${progreso}%</div>
-                </div>
-                <div class="progress mt-2">
-                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning"
-                         style="width: ${progreso}%"></div>
-                </div>
-                <small class="text-muted mt-2 d-block">
-                    Registros: ${i + lote.length} / ${datosValidados.length}
-                </small>`;
-
-            console.log('📤 Enviando lote:', lote);
-
-            const response = await fetch('/migracion/productos/importar', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                },
-                body: JSON.stringify({ modulo: 'productos', datos: lote })
-            });
-
-            console.log('📥 Response status:', response.status);
-
-            const contentType = response.headers.get('content-type') || '';
-            const texto = await response.text();
-
-            console.log('📄 Response text:', texto);
-
-            if (contentType.includes('text/html') || texto.trim().startsWith('<!DOCTYPE') || texto.trim().startsWith('<html')) {
-                console.error('❌ El servidor devolvió HTML:');
-                console.error(texto);
-                throw new Error('El servidor devolvió HTML. Verifica la ruta /migracion/productos/importar');
-            }
-
-            let resultado;
-            try {
-                resultado = JSON.parse(texto);
-                console.log('✅ JSON parseado:', resultado);
-            } catch (e) {
-                console.error('❌ Error al parsear JSON:', e);
-                throw new Error('El servidor no devolvió JSON válido.');
-            }
-
-            if (!resultado.success) {
-                throw new Error(resultado.mensaje || 'Error desconocido');
-            }
-
-            importados += resultado.importados || 0;
-            
-            // Acumular errores
-            if (resultado.errores && resultado.errores.length > 0) {
-                todosLosErrores = todosLosErrores.concat(resultado.errores);
-            }
-
-            await new Promise(r => setTimeout(r, 300));
-        }
-
-        progresoDiv.className = 'alert alert-success';
-        let mensajeFinal = `
-            <i class="fa fa-check-circle"></i>
-            <strong>¡Importación completada!</strong>
-            <br><small>Se importaron ${importados} productos correctamente</small>
-        `;
-
-        // Mostrar errores si los hay
-        if (todosLosErrores.length > 0) {
-            mensajeFinal += `
-                <div class="mt-3">
-                    <strong>⚠️ Advertencias (${todosLosErrores.length}):</strong>
-                    <ul class="text-start mt-2">
-                        ${todosLosErrores.slice(0, 10).map(e => `<li>${e}</li>`).join('')}
-                        ${todosLosErrores.length > 10 ? `<li><em>...y ${todosLosErrores.length - 10} más</em></li>` : ''}
-                    </ul>
-                </div>
-            `;
-        }
-
-        progresoDiv.innerHTML = mensajeFinal;
-
-        if (importados > 0) {
-            setTimeout(() => location.reload(), 3000);
-        }
-
-    } catch (error) {
-        console.error('❌ Error completo:', error);
-        progresoDiv.className = 'alert alert-danger';
-        progresoDiv.innerHTML = `
-            <i class="fa fa-exclamation-triangle"></i> 
-            <strong>Error:</strong> ${error.message}
-            <br><small class="mt-2 d-block">Abre la consola del navegador (F12) para más detalles</small>
-        `;
-    }
-
-    event.target.value = '';
-}
-
-// ============================================
-// EXPORTACIÓN A EXCEL
-// ============================================
-async function iniciarExportacion() {
-    const btnExportar = event.target;
-    btnExportar.disabled = true;
-    btnExportar.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Exportando...';
-
-    const progresoDiv = document.getElementById('progreso');
-
-    try {
-        progresoDiv.className = 'alert alert-info';
-        progresoDiv.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Iniciando exportación...';
-
-        const initResp = await fetch('/migracion/productos/iniciar', {
-            method: 'POST',
-            headers: { 
-                'Content-Type':'application/json',
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content 
-            },
-            body: JSON.stringify({ modulo: 'productos' })
+    // ============================================
+    // HELPERS
+    // ============================================
+    function normalizarClaves(obj) {
+        const r = {};
+        Object.keys(obj).forEach(key => {
+            r[key.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim()] = obj[key];
         });
-        
-        const initData = await initResp.json();
-        if (!initData.success) throw new Error(initData.mensaje);
+        return r;
+    }
+    function buscarClave(o, ...ps) {
+        for (const p of ps) {
+            const n = p.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+            if (o[n] !== undefined) return o[n];
+        }
+        return null;
+    }
 
-        let todosLosDatos = [];
-        let completado = false, intentos = 0;
+    // ============================================
+    // IMPORTACIÓN DESDE EXCEL
+    // ============================================
+    async function importarDesdeExcel(event) {
+        const archivo = event.target.files[0];
+        if (!archivo) return;
 
-        while (!completado && intentos < 100) {
-            const loteResp = await fetch('/migracion/productos/lote', {
+        const progresoDiv = document.getElementById('progreso');
+        progresoDiv.className = 'alert alert-info';
+        progresoDiv.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Leyendo archivo Excel...';
+
+        try {
+            const data = await archivo.arrayBuffer();
+            const workbook = XLSX.read(data);
+            const hoja = workbook.Sheets[workbook.SheetNames[0]];
+            const productos = XLSX.utils.sheet_to_json(hoja).map(normalizarClaves);
+
+            if (productos.length === 0) {
+                progresoDiv.className = 'alert alert-warning';
+                progresoDiv.innerHTML = '<i class="fa fa-exclamation-triangle"></i> El archivo está vacío';
+                return;
+            }
+
+            const datosValidados = productos.map(prod => ({
+                Nombre_Producto: buscarClave(prod, 'nombre_producto', 'nombre producto', 'nombre') ?? 'Sin nombre',
+                Descripcion:     buscarClave(prod, 'descripcion') ?? 'Sin descripción',
+                Precio_Venta:    buscarClave(prod, 'precio_venta', 'precio venta', 'precio') ?? 0,
+                Stock_Minimo:    buscarClave(prod, 'stock_minimo', 'stock minimo', 'stock') ?? 0,
+                Categoria:       buscarClave(prod, 'categoria') ?? null,
+                Estado:          buscarClave(prod, 'estado') ?? null,
+                Gama:            buscarClave(prod, 'gama') ?? null,
+                Fotos:           buscarClave(prod, 'fotos', 'foto') ?? '',
+            }));
+
+            const tamañoLote = 10;
+            let importados = 0;
+            let todosLosErrores = [];
+
+            for (let i = 0; i < datosValidados.length; i += tamañoLote) {
+                const lote = datosValidados.slice(i, i + tamañoLote);
+                const progreso = Math.round(((i + lote.length) / datosValidados.length) * 100);
+
+                progresoDiv.innerHTML = `
+                    <div class="d-flex align-items-center">
+                        <strong>Importando productos...</strong>
+                        <div class="ms-auto">${progreso}%</div>
+                    </div>
+                    <div class="progress mt-2">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning"
+                             style="width: ${progreso}%"></div>
+                    </div>
+                    <small class="text-muted mt-2 d-block">Registros: ${i + lote.length} / ${datosValidados.length}</small>`;
+
+                const response = await fetch('/migracion/productos/importar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({ modulo: 'productos', datos: lote })
+                });
+
+                const texto = await response.text();
+                let resultado;
+                try { resultado = JSON.parse(texto); }
+                catch(e) { throw new Error('El servidor devolvió HTML. Verifica la ruta /migracion/productos/importar'); }
+
+                if (!resultado.success) throw new Error(resultado.mensaje || 'Error desconocido');
+                importados += resultado.importados || 0;
+                if (resultado.errores?.length > 0) todosLosErrores = todosLosErrores.concat(resultado.errores);
+                await new Promise(r => setTimeout(r, 300));
+            }
+
+            progresoDiv.className = 'alert alert-success';
+            let mensajeFinal = `<i class="fa fa-check-circle"></i> <strong>¡Importación completada!</strong><br><small>Se importaron ${importados} productos correctamente</small>`;
+
+            if (todosLosErrores.length > 0) {
+                mensajeFinal += `<div class="mt-3"><strong>⚠️ Advertencias (${todosLosErrores.length}):</strong><ul class="text-start mt-2">${todosLosErrores.slice(0,10).map(e=>`<li>${e}</li>`).join('')}${todosLosErrores.length>10?`<li><em>...y ${todosLosErrores.length-10} más</em></li>`:''}</ul></div>`;
+            }
+
+            progresoDiv.innerHTML = mensajeFinal;
+            if (importados > 0) setTimeout(() => location.reload(), 3000);
+
+        } catch (error) {
+            progresoDiv.className = 'alert alert-danger';
+            progresoDiv.innerHTML = `<i class="fa fa-exclamation-triangle"></i> <strong>Error:</strong> ${error.message}`;
+        }
+
+        event.target.value = '';
+    }
+
+    // ============================================
+    // EXPORTACIÓN A EXCEL
+    // ============================================
+    async function iniciarExportacion() {
+        const btnExportar = event.target;
+        btnExportar.disabled = true;
+        btnExportar.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Exportando...';
+
+        const progresoDiv = document.getElementById('progreso');
+
+        try {
+            progresoDiv.className = 'alert alert-info';
+            progresoDiv.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Iniciando exportación...';
+
+            const initResp = await fetch('/migracion/productos/iniciar', {
                 method: 'POST',
-                headers: { 
-                    'Content-Type':'application/json',
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content 
-                },
+                headers: { 'Content-Type':'application/json', 'Accept':'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
                 body: JSON.stringify({ modulo: 'productos' })
             });
-            
-            const loteData = await loteResp.json();
-            if (!loteData.success) throw new Error(loteData.mensaje);
-            if (loteData.datos?.length > 0) todosLosDatos = todosLosDatos.concat(loteData.datos);
+            const initData = await initResp.json();
+            if (!initData.success) throw new Error(initData.mensaje);
 
-            progresoDiv.innerHTML = `
-                <div class="d-flex align-items-center">
-                    <strong>Exportando productos...</strong>
-                    <div class="ms-auto">${loteData.progreso}%</div>
-                </div>
-                <div class="progress mt-2">
-                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
-                         style="width: ${loteData.progreso}%"></div>
-                </div>
-                <small class="text-muted mt-2 d-block">
-                    Registros: ${loteData.registros_migrados} / ${loteData.total_registros}
-                </small>`;
+            let todosLosDatos = [];
+            let completado = false, intentos = 0;
 
-            completado = loteData.completado;
-            intentos++;
-            await new Promise(r => setTimeout(r, 300));
-        }
+            while (!completado && intentos < 100) {
+                const loteResp = await fetch('/migracion/productos/lote', {
+                    method: 'POST',
+                    headers: { 'Content-Type':'application/json', 'Accept':'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+                    body: JSON.stringify({ modulo: 'productos' })
+                });
+                const loteData = await loteResp.json();
+                if (!loteData.success) throw new Error(loteData.mensaje);
+                if (loteData.datos?.length > 0) todosLosDatos = todosLosDatos.concat(loteData.datos);
 
-        if (todosLosDatos.length === 0) {
-            progresoDiv.className = 'alert alert-warning';
-            progresoDiv.innerHTML = '<i class="fa fa-exclamation-triangle"></i> No hay datos para exportar';
+                progresoDiv.innerHTML = `
+                    <div class="d-flex align-items-center"><strong>Exportando productos...</strong><div class="ms-auto">${loteData.progreso}%</div></div>
+                    <div class="progress mt-2"><div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" style="width:${loteData.progreso}%"></div></div>
+                    <small class="text-muted mt-2 d-block">Registros: ${loteData.registros_migrados} / ${loteData.total_registros}</small>`;
+
+                completado = loteData.completado;
+                intentos++;
+                await new Promise(r => setTimeout(r, 300));
+            }
+
+            if (todosLosDatos.length === 0) {
+                progresoDiv.className = 'alert alert-warning';
+                progresoDiv.innerHTML = '<i class="fa fa-exclamation-triangle"></i> No hay datos para exportar';
+                btnExportar.disabled = false;
+                btnExportar.innerHTML = '<i class="fa fa-download"></i> Exportar a Excel';
+                return;
+            }
+
+            const hoja = todosLosDatos.map(prod => ({
+                'Nombre_Producto': prod.Nombre_Producto,
+                'Descripcion':     prod.Descripcion,
+                'Precio_Venta':    prod.Precio_Venta,
+                'Stock_Minimo':    prod.Stock_Minimo,
+                'Categoria':       prod.Categoria,
+                'Estado':          prod.Estado,
+                'Gama':            prod.Gama,
+                'Fotos':           prod.Fotos
+            }));
+
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(hoja);
+            XLSX.utils.book_append_sheet(wb, ws, 'Productos');
+            XLSX.writeFile(wb, `Productos_${new Date().toISOString().split('T')[0]}.xlsx`);
+
+            progresoDiv.className = 'alert alert-success';
+            progresoDiv.innerHTML = `<i class="fa fa-check-circle"></i> <strong>¡Exportación completada!</strong><br><small>${todosLosDatos.length} productos exportados</small>`;
+            setTimeout(() => { progresoDiv.innerHTML=''; progresoDiv.className=''; }, 5000);
+
+        } catch (error) {
+            progresoDiv.className = 'alert alert-danger';
+            progresoDiv.innerHTML = `<i class="fa fa-exclamation-triangle"></i> Error: ${error.message}`;
+        } finally {
             btnExportar.disabled = false;
             btnExportar.innerHTML = '<i class="fa fa-download"></i> Exportar a Excel';
-            return;
         }
-
-        progresoDiv.innerHTML += '<br><i class="fa fa-spinner fa-spin"></i> Generando Excel...';
-
-        const hoja = todosLosDatos.map(prod => ({
-            'Nombre_Producto': prod.Nombre_Producto,
-            'Descripcion':     prod.Descripcion,
-            'Precio_Venta':    prod.Precio_Venta,
-            'Stock_Minimo':    prod.Stock_Minimo,
-            'Categoria':       prod.Categoria,
-            'Estado':          prod.Estado,
-            'Gama':            prod.Gama,
-            'Fotos':           prod.Fotos
-        }));
-
-        const wb = XLSX.utils.book_new();
-        const ws = XLSX.utils.json_to_sheet(hoja);
-        XLSX.utils.book_append_sheet(wb, ws, 'Productos');
-
-        XLSX.writeFile(wb, `Productos_${new Date().toISOString().split('T')[0]}.xlsx`);
-
-        progresoDiv.className = 'alert alert-success';
-        progresoDiv.innerHTML = `
-            <i class="fa fa-check-circle"></i> <strong>¡Exportación completada!</strong>
-            <br><small>${todosLosDatos.length} productos exportados</small>
-        `;
-        setTimeout(() => { progresoDiv.innerHTML=''; progresoDiv.className=''; }, 5000);
-
-    } catch (error) {
-        console.error('Error en exportación:', error);
-        progresoDiv.className = 'alert alert-danger';
-        progresoDiv.innerHTML = `<i class="fa fa-exclamation-triangle"></i> Error: ${error.message}`;
-    } finally {
-        btnExportar.disabled = false;
-        btnExportar.innerHTML = '<i class="fa fa-download"></i> Exportar a Excel';
     }
-}
 </script>
-<div style="position: fixed; bottom: 10px; left: 0; width: 100%; text-align: center; margin-left: 115px;">
-    <p style="color: #aaaaaa; font-size: 13px; margin: 0;">Copyright © 2026 Fonrio</p>
-</div>
+
 </body>
 </html>

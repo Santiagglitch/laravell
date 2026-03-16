@@ -81,9 +81,19 @@ Route::get('/admin', function () {
     ));
 })->name('admin.inicio');
 
+
 Route::get('/InicioE', function () {
-    return view('InicioE.index');
+    $devoluciones = \App\Models\Devolucion::count();
+    $ventas       = \Illuminate\Support\Facades\DB::table('Ventas')->count();
+    $productos    = \Illuminate\Support\Facades\DB::table('Productos')->count();
+    $usuarios     = \Illuminate\Support\Facades\DB::table('Clientes')->count();
+
+    return view('InicioE.index', compact(
+        'devoluciones', 'ventas', 'productos', 'usuarios'
+    ));
 })->name('InicioE.index');
+
+
 
 Route::get('/pie-pag', function () {
     return view('Pie_pag.index');

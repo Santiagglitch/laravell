@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="{{ asset('Imagenes/Logo.webp') }}" type="image/webp">
     <title>Auditoría</title>
 
@@ -35,93 +35,152 @@
         .field-line { margin-bottom:4px; }
         .field-label { font-weight:600; color:#6c757d; }
 
-        /* ✅ Arreglo para textos largos */
         .audit-table {
             table-layout: fixed;
             width: 100%;
         }
 
         .audit-table td, .audit-table th { vertical-align: top; }
-
         .audit-cell { max-width: 420px; }
 
-        .audit-preview{
+        .audit-preview {
             max-width: 420px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             display: block;
         }
+
+        /* ── MÓVIL - Auditoría ── */
+        @media (max-width: 576px) {
+            .audit-table {
+                table-layout: auto;
+            }
+
+            .audit-table thead th,
+            .audit-table tbody td {
+                font-size: 0.7rem;
+                padding: 0.3rem 0.25rem;
+                white-space: nowrap;
+            }
+
+            .audit-preview {
+                max-width: 120px;
+            }
+
+            /* Filtros en columna */
+            .row.g-2 .col-md-4,
+            .row.g-2 .col-md-3,
+            .row.g-2 .col-md-2 {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+
+            /* KPIs 2 por fila en móvil */
+            .row.g-3 .col-md-3 {
+                flex: 0 0 50%;
+                max-width: 50%;
+            }
+
+            h3 { font-size: 1.2rem; }
+        }
+
+        @media (max-width: 992px) {
+            /* KPIs 2 por fila en tablet */
+            .row.g-3 .col-md-3 {
+                flex: 0 0 50%;
+                max-width: 50%;
+            }
+        }
     </style>
 </head>
 
 <body>
 
+<!-- Overlay oscuro al abrir sidebar -->
+<div class="overlay-sidebar" id="overlay"></div>
+
 <div class="d-flex" style="min-height: 100vh;">
 
-    <div class="barra-lateral d-flex flex-column flex-shrink-0 p-3 bg-primary text-white">
+    <!-- ===================== SIDEBAR ===================== -->
+    <div class="barra-lateral d-flex flex-column flex-shrink-0 p-3 bg-primary text-white" id="sidebar">
         <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-            TECNICELL RM <img src="{{ asset('Imagenes/Logo.webp') }}" style="height:48px;">
+            TECNICELL RM
+            <img src="{{ asset('Imagenes/Logo.webp') }}" style="height:48px;">
         </a>
         <hr>
         <div class="menu-barra-lateral">
             <div class="seccion-menu">
-                <a href="{{ route('admin.inicio') }}" class="elemento-menu">
+                <a href="{{ route('admin.inicio') }}"
+                   class="elemento-menu {{ request()->routeIs('admin.inicio') ? 'activo' : '' }}">
                     <i class="fa-solid fa-tachometer-alt"></i><span>Dashboard</span>
                 </a>
-                <a href="{{ route('compras.index') }}" class="elemento-menu">
+                <a href="{{ route('compras.index') }}"
+                   class="elemento-menu {{ request()->routeIs('compras.*') ? 'activo' : '' }}">
                     <i class="ri-shopping-cart-2-line"></i><span>Compras</span>
                 </a>
-                <a href="{{ route('devolucion.index') }}" class="elemento-menu">
+                <a href="{{ route('devolucion.index') }}"
+                   class="elemento-menu {{ request()->routeIs('devolucion.*') ? 'activo' : '' }}">
                     <i class="ri-arrow-go-back-line"></i><span>Devoluciones</span>
                 </a>
-                <a href="{{ route('ventas.index') }}" class="elemento-menu">
+                <a href="{{ route('ventas.index') }}"
+                   class="elemento-menu {{ request()->routeIs('ventas.*') ? 'activo' : '' }}">
                     <i class="ri-price-tag-3-line"></i><span>Ventas</span>
                 </a>
                 <a href="{{ route('auditoria.index') }}"
                    class="elemento-menu {{ request()->routeIs('auditoria.*') ? 'activo' : '' }}">
-                    <i class="ri-shield-check-line"></i>
-                    <span>Auditoría</span>
+                    <i class="ri-shield-check-line"></i><span>Auditoría</span>
                 </a>
             </div>
             <hr>
             <div class="seccion-menu">
-                <a href="{{ route('productos.index') }}" class="elemento-menu">
+                <a href="{{ route('productos.index') }}"
+                   class="elemento-menu {{ request()->routeIs('productos.*') ? 'activo' : '' }}">
                     <i class="ri-box-3-line"></i><span>Productos</span>
                 </a>
-                <a href="{{ route('proveedor.index') }}" class="elemento-menu">
+                <a href="{{ route('proveedor.index') }}"
+                   class="elemento-menu {{ request()->routeIs('proveedor.*') ? 'activo' : '' }}">
                     <i class="ri-truck-line"></i><span>Proveedores</span>
                 </a>
                 <div class="dropdown">
-                    <a class="elemento-menu d-flex align-items-center text-white text-decoration-none dropdown-toggle activo"
+                    <a class="elemento-menu d-flex align-items-center text-white text-decoration-none dropdown-toggle
+                       {{ request()->routeIs('clientes.*') || request()->routeIs('empleados.*') ? 'activo' : '' }}"
                        href="#" data-bs-toggle="dropdown">
                         <i class="ri-user-line"></i><span>Usuarios</span>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item active" href="{{ route('clientes.index') }}">Cliente</a></li>
+                        <li><a class="dropdown-item" href="{{ route('clientes.index') }}">Cliente</a></li>
                         <li><a class="dropdown-item" href="{{ route('empleados.index') }}">Empleado</a></li>
                     </ul>
                 </div>
             </div>
         </div>
     </div>
+    <!-- ===================== FIN SIDEBAR ===================== -->
 
+
+    <!-- ===================== CONTENIDO PRINCIPAL ===================== -->
     <div class="contenido-principal flex-grow-1">
 
+        <!-- NAVBAR SUPERIOR -->
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
+
+                <button class="btn-sidebar-toggle" id="btnToggleSidebar">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+
                 <a class="navbar-brand">Sistema gestión de inventarios</a>
 
                 <div class="dropdown ms-auto">
                     <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle"
-                       data-bs-toggle="dropdown">
-                        <img src="{{ asset('fotos_empleados/686fe89fe865f_Foto Kevin.jpeg') }}"
-                             alt="Perfil" width="32" height="32" class="rounded-circle me-2">
+                       id="dropdownUser1" data-bs-toggle="dropdown">
+                        <img src="{{ session('foto') ?? asset('Imagenes/default-user.png') }}"
+                             width="32" height="32" class="rounded-circle me-2">
                         <strong>{{ session('nombre') ?? 'Perfil' }}</strong>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-dark">
-                        <li><a class="dropdown-item" href="#">Mi perfil</a></li>
-                        <li><a class="dropdown-item" href="#">Editar perfil</a></li>
+                    <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+                        <li><a class="dropdown-item" href="{{ route('perfil') }}">Mi perfil</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <form action="{{ route('logout') }}" method="POST">
@@ -134,11 +193,12 @@
             </div>
         </nav>
 
+        <!-- CONTENIDO -->
         <div class="container py-4">
 
             <h3 class="mb-4">Auditoría de movimientos</h3>
 
-            <!-- FICHAS -->
+            <!-- KPIs -->
             <div class="row g-3 mb-4">
                 <div class="col-md-3">
                     <div class="card audit-kpi p-3">
@@ -178,7 +238,6 @@
                             @endforeach
                         </select>
                     </div>
-
                     <div class="col-md-3">
                         <label class="form-label">Operación</label>
                         <select class="form-select" name="op">
@@ -188,18 +247,15 @@
                             <option value="DELETE" @selected(request('op') === 'DELETE')>DELETE</option>
                         </select>
                     </div>
-
                     <div class="col-md-2">
                         <label class="form-label">Desde</label>
                         <input class="form-control" type="date" name="desde" value="{{ request('desde') }}">
                     </div>
-
                     <div class="col-md-2">
                         <label class="form-label">Hasta</label>
                         <input class="form-control" type="date" name="hasta" value="{{ request('hasta') }}">
                     </div>
-
-                    <div class="col-12 d-flex gap-2 mt-2">
+                    <div class="col-12 d-flex gap-2 mt-2 flex-wrap">
                         <button class="btn btn-primary" type="submit">
                             <i class="ri-filter-3-line"></i> Filtrar
                         </button>
@@ -213,72 +269,89 @@
             <!-- TABLA -->
             <div class="card audit-card">
                 <div class="card-body p-0">
-                    <table class="table table-hover mb-0 audit-table">
-                        <thead>
-                        <tr>
-                            <th style="width:90px;">ID</th>
-                            <th style="width:120px;">Operación</th>
-                            <th style="width:160px;">Tabla</th>
-                            <th style="width:190px;">Registro</th>
-                            <th style="width:190px;">Fecha</th>
-                            <th>Antes</th>
-                            <th>Después</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @forelse($auditorias as $a)
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 audit-table">
+                            <thead>
                             <tr>
-                                <td class="mono">#{{ $a->ID_Auditoria }}</td>
-
-                                <td>
-                                    @php
-                                        $op = strtoupper(trim($a->Operacion));
-                                        $cls = $op === 'INSERT' ? 'op-insert' :
-                                               ($op === 'UPDATE' ? 'op-update' : 'op-delete');
-                                    @endphp
-                                    <span class="badge badge-op {{ $cls }}">{{ $op }}</span>
-                                </td>
-
-                                <td>{{ $a->Tabla_Afectada }}</td>
-                                <td class="mono">{{ $a->ID_Registro }}</td>
-                                <td class="mono">{{ $a->Fecha }}</td>
-
-                                <td class="audit-cell">
-                                    <span class="audit-preview" title="{{ strip_tags($a->Datos_Antes) }}">
-                                        {!! $a->Datos_Antes !!}
-                                    </span>
-                                </td>
-
-                                <td class="audit-cell">
-                                    <span class="audit-preview" title="{{ strip_tags($a->Datos_Despues) }}">
-                                        {!! $a->Datos_Despues !!}
-                                    </span>
-                                </td>
+                                <th style="width:90px;">ID</th>
+                                <th style="width:120px;">Operación</th>
+                                <th style="width:160px;">Tabla</th>
+                                <th style="width:190px;">Registro</th>
+                                <th style="width:190px;">Fecha</th>
+                                <th>Antes</th>
+                                <th>Después</th>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="7" class="text-center py-4 text-muted">
-                                    No hay registros de auditoría con los filtros actuales.
-                                </td>
-                            </tr>
-                        @endforelse
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                            @forelse($auditorias as $a)
+                                <tr>
+                                    <td class="mono">#{{ $a->ID_Auditoria }}</td>
+                                    <td>
+                                        @php
+                                            $op  = strtoupper(trim($a->Operacion));
+                                            $cls = $op === 'INSERT' ? 'op-insert' :
+                                                   ($op === 'UPDATE' ? 'op-update' : 'op-delete');
+                                        @endphp
+                                        <span class="badge badge-op {{ $cls }}">{{ $op }}</span>
+                                    </td>
+                                    <td>{{ $a->Tabla_Afectada }}</td>
+                                    <td class="mono">{{ $a->ID_Registro }}</td>
+                                    <td class="mono">{{ $a->Fecha }}</td>
+                                    <td class="audit-cell">
+                                        <span class="audit-preview" title="{{ strip_tags($a->Datos_Antes) }}">
+                                            {!! $a->Datos_Antes !!}
+                                        </span>
+                                    </td>
+                                    <td class="audit-cell">
+                                        <span class="audit-preview" title="{{ strip_tags($a->Datos_Despues) }}">
+                                            {!! $a->Datos_Despues !!}
+                                        </span>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="7" class="text-center py-4 text-muted">
+                                        No hay registros de auditoría con los filtros actuales.
+                                    </td>
+                                </tr>
+                            @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
-                <!-- ✅ PAGINACIÓN LIMPIA (no saca 1..200) -->
                 <div class="card-footer bg-white text-center">
-                    
-
                     {{ $auditorias->onEachSide(1)->links('pagination::bootstrap-5') }}
                 </div>
-
             </div>
 
         </div>
     </div>
+    <!-- ===================== FIN CONTENIDO PRINCIPAL ===================== -->
+
+</div>
+
+<div style="position: fixed; bottom: 10px; left: 0; width: 100%; text-align: center; margin-left: 115px;">
+    <p style="color: #aaaaaa; font-size: 13px; margin: 0;">Copyright © 2026 Fonrio</p>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    const btnToggle = document.getElementById('btnToggleSidebar');
+    const sidebar   = document.getElementById('sidebar');
+    const overlay   = document.getElementById('overlay');
+
+    btnToggle.addEventListener('click', function () {
+        sidebar.classList.toggle('abierto');
+        overlay.classList.toggle('activo');
+    });
+
+    overlay.addEventListener('click', function () {
+        sidebar.classList.remove('abierto');
+        overlay.classList.remove('activo');
+    });
+</script>
+
 </body>
 </html>
