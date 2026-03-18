@@ -8,22 +8,13 @@ use Illuminate\Support\Facades\DB;
 
 class DetalleVentaController extends Controller
 {
-    /* ======================
-       LISTAR (ADMIN)
-    ====================== */
     public function get()
     {
         $detalles = DB::table('Detalle_Ventas as dv')
             ->join('Productos as p', 'dv.ID_Producto', '=', 'p.ID_Producto')
             ->join('Ventas as v', 'dv.ID_Venta', '=', 'v.ID_Venta')
-            ->select(
-                'dv.ID_Venta',
-                'dv.ID_Producto',
-                'dv.Cantidad',
-                'dv.Fecha_Salida',
-                'p.Nombre_Producto',
-                'p.Stock_Minimo'
-            )->get();
+            ->select('dv.ID_Venta', 'dv.ID_Producto', 'dv.Cantidad', 'dv.Fecha_Salida', 'p.Nombre_Producto', 'p.Stock_Minimo')
+            ->get();
 
         $productos     = DB::table('Productos')->where('ID_Estado', 1)->select('ID_Producto', 'Nombre_Producto', 'Stock_Minimo')->get();
         $ultimasVentas = DB::table('Ventas')->select('ID_Venta', 'Documento_Cliente')->orderByDesc('ID_Venta')->limit(5)->get();
@@ -31,9 +22,6 @@ class DetalleVentaController extends Controller
         return view('detalle_ventas.index', compact('detalles', 'productos', 'ultimasVentas'));
     }
 
-    /* ======================
-       LISTAR (EMPLEADO)
-    ====================== */
     public function indexEmpleado()
     {
         $detalles = DB::table('Detalle_Ventas as dv')
@@ -42,18 +30,10 @@ class DetalleVentaController extends Controller
             ->select('dv.ID_Venta', 'dv.ID_Producto', 'dv.Cantidad', 'dv.Fecha_Salida', 'p.Nombre_Producto', 'p.Stock_Minimo')
             ->get();
 
-        $ultimasVentas = DB::table('Ventas')
-            ->select('ID_Venta', 'Documento_Cliente')
-            ->orderByDesc('ID_Venta')
-            ->limit(5)
-            ->get();
-
+        $ultimasVentas = DB::table('Ventas')->select('ID_Venta', 'Documento_Cliente')->orderByDesc('ID_Venta')->limit(5)->get();
         return view('detalle_ventas.indexEm', compact('detalles', 'ultimasVentas'));
     }
 
-    /* ======================
-       CREAR (ADMIN)
-    ====================== */
     public function post(Request $request)
     {
         $validated = $request->validate([
@@ -63,9 +43,7 @@ class DetalleVentaController extends Controller
             'ID_Venta'     => 'required|integer|exists:Ventas,ID_Venta',
         ]);
 
-        $producto = DB::table('Productos')
-            ->where('ID_Producto', $validated['ID_Producto'])
-            ->first();
+        $producto = DB::table('Productos')->where('ID_Producto', $validated['ID_Producto'])->first();
 
         if (!$producto) {
             return redirect()->back()->with('error', 'Producto no encontrado.');
@@ -85,6 +63,7 @@ class DetalleVentaController extends Controller
             return redirect()->back()->with('error', 'Ya existe un detalle para esta venta con ese producto.');
         }
 
+        // ✅ Solo insert, el trigger maneja el stock
         DB::table('Detalle_Ventas')->insert([
             'ID_Venta'     => $validated['ID_Venta'],
             'ID_Producto'  => $validated['ID_Producto'],
@@ -92,16 +71,9 @@ class DetalleVentaController extends Controller
             'Fecha_Salida' => $validated['Fecha_Salida'],
         ]);
 
-        DB::table('Productos')
-            ->where('ID_Producto', $validated['ID_Producto'])
-            ->decrement('Stock_Minimo', $validated['Cantidad']);
-
         return redirect()->route('detalleventas.index')->with('mensaje', 'Detalle registrado correctamente.');
     }
 
-    /* ======================
-       CREAR (EMPLEADO)
-    ====================== */
     public function postEm(Request $request)
     {
         $validated = $request->validate([
@@ -111,10 +83,7 @@ class DetalleVentaController extends Controller
             'ID_Venta'     => 'required|integer|exists:Ventas,ID_Venta',
         ]);
 
-        $producto = DB::table('Productos')
-            ->where('ID_Producto', $validated['ID_Producto'])
-            ->first();
-
+        $producto = DB::table('Productos')->where('ID_Producto', $validated['ID_Producto'])->first();
         if (!$producto) {
             return redirect()->back()->with('error', 'Producto no encontrado.');
         }
@@ -140,16 +109,9 @@ class DetalleVentaController extends Controller
             'Fecha_Salida' => $validated['Fecha_Salida'],
         ]);
 
-        DB::table('Productos')
-            ->where('ID_Producto', $validated['ID_Producto'])
-            ->decrement('Stock_Minimo', $validated['Cantidad']);
-
         return redirect()->route('detalleventas.indexEm')->with('mensaje', 'Detalle registrado correctamente.');
     }
 
-    /* ======================
-       ACTUALIZAR (ADMIN)
-    ====================== */
     public function put(Request $request)
     {
         $validated = $request->validate([
@@ -167,9 +129,7 @@ class DetalleVentaController extends Controller
             return redirect()->back()->with('error', 'No se encontró el detalle a actualizar.');
         }
 
-        $producto = DB::table('Productos')
-            ->where('ID_Producto', $validated['ID_Producto'])
-            ->first();
+        $producto = DB::table('Productos')->where('ID_Producto', $validated['ID_Producto'])->first();
 
         $cantidadAnterior = $detalleActual->Cantidad;
         $cantidadNueva    = $validated['Cantidad'];
@@ -180,27 +140,15 @@ class DetalleVentaController extends Controller
                 ->with('error', "Stock insuficiente. Solo hay {$producto->Stock_Minimo} unidades adicionales disponibles.");
         }
 
+        // ✅ Solo update, el trigger maneja el stock
         DB::table('Detalle_Ventas')
             ->where('ID_Venta', $validated['ID_Venta'])
             ->where('ID_Producto', $validated['ID_Producto'])
             ->update(['Cantidad' => $cantidadNueva]);
 
-        if ($diferencia > 0) {
-            DB::table('Productos')
-                ->where('ID_Producto', $validated['ID_Producto'])
-                ->decrement('Stock_Minimo', $diferencia);
-        } elseif ($diferencia < 0) {
-            DB::table('Productos')
-                ->where('ID_Producto', $validated['ID_Producto'])
-                ->increment('Stock_Minimo', abs($diferencia));
-        }
-
         return redirect()->route('detalleventas.index')->with('mensaje', 'Detalle actualizado correctamente.');
     }
 
-    /* ======================
-       ACTUALIZAR (EMPLEADO)
-    ====================== */
     public function putEm(Request $request)
     {
         $validated = $request->validate([
@@ -218,10 +166,7 @@ class DetalleVentaController extends Controller
             return redirect()->back()->with('error', 'No se encontró el detalle a actualizar.');
         }
 
-        $producto = DB::table('Productos')
-            ->where('ID_Producto', $validated['ID_Producto'])
-            ->first();
-
+        $producto = DB::table('Productos')->where('ID_Producto', $validated['ID_Producto'])->first();
         $cantidadAnterior = $detalleActual->Cantidad;
         $cantidadNueva    = $validated['Cantidad'];
         $diferencia       = $cantidadNueva - $cantidadAnterior;
@@ -236,22 +181,9 @@ class DetalleVentaController extends Controller
             ->where('ID_Producto', $validated['ID_Producto'])
             ->update(['Cantidad' => $cantidadNueva]);
 
-        if ($diferencia > 0) {
-            DB::table('Productos')
-                ->where('ID_Producto', $validated['ID_Producto'])
-                ->decrement('Stock_Minimo', $diferencia);
-        } elseif ($diferencia < 0) {
-            DB::table('Productos')
-                ->where('ID_Producto', $validated['ID_Producto'])
-                ->increment('Stock_Minimo', abs($diferencia));
-        }
-
         return redirect()->route('detalleventas.indexEm')->with('mensaje', 'Detalle actualizado correctamente.');
     }
 
-    /* ======================
-       ELIMINAR (ADMIN)
-    ====================== */
     public function delete(Request $request)
     {
         $validated = $request->validate([
@@ -268,10 +200,7 @@ class DetalleVentaController extends Controller
             return redirect()->back()->with('error', 'Detalle no encontrado.');
         }
 
-        DB::table('Productos')
-            ->where('ID_Producto', $validated['ID_Producto'])
-            ->increment('Stock_Minimo', $detalle->Cantidad);
-
+        // ✅ Solo delete, el trigger maneja el stock
         DB::table('Detalle_Ventas')
             ->where('ID_Venta', $validated['ID_Venta'])
             ->where('ID_Producto', $validated['ID_Producto'])
@@ -280,9 +209,6 @@ class DetalleVentaController extends Controller
         return redirect()->route('detalleventas.index')->with('mensaje', 'Detalle eliminado correctamente.');
     }
 
-    /* ======================
-       ELIMINAR (EMPLEADO)
-    ====================== */
     public function deleteEm(Request $request)
     {
         $validated = $request->validate([
@@ -299,10 +225,6 @@ class DetalleVentaController extends Controller
             return redirect()->back()->with('error', 'Detalle no encontrado.');
         }
 
-        DB::table('Productos')
-            ->where('ID_Producto', $validated['ID_Producto'])
-            ->increment('Stock_Minimo', $detalle->Cantidad);
-
         DB::table('Detalle_Ventas')
             ->where('ID_Venta', $validated['ID_Venta'])
             ->where('ID_Producto', $validated['ID_Producto'])
@@ -311,9 +233,6 @@ class DetalleVentaController extends Controller
         return redirect()->route('detalleventas.indexEm')->with('mensaje', 'Detalle eliminado correctamente.');
     }
 
-    /* ======================
-       BUSCAR PRODUCTO (AJAX)
-    ====================== */
     public function buscarProducto($nombre)
     {
         try {
@@ -335,21 +254,13 @@ class DetalleVentaController extends Controller
         }
     }
 
-    /* ======================
-       INFO DE VENTA (AJAX)
-    ====================== */
     public function ventaInfo($idVenta)
     {
         try {
             $info = DB::table('Detalle_Ventas as dv')
                 ->join('Productos as p', 'dv.ID_Producto', '=', 'p.ID_Producto')
                 ->where('dv.ID_Venta', $idVenta)
-                ->select(
-                    'p.Nombre_Producto as producto',
-                    'dv.Cantidad       as cantidad',
-                    'p.Stock_Minimo    as stock',
-                    'p.ID_Producto     as id_producto'
-                )
+                ->select('p.Nombre_Producto as producto', 'dv.Cantidad as cantidad', 'p.Stock_Minimo as stock', 'p.ID_Producto as id_producto')
                 ->get();
 
             if ($info->isEmpty()) {
