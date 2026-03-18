@@ -18,7 +18,6 @@ class ProductoController
     {
         $productos = $this->productosService->obtenerProductos();
 
-        // ✅ catálogos dinámicos desde API Spring
         $catalogos  = $this->productosService->obtenerCatalogos();
         $categorias = $catalogos['categorias'] ?? [];
         $estados    = $catalogos['estados'] ?? [];
@@ -36,21 +35,20 @@ class ProductoController
 
     public function post(Request $request)
     {
-        // ✅ ID_Producto ya NO se envía (AUTO_INCREMENT)
+        // 🔥 SOLO AQUÍ SE ARREGLÓ (required en vez de nullable)
         $data = $request->validate([
             'Nombre_Producto' => 'required|string|max:50',
-            'Descripcion'     => 'nullable|string',
-            'Precio_Venta'    => 'nullable|numeric',
-            'Stock_Minimo'    => 'nullable|integer',
+            'Descripcion'     => 'required|string',
+            'Precio_Venta'    => 'required|numeric',
+            'Stock_Minimo'    => 'required|integer',
 
-            'ID_Categoria'    => 'nullable|integer',
-            'ID_Estado'       => 'nullable|integer',
-            'ID_Gama'         => 'nullable|integer',
+            'ID_Categoria'    => 'required|integer',
+            'ID_Estado'       => 'required|integer',
+            'ID_Gama'         => 'required|integer',
 
             'Fotos'           => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
         ]);
 
-        // ✅ tipado (recomendado)
         if (isset($data['Precio_Venta']) && $data['Precio_Venta'] !== '') $data['Precio_Venta'] = (float) $data['Precio_Venta'];
         if (isset($data['Stock_Minimo']) && $data['Stock_Minimo'] !== '') $data['Stock_Minimo'] = (int) $data['Stock_Minimo'];
 
@@ -76,7 +74,6 @@ class ProductoController
 
     public function put(Request $request)
     {
-        // ✅ ID_Producto es INT
         $request->validate([
             'ID_Producto' => 'required|integer',
             'Fotos'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
@@ -93,12 +90,10 @@ class ProductoController
 
         $data = $request->except(['_token', '_method', 'ID_Producto', 'Fotos']);
 
-        // ✅ limpiar vacíos
         $data = array_filter($data, function ($valor) {
             return $valor !== null && $valor !== '';
         });
 
-        // ✅ tipado (recomendado)
         if (isset($data['Precio_Venta']) && $data['Precio_Venta'] !== '') $data['Precio_Venta'] = (float) $data['Precio_Venta'];
         if (isset($data['Stock_Minimo']) && $data['Stock_Minimo'] !== '') $data['Stock_Minimo'] = (int) $data['Stock_Minimo'];
 
@@ -123,7 +118,6 @@ class ProductoController
 
     public function delete(Request $request)
     {
-        // ✅ ID_Producto es INT
         $request->validate([
             'ID_Producto' => 'required|integer',
         ]);
