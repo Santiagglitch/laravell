@@ -38,10 +38,10 @@
                 <img src="{{ asset('Imagenes/Portada 3.jpg') }}" class="d-block w-100 carousel-img">
             </div>
             <div class="carousel-item">
-                <img src="{{ asset('Imagenes/portada 4.jpg') }}" class="d-block w-100 carousel-img">
+                <img src="{{ asset('Imagenes/Portada 4.jpg') }}" class="d-block w-100 carousel-img">
             </div>
             <div class="carousel-item">
-                <img src="{{ asset('Imagenes/portada 5.jpg') }}" class="d-block w-100 carousel-img">
+                <img src="{{ asset('Imagenes/Portada 5.jpg') }}" class="d-block w-100 carousel-img">
             </div>
         </div>
 

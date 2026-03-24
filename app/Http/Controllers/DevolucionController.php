@@ -31,7 +31,7 @@ class DevolucionController
     public function put(Request $request)
     {
         $validated = $request->validate([
-            'ID_Devolucion'    => 'required|string|max:20|exists:devoluciones,ID_Devolucion',
+            'ID_Devolucion'    => 'required|string|max:20|exists:Devoluciones,ID_Devolucion',
             'Fecha_Devolucion' => 'required|date',
             'Motivo'           => 'required|string|max:45',
         ]);
@@ -58,7 +58,7 @@ class DevolucionController
     public function delete(Request $request)
     {
         $validated = $request->validate([
-            'ID_Devolucion' => 'required|string|max:20|exists:devoluciones,ID_Devolucion',
+            'ID_Devolucion' => 'required|string|max:20|exists:Devoluciones,ID_Devolucion',
         ]);
 
         $tieneDetalles = DB::table('Detalle_Devoluciones')
@@ -130,7 +130,7 @@ class DevolucionController
     public function updateEmpleado(Request $request)
     {
         $validated = $request->validate([
-            'ID_Devolucion' => 'required|string|max:20|exists:devoluciones,ID_Devolucion',
+            'ID_Devolucion' => 'required|string|max:20|exists:Devoluciones,ID_Devolucion',
             'Motivo'        => 'required|string|max:45',
         ]);
 
@@ -145,7 +145,7 @@ class DevolucionController
     public function destroyEmpleado(Request $request)
     {
         $validated = $request->validate([
-            'ID_Devolucion' => 'required|string|max:20|exists:devoluciones,ID_Devolucion',
+            'ID_Devolucion' => 'required|string|max:20|exists:Devoluciones,ID_Devolucion',
         ]);
 
         $tieneDetalles = DB::table('Detalle_Devoluciones')

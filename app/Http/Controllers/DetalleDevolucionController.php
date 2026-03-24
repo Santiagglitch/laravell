@@ -26,9 +26,9 @@ class DetalleDevolucionController
     public function post(Request $request)
     {
         $validated = $request->validate([
-            'ID_Devolucion'     => 'required|exists:devoluciones,ID_Devolucion',
+            'ID_Devolucion'     => 'required|exists:Devoluciones,ID_Devolucion',
             'Cantidad_Devuelta' => 'required|integer|min:1',
-            'ID_Venta'          => 'required|exists:ventas,ID_Venta',
+            'ID_Venta'          => 'required|exists:Ventas,ID_Venta',
         ]);
 
         $detalleExistente = DetalleDevolucion::where('ID_Devolucion', $validated['ID_Devolucion'])->first();
@@ -58,7 +58,7 @@ class DetalleDevolucionController
     {
         $validated = $request->validate([
             'Cantidad_Devuelta' => 'required|integer|min:1',
-            'ID_Venta'          => 'required|exists:ventas,ID_Venta',
+            'ID_Venta'          => 'required|exists:Ventas,ID_Venta',
         ]);
 
         $detalleVenta = DB::table('Detalle_Ventas')->where('ID_Venta', $validated['ID_Venta'])->first();
@@ -174,9 +174,9 @@ class DetalleDevolucionController
     public function storeEmpleado(Request $request)
     {
         $validated = $request->validate([
-            'ID_Devolucion'     => 'required|exists:devoluciones,ID_Devolucion',
+            'ID_Devolucion'     => 'required|exists:Devoluciones,ID_Devolucion',
             'Cantidad_Devuelta' => 'required|integer|min:1',
-            'ID_Venta'          => 'required|exists:ventas,ID_Venta',
+            'ID_Venta'          => 'required|exists:Ventas,ID_Venta',
         ]);
 
         $detalleExistente = DetalleDevolucion::where('ID_Devolucion', $validated['ID_Devolucion'])->first();
@@ -207,7 +207,7 @@ class DetalleDevolucionController
     {
         $validated = $request->validate([
             'Cantidad_Devuelta' => 'required|integer|min:1',
-            'ID_Venta'          => 'required|exists:ventas,ID_Venta',
+            'ID_Venta'          => 'required|exists:Ventas,ID_Venta',
         ]);
 
         $detalleVenta = DB::table('Detalle_Ventas')->where('ID_Venta', $validated['ID_Venta'])->first();

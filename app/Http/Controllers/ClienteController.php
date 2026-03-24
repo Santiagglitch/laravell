@@ -18,7 +18,7 @@ class ClienteController
     {
         try {
             $validated = $request->validate([
-                'Documento_Cliente' => 'required|string|max:20|unique:clientes,Documento_Cliente',
+                'Documento_Cliente' => 'required|string|max:20|unique:Clientes,Documento_Cliente',
                 'Nombre_Cliente'    => 'required|string|max:20',
                 'Apellido_Cliente'  => 'required|string|max:20',
                 'ID_Estado'         => 'required|integer|in:1,2',
@@ -43,7 +43,7 @@ class ClienteController
     public function put(Request $request)
     {
         $validated = $request->validate([
-            'Documento_Cliente' => 'required|string|max:20|exists:clientes,Documento_Cliente',
+            'Documento_Cliente' => 'required|string|max:20|exists:Clientes,Documento_Cliente',
             'Nombre_Cliente'    => 'nullable|string|max:20',
             'Apellido_Cliente'  => 'nullable|string|max:20',
             'ID_Estado'         => 'nullable|integer|in:1,2',
@@ -71,7 +71,7 @@ class ClienteController
     public function delete(Request $request)
     {
         $validated = $request->validate([
-            'Documento_Cliente' => 'required|string|max:20|exists:clientes,Documento_Cliente',
+            'Documento_Cliente' => 'required|string|max:20|exists:Clientes,Documento_Cliente',
         ]);
 
         $cliente = Cliente::findOrFail($validated['Documento_Cliente']);

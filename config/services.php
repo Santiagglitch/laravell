@@ -37,7 +37,11 @@ return [
 'auth_api' => [
     'base_url' => env('AUTH_API_BASE_URL', 'http://localhost:8080'),
 ],
-
+'productos' => [
+    'base_url' => env('SPRING_BASE_URL', 'http://localhost:8080'),
+],
+'spring' => [
+    'base_url' => env('SPRING_BASE_URL', 'http://localhost:8080'),
+],
 
 ];
-

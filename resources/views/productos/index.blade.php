@@ -185,7 +185,7 @@
                                             if (\Illuminate\Support\Str::startsWith($fotoLimpia, 'uploads/')) {
                                                 $fotoLimpia = substr($fotoLimpia, strlen('uploads/'));
                                             }
-                                            $fotoUrl = 'http://localhost:8080/' . $fotoLimpia;
+                                            $fotoUrl = 'http://34.225.251.49:8080/' . $fotoLimpia;
                                         }
                                     @endphp
                                     <img src="{{ $fotoUrl }}" width="50" height="50" class="rounded" style="object-fit:cover;">

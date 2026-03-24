@@ -22,7 +22,7 @@ class ComprasController extends BaseController
     {
         $validated = $request->validate([
             'Precio_Compra'      => 'nullable|numeric',
-            'ID_Producto'        => 'required|exists:productos,ID_Producto',
+            'ID_Producto'        => 'required|exists:Productos,ID_Producto',
             'Documento_Empleado' => 'required|exists:Empleados,Documento_Empleado',
         ]);
 
@@ -37,7 +37,7 @@ class ComprasController extends BaseController
     {
         $validated = $request->validate([
             'Precio_Compra' => 'nullable|numeric',
-            'ID_Producto'   => 'nullable|exists:productos,ID_Producto',
+            'ID_Producto'   => 'nullable|exists:Productos,ID_Producto',
         ]);
 
         $compra = Compras::findOrFail($ID_Entrada);

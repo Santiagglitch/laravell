@@ -27,7 +27,7 @@ class VentaController
 public function delete(Request $request)
 {
     $validated = $request->validate([
-        'ID_Venta' => 'required|integer|exists:ventas,ID_Venta',
+        'ID_Venta' => 'required|integer|exists:Ventas,ID_Venta',
     ]);
 
     $tieneDetalles = \DB::table('Detalle_Ventas')
@@ -210,7 +210,7 @@ public function storeEmpleado(Request $request)
     public function destroyEmpleado(Request $request)
     {
         $validated = $request->validate([
-            'ID_Venta' => 'required|integer|exists:ventas,ID_Venta',
+            'ID_Venta' => 'required|integer|exists:Ventas,ID_Venta',
         ]);
 
         $venta = Venta::findOrFail($validated['ID_Venta']);
