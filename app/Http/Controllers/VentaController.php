@@ -31,14 +31,21 @@ public function delete(Request $request)
     ]);
 
     $tieneDetalles = \DB::table('Detalle_Ventas')
-        ->where('ID_Venta', $validated['ID_Venta'])
-        ->exists();
-
-    if ($tieneDetalles) {
-        return redirect()
-            ->route('ventas.index')
-            ->with('error', 'No se puede eliminar la venta porque tiene detalles asociados. Por favor, elimina primero el detalle de la venta.');
-    }
+    ->where('ID_Venta', $validated['ID_Venta'])
+    ->exists();
+if ($tieneDetalles) {
+    return redirect()
+        ->route('ventas.index')
+        ->with('error', 'No se puede eliminar la venta porque tiene detalles asociados. Por favor, elimina primero el detalle de la venta.');
+}
+$tieneDevoluciones = \DB::table('Detalle_Devoluciones')
+    ->where('ID_Venta', $validated['ID_Venta'])
+    ->exists();
+if ($tieneDevoluciones) {
+    return redirect()
+        ->route('ventas.index')
+        ->with('error', 'No se puede eliminar la venta porque tiene devoluciones asociadas. Por favor, elimina primero las devoluciones.');
+}
 
     $venta = Venta::findOrFail($validated['ID_Venta']);
     $venta->delete();
@@ -208,16 +215,30 @@ public function storeEmpleado(Request $request)
     }
 
     public function destroyEmpleado(Request $request)
-    {
-        $validated = $request->validate([
-            'ID_Venta' => 'required|integer|exists:Ventas,ID_Venta',
-        ]);
-
-        $venta = Venta::findOrFail($validated['ID_Venta']);
-        $venta->delete();
-
+{
+    $validated = $request->validate([
+        'ID_Venta' => 'required|integer|exists:Ventas,ID_Venta',
+    ]);
+    $tieneDetalles = \DB::table('Detalle_Ventas')
+        ->where('ID_Venta', $validated['ID_Venta'])
+        ->exists();
+    if ($tieneDetalles) {
         return redirect()
             ->route('ventas.indexEm')
-            ->with('mensaje', 'Venta eliminada correctamente.');
+            ->with('error', 'No se puede eliminar la venta porque tiene detalles asociados. Elimina primero el detalle de la venta.');
     }
+    $tieneDevoluciones = \DB::table('Detalle_Devoluciones')
+        ->where('ID_Venta', $validated['ID_Venta'])
+        ->exists();
+    if ($tieneDevoluciones) {
+        return redirect()
+            ->route('ventas.indexEm')
+            ->with('error', 'No se puede eliminar la venta porque tiene devoluciones asociadas. Elimina primero las devoluciones.');
+    }
+    $venta = Venta::findOrFail($validated['ID_Venta']);
+    $venta->delete();
+    return redirect()
+        ->route('ventas.indexEm')
+        ->with('mensaje', 'Venta eliminada correctamente.');
+}
 }

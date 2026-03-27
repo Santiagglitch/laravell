@@ -215,6 +215,33 @@
                                                 <input class="form-control" name="Stock_Minimo"
                                                        value="{{ $pro['Stock_Minimo'] }}" required>
                                             </div>
+					<div class="col-md-6">
+    						<label>Categoría</label>
+    						<select name="ID_Categoria" class="form-control" required>
+        							<option value="">--Seleccione--</option>
+        						@foreach($categorias as $id => $nombre)
+            							<option value="{{ $id }}" {{ $pro['ID_Categoria'] == $id ? 'selected' : '' }}>{{ $nombre }}</option>
+        						@endforeach
+    						</select>
+					</div>
+						<div class="col-md-6">
+    							<label>Estado</label>
+    							<select name="ID_Estado" class="form-control" required>
+        							<option value="">--Seleccione--</option>
+        						@foreach($estados as $id => $nombre)
+            							<option value="{{ $id }}" {{ $pro['ID_Estado'] == $id ? 'selected' : '' }}>{{ $nombre }}</option>
+        						@endforeach
+    						</select>
+					</div>
+						<div class="col-md-6">
+    							<label>Gama</label>
+    							<select name="ID_Gama" class="form-control" required>
+        							<option value="">--Seleccione--</option>
+        						@foreach($gamas as $id => $nombre)
+            							<option value="{{ $id }}" {{ $pro['ID_Gama'] == $id ? 'selected' : '' }}>{{ $nombre }}</option>
+        						@endforeach
+    						</select>
+					</div>
                                             <div class="col-md-6">
                                                 <label>Nueva Foto (opcional)</label>
                                                 <input type="file" name="Fotos" class="form-control">

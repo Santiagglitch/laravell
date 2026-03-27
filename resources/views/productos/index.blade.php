@@ -345,7 +345,7 @@
                                     <select name="ID_Categoria" class="form-control" required>
                                         <option value="">--Seleccione--</option>
                                         @foreach($categorias as $id => $nombre)
-                                            <option value="{{ $id }}">{{ $nombre }}</option>
+                                            <option value="{{ $id }}" {{ $pro['ID_Categoria'] == $id ? 'selected' : '' }}>{{ $nombre }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -354,7 +354,7 @@
                                     <select name="ID_Estado" class="form-control" required>
                                         <option value="">--Seleccione--</option>
                                         @foreach($estados as $id => $nombre)
-                                            <option value="{{ $id }}">{{ $nombre }}</option>
+                                            <option value="{{ $id }}" {{ $pro['ID_Estado'] == $id ? 'selected' : '' }}>{{ $nombre }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -363,7 +363,7 @@
                                     <select name="ID_Gama" class="form-control" required>
                                         <option value="">--Seleccione--</option>
                                         @foreach($gamas as $id => $nombre)
-                                            <option value="{{ $id }}">{{ $nombre }}</option>
+                                            <option value="{{ $id }}" {{ $pro['ID_Gama'] == $id ? 'selected' : '' }}>{{ $nombre }}</option>
                                         @endforeach
                                     </select>
                                 </div>

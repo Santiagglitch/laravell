@@ -68,19 +68,23 @@ class ClienteController
             ->with('mensaje', 'Cliente actualizado correctamente.');
     }
 
-    public function delete(Request $request)
-    {
-        $validated = $request->validate([
-            'Documento_Cliente' => 'required|string|max:20|exists:Clientes,Documento_Cliente',
-        ]);
-
-        $cliente = Cliente::findOrFail($validated['Documento_Cliente']);
-        $cliente->delete();
-
-        return redirect()
-            ->route('clientes.index')
-            ->with('mensaje', 'Cliente eliminado correctamente.');
-    }
+    	public function delete(Request $request)
+	{
+    		$validated = $request->validate([
+        	'Documento_Cliente' => 'required|string|max:20|exists:Clientes,Documento_Cliente',
+    	]);
+    		$cliente = Cliente::findOrFail($validated['Documento_Cliente']);
+    	try {
+        	$cliente->delete();
+        	return redirect()
+            	->route('clientes.index')
+            	->with('mensaje', 'Cliente eliminado correctamente.');
+    	} catch (\Exception $e) {
+        	return redirect()
+       		->route('clientes.index')
+       		->with('error', 'No puedes eliminar este cliente porque tiene ventas asociadas.');
+    		}
+	}
 
     public function indexEmpleado()
     {
@@ -101,8 +105,20 @@ class ClienteController
     }
 
     public function destroyEmpleado(Request $request)
-    {
-        $this->delete($request);
-        return redirect()->route('clientes.indexEm')->with('mensaje', 'Cliente eliminado correctamente.');
+{
+    $validated = $request->validate([
+        'Documento_Cliente' => 'required|string|max:20|exists:Clientes,Documento_Cliente',
+    ]);
+    $cliente = Cliente::findOrFail($validated['Documento_Cliente']);
+    try {
+        $cliente->delete();
+        return redirect()
+            ->route('clientes.indexEm')
+            ->with('mensaje', 'Cliente eliminado correctamente.');
+    } catch (\Exception $e) {
+        return redirect()
+            ->route('clientes.indexEm')
+            ->with('error', 'No puedes eliminar este cliente porque tiene ventas asociadas.');
     }
+}
 }
